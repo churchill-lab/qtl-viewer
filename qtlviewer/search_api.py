@@ -43,17 +43,15 @@ def str2bool(val):
 
 @app.before_request
 def before_request():
-    request.URL_BASE = CONF.URL_BASE
+    g.URL_BASE = request.url_root
+
     if 'HTTP_X_FORWARDED_PATH' in request.environ:
-        protocol = 'http:'
         if 'wsgi.url_scheme' in request.environ:
             protocol = request.environ['wsgi.url_scheme'] + ':'
+        g.URL_BASE = "{}//{}{}".format(protocol, request.environ['HTTP_X_FORWARDED_HOST'], request.environ['HTTP_X_FORWARDED_PATH'])
 
-        request.URL_BASE = '{}//{}{}'.format(protocol, request.environ['HTTP_X_FORWARDED_HOST'], request.environ['HTTP_X_FORWARDED_PATH'])
-        if request.URL_BASE[-1] == '/':
-            request.URL_BASE = request.URL_BASE[:-1]
-
-    print (request.URL_BASE)
+    if g.URL_BASE[-1] == '/':
+        g.URL_BASE = g.URL_BASE[:-1]
 
 
 def format_time(start, end):
@@ -108,7 +106,7 @@ def parse_url(url):
 
 @app.route('/proxy/<path:url>', methods=['GET'])
 def proxy_get(url):
-    print ('request.url={}'.format(request.url))
+    #print ('request.url={}'.format(request.url))
     rd = parse_url(request.url)
     '''
     print("rd=", str(rd))
@@ -126,7 +124,7 @@ def proxy_get(url):
 
     #_params = {} if params is None else params
     r = requests.get(_url)  # , params=_params)
-    print("From cache: {}".format(r.from_cache))
+    #print("From cache: {}".format(r.from_cache))
 
     if _url in CACHE.urls:
         CACHE.urls[_url]['hits'] += 1
@@ -174,6 +172,7 @@ def run(host, port, debug):
     CONF.PLOT_LOD_LINES = app.config.get('PLOT_LOD_LINES', None)
     CONF.PLOT_LOD_XAXIS_TEXT = app.config.get('PLOT_LOD_XAXIS_TEXT', None)
     CONF.PLOT_EFFECT_STRAINS = app.config.get('PLOT_EFFECT_STRAINS', None)
+    CONF.API_R_BASE = app.config.get('API_R_BASE', None)
 
     app.config['BASIC_AUTH_USERNAME'] = 'admin'
     app.config['BASIC_AUTH_PASSWORD'] = 'admin'
