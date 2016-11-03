@@ -1,0 +1,6 @@
+* Moved mRNA and Protein "level selection" into title of portlet search
+* Clear all plots on new selection of mRNA or protein
+* LOD Plot Zoom on X allowed, but not Y
+* Effect Plot, disabled all zoom
+* Fixed genome coordinates on effect plot
+* Added _cache/view to see cache

@@ -1,0 +1,1024 @@
+<!--
+Copyright (c) 2015 Matthew Vincent, The Churchill Lab
+
+This software was developed by Gary Churchill's Lab.
+(see http://research.jax.org/faculty/churchill)
+
+This is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This software is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this software. If not, see <http://www.gnu.org/licenses/>.
+//-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title></title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="//127.0.0.1:8082/static/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//127.0.0.1:8082/static/font-awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//127.0.0.1:8082/static/jquery.tablesorter/css/theme.bootstrap.css">
+    <link rel="stylesheet" href="//127.0.0.1:8082/static/jquery.tablesorter/addons/pager/jquery.tablesorter.pager.css">
+    <link rel="stylesheet" href="//127.0.0.1:8082/static/css/style.css">
+    <!--
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    //-->
+    <link rel="shortcut icon" href="//127.0.0.1:8082/static/images/favicon.ico">
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div id="content" class="container-fluid">
+
+        <div class="row">
+            <div class="col-sm-4">
+                <!-- START SEARCH //-->
+                <div id="portletSearch" class="portlet margin-bottom-30">
+                    <div class="portlet-title">
+                        <div class="caption">
+                            <i class="glyphicon glyphicon-search"></i>
+                            <span class="caption-subject bold font-yellow-crusta uppercase">Search</span>
+                            <span class="caption-helper"></span>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="input-group">
+                                    <input type="text" id="searchTerm" class="form-control input-circle-left" placeholder="Example: Kit, Ren1"  value="">
+                                    <span class="input-group-btn">
+                                        <button id="btnGo" class="btn btn-circle-right btn-default" data-loading-text="<i class='fa fa-spinner fa-spin'></i>" type="submit">Go!</button>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12" id="searchResultsStatus"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div id="searchResults" style="height:300px;overflow-y:auto;overflow-x:hidden;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END SEARCH //-->
+            </div>
+            <div class="col-sm-8">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="portletLODPlot" class="portlet margin-bottom-30">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="fa fa-line-chart"></i>
+                                    <span class="caption-subject bold font-yellow-crusta uppercase">LOD Plot</span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="tester-wait"></div>
+                                        <div id="tester"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div id="portletMediationPlot" class="portlet margin-bottom-30">
+                            <div class="portlet-title">
+                                <div class="caption">
+                                    <i class="fa fa-line-chart"></i>
+                                    <span class="caption-subject bold font-yellow-crusta uppercase">Mediation Plot</span>
+                                    <span class="caption-helper"></span>
+                                </div>
+                            </div>
+                            <div class="portlet-body">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="tester2-wait"></div>
+                                        <div id="tester2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- /.container -->
+
+
+    <script src="//127.0.0.1:8082/static/js/jquery-2.0.3.min.js"></script>
+    <script src="//127.0.0.1:8082/static/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="//127.0.0.1:8082/js/whoz_api.js"></script>
+    <script src="//127.0.0.1:8082/static/jquery.tablesorter/js/jquery.tablesorter.min.js"></script>
+    <script src="//127.0.0.1:8082/static/jquery.tablesorter/js/jquery.tablesorter.widgets.js"></script>
+    <script src="//127.0.0.1:8082/static/jquery.tablesorter/addons/pager/jquery.tablesorter.pager.min.js"></script>
+    <script src="//127.0.0.1:8082/static/js/plotly-latest.js"></script>
+    <script src="//127.0.0.1:8082/static/js/d3.v4.js"></script>
+
+    <script>
+    <!--
+    //GLOBALS
+    var _G = {};
+
+
+    var WHOZ = new whoz({search_limit: 100});
+
+    function formatMbp(Mbp) {
+        return Number(Mbp).toFixed(2);
+    }
+
+    function findGene() {
+        $("#btnGo").button('loading');
+        var searchTerm = $('#searchTerm').val().trim().toUpperCase();
+        if (searchTerm.length == 0) {
+            $('#searchTerm').focus();
+            $("#btnGo").button('reset');
+            return;
+        }
+
+        WHOZ.search(searchTerm, myCallback, {species: 'Mm'});
+
+    }
+
+
+    function myCallback() {
+        if (WHOZ.results == null) {
+            $('#searchResultsStatus').html("<br><span class='text-danger'>Error searching.</span>");
+            $('#searchResults').html("");
+            return;
+        }
+
+        var data = WHOZ.results;
+    var searchResults = {};
+
+       if (data.length <= 0) {
+           $('#searchResultsStatus').html("<br><span class='text-danger'>No results found.</span>");
+           $('#searchResults').html("");
+       } else {
+           if (data.length == 1) {
+               $('#searchResultsStatus').html("<p class='text-right text-muted'><em><small>" + data.length.toLocaleString() + " result</small></em></p>");
+           } else {
+               $('#searchResultsStatus').html("<p class='text-right text-muted'><em><small>" + data.length.toLocaleString() + " results</small></em></p>");
+           }
+
+            var tbl = '<table id="searchTable" class="table-condensed">';
+            tbl += '<thead><tr><th>Ensembl ID</th><th>Symbol</th><th>Location</th></tr></thead>';
+            tbl += '<tbody>';
+
+            for (d in data) {
+                console.log(d);
+
+                var match = data[d];
+                console.log('match=', match);
+
+                var row = '<tr>';
+                searchResults[match.ensembl_gene_id] = match;
+
+                //console.log('delem[_settings.MATRIX.feature_id]=', delem[_settings.MATRIX.feature_id]);
+                /*
+
+                if (match.ensembl_id in _PLOTS.matrix.group_ids) {
+                    // we know a point exists, find it
+                    console.log('element exists');
+                    var delem = _PLOTS.matrix.ids[_PLOTS.matrix.group_ids[match.ensembl_id]];
+                    console.log('delem=',delem);
+                    row += '<td><a href="#" id="plotMe" feature_id="' + delem[_settings.MATRIX.feature_group_id] + '">' + delem[_settings.MATRIX.feature_group_id] + '</a> <span id="matchInfo" feature_id="' + delem[_settings.MATRIX.feature_group_id] + '" class="glyphicon glyphicon-info-sign"></span></td>';
+                    row += ('<td>' + delem[_settings.MATRIX.feature_name] + '</td>');
+                    row += ('<td>' + Number(delem[_settings.MATRIX.lod_score]).toFixed(4) + '</td>');
+                    //row += ('<td>' + delem[_settings.MATRIX.feature_chrom] + ":" + formatMbp(delem[_settings.MATRIX.feature_location]) + '</td></tr>');
+                    row += ('<td>' + match.chromosome + ":" + formatMbp(match.position_start/1000000) + "-" + formatMbp(match.position_end/1000000) + '</td>');
+
+                    _PLOTS.matrix.found.push(delem.feature_id);
+                    _PLOTS.matrix.filteredData.push(delem);
+                } else {
+                */
+
+                if (_G.genes[match.ensembl_gene_id]) {
+                    row += '<td><a href="#" id="plotMe" feature_id="' + match.ensembl_gene_id + '">' + match.ensembl_gene_id + '</a> <span id="matchInfo" feature_id="' + match.ensembl_gene_id + '" class="glyphicon glyphicon-info-sign"></span></td>';
+                } else {
+                    row += '<td>' + match.ensembl_gene_id + ' <span id="matchInfo" feature_id="' + match.ensembl_gene_id + '" class="glyphicon glyphicon-info-sign"></span></td>';
+                }
+                        row += ('<td>' + match.symbol + '</td>');
+                        row += ('<td>' + match.chromosome + ":" + formatMbp(match.position_start/1000000) + "-" + formatMbp(match.position_end/1000000) + '</td>');
+                        row += ('</tr>');
+                //}
+                row += '</tr>';
+                tbl += row;
+
+
+
+                //if(_PLOTS.matrix.found.length >= 100) {
+                //    break;
+                //}
+            }
+
+            tbl += "</tbody>";
+            tbl += "</table>";
+            $('#searchResults').html(tbl);
+
+            $("#searchTable").tablesorter({
+                theme: "bootstrap",
+                widthFixed: true,
+                headerTemplate: '{content} {icon}', // new in v2.7. Needed to add the bootstrap icon!
+                widgets: ["uitheme", "zebra"],
+                widgetOptions: {
+                    zebra: ["even", "odd"]
+                }
+            });
+
+            $("#searchTable a").click(function (e) {
+                e.preventDefault();
+                console.log("Search Table click, this=", $(this))
+                console.log("Search Table click, e=", e)
+
+
+                generateLODPlot($(this).attr('feature_id'));
+
+                return false;
+            });
+
+
+            to = setTimeout(function () {
+                $("[id='matchInfo']").each(function () {
+                    var that = $(this);
+
+                    $(this).popover({
+                        placement: 'right',
+                        html: true,
+                        trigger: 'hover',
+                        container: 'body',
+                        template:'<div class="popover container my-custom-class" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+                        content: function () {
+                            console.log('that=',that);
+                            console.log('that[0].getAttribute("feature_id")=', that[0].getAttribute("feature_id"));
+                            var d = searchResults[that[0].getAttribute("feature_id")];
+                            console.log('d=', d);
+                            var h = '<table class="table table-condensed">';
+                            h += '<tr><td><strong>Symbol</strong> </td><td>' + d['symbol'] + '</td></tr>';
+                            h += '<tr><td><strong>Location</strong> </td><td>' + d['chromosome'] + ':' + d['position_start'] + '-' + d['position_end'] + '</td></tr>';
+                            h += '<tr><td><strong>Name</strong> </td><td>' + d['name'] + '</td></tr>';
+                            h += '<tr><td><strong>Synonyms</strong> </td><td>';
+
+                            var s = d['synonyms'];
+                            if (s) {
+                                if (s.length > 5) {
+                                    var s2 = s.slice(1, 6);
+                                    h += s2.join("<br>");
+                                    h += "<br><i>(" + (s.length - s2.length) + " more synonyms)</i>";
+                                } else {
+                                    h += s.join("<br>");
+                                }
+                            }
+                            h += '</td></tr>';
+                            h += '<tr><td><strong>Match Reason</strong> </td><td>' + d['match_reason'] + '</td></tr>';
+                            h += '<tr><td><strong>Match Value</strong> </td><td>' + d['match_value'] + '</td></tr>';
+                            h += '</table>';
+
+                            return h;
+                        }
+                    });
+                });
+            });
+       }
+
+
+        _G.searchResults = searchResults;
+        $("#btnGo").button('reset');
+
+
+    }
+
+    function downloadLODData(ensembl_id, callback) {
+        var elem = _G.genes[ensembl_id];
+
+        console.log("//127.0.0.1:8082/proxy/http://127.0.0.1:18001/scan?id=" + ensembl_id);
+
+
+
+        $.ajax("//127.0.0.1:8082/proxy/http://127.0.0.1:18001/scan?id=" + ensembl_id)
+                .done(function(data, textStatus, jqXHR) {
+                    console.log("lod download success", data);
+                    callback(null, data);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.log("lod download failure");
+                    callback(errorThrown, null);
+                });
+
+    }
+
+    function plotLOD(lods, min_lod, max_lod, ensembl_id) {
+        var dataByChrom = {};
+
+        // current {"id":"1_12097218","chr":"1","pos":12097218,"pheno1":1.9185}
+        // old     {rs: "rs4222106", chromosome: 19, position: 57.10794, lod: 0.17895197357}
+
+        console.log('lods=', lods);
+
+        $.each(lods, function(index, element) {
+            //console.log('element=', element);
+            var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element.chr]];
+            var x = chr.start + (element.pos);
+            var y = element.pheno1;
+
+            // chr = {chromosome: "Y", end:2725521390, length: 91744698,
+            //        mid: 2679649040, name: "Y", order: 21, start: 2633776692 }
+            if (!(chr.chromosome in dataByChrom)) {
+                dataByChrom[chr.chromosome] = {'x':[], 'y':[], 'text':[], 'id':[]};
+            }
+            //console.log(dataByChrom[chr.chromosome]['x']);
+            dataByChrom[chr.chromosome]['x'].push(x);
+            dataByChrom[chr.chromosome]['y'].push(y);
+            dataByChrom[chr.chromosome]['text'].push(element.pheno1+'');
+            dataByChrom[chr.chromosome]['id'].push(element.id);
+        });
+
+        var traces = [];
+
+        $.each(dataByChrom, function(key, value) {
+            console.log(key);
+            console.log(value);
+            traces.push({
+                  type: 'scatter',
+                  x: value['x'],
+                  y: value['y'],
+                  text: value['id'],
+                  //name: value['text'],
+                  name: key,
+                  hoverinfo:'text',
+                  mode: 'lines',
+                  opacity: 100.0,
+                  line: {
+                    color: 'rgb(0,0,0)',
+                    width: 1
+                  }
+
+            });
+        });
+
+
+
+
+        var axis_tick_vals = [];
+        var axis_tick_text = [];
+
+        // rectangles to display
+        var chrom_shapes = [];
+        var data_chr = {};
+
+        // lines
+        var line_vals = [{'val':6.28, 'color':'yellow', 'text':'37%'},
+            {'val':8.13, 'color':'blue', 'text':'95%'},
+            {'val':9.14, 'color':'red', 'text':'99%'}];
+
+        var line_annotations = [];
+
+
+        for (var l in line_vals) {
+            chrom_shapes.push({
+                type: 'line',
+                // x-reference is assigned to the x-values
+                xref: 'paper',
+                // y-reference is assigned to the y-values
+                //yref: 'paper',
+                x0: 0,
+                y0: line_vals[l].val,
+                x1: 1,
+                y1: line_vals[l].val,
+                line: {
+                    color: line_vals[l].color,
+                    width: 1.5
+                },
+                layer: 'above',
+            });
+
+            line_annotations.push({
+                  x: 1,
+                  y: line_vals[l].val,
+                  xref: 'paper',
+                  yref: 'y',
+                  text: line_vals[l].text,
+                  xanchor: 'left',
+                  yanchor: 'middle',
+                  showarrow: false,
+            });
+        }
+
+
+        $.each(_G.chromosomes.idx, function(index, element) {
+
+            axis_tick_vals.push(element.mid);
+            axis_tick_text.push(element.name);
+
+            data_chr[element.name] = {};
+            data_chr[element.name].data = [];
+
+            var fill_color = '#ffffff';
+            if ((index % 2) == 0) {
+                fill_color = '#222222';
+            }
+            var s =  {
+                type: 'rect',
+                // x-reference is assigned to the x-values
+                xref: 'x',
+                // y-reference is assigned to the paper space (0 to 1)
+                yref: 'paper',
+                x0: element.start,
+                y0: 0,
+                x1: element.end,
+                y1: 1,
+                fillcolor: fill_color,
+                opacity: 0.2,
+                line: {
+                    width: 0.0
+                },
+            };
+
+            chrom_shapes.push(s);
+        });
+
+
+        //console.log(JSON.stringify(chrom_shapes));
+
+        var data = [];
+
+        var layout = {
+            annotations: line_annotations,
+            xaxis: {
+                title: ensembl_id + " (" + _G.searchResults[ensembl_id].symbol + ")",
+                showgrid: false,
+                zeroline: true,
+                showline: true,
+                mirror: 'ticks',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+                zerolinecolor: '#969696',
+                zerolinewidth: 4,
+                linecolor: '#636363',
+                linewidth: 1,
+                side: 'top',
+                autorange: false,
+                tickvals: axis_tick_vals,
+                ticktext: axis_tick_text,
+                range: [0, _G.chromosomes.totalLength],
+                tickfont: {
+                    color: 'rgb(0,0,0)',
+                    size:12
+                },
+                tickangle: 0,
+
+            },
+            yaxis: {
+                title: 'lod',
+                showgrid: false,
+                zeroline: false,
+                showline: true,
+                mirror: 'all',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+                zerolinecolor: '#969696',
+                zerolinewidth: 1,
+                linecolor: '#636363',
+                linewidth: 1,
+                range: [-2,22],
+                tickwidth:2,
+                tickmode:'array',
+                tickangle: 0,
+
+            },
+
+            showlegend: false,
+            shapes: chrom_shapes,
+            hovermode: 'closest',
+
+        };
+
+        /*
+        if (_G.plotlyLod) {
+            Plotly.deleteTraces('tester');
+        }
+        */
+
+
+        console.log(traces[0]);
+
+        var testButton = {
+    name: 'zoom2daaa',
+    title: 'woooohoooooo',
+    attr: 'dragmode',
+    val: 'zoom',
+    //icon: Icons.zoombox,
+    click: function(a,b,c) {
+            console.log('a=',a);
+            console.log('b=',b);
+            console.log('c=',c);
+        },
+};
+
+
+        //console.log(JSON.stringify(traces[0]));
+        //console.log(JSON.stringify(layout));
+
+        _G.plotlyLod = Plotly.newPlot('tester',
+                    traces,
+                    layout,
+                    {
+                        scrollZoom: false,
+                        displaylogo: false,
+                        showLink: false,
+                        modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'hoverCompareCartesian', 'hoverClosestCartesian'],
+                        modeBarButtonsToAdd: [testButton],
+                        logging: 5,
+                    }
+        );
+
+        var myPlot = document.getElementById('tester');
+
+        myPlot.on('plotly_click', function(data){
+
+            console.log('plotly_click=', data);
+            var marker = '';
+            var pts = '';
+            for(var i=0; i < data.points.length; i++){
+                pts = 'x = '+data.points[i].x +'\ny = '+
+                    data.points[i].y.toPrecision(4) + '\n\n';
+
+
+
+                console.log(data.points[i].pointNumber);
+                console.log(data.points[i].data.text[data.points[i].pointNumber]);
+
+                marker = data.points[i].data.text[data.points[i].pointNumber];
+
+
+            }
+
+
+            console.log('Closest point clicked:\n\n'+pts);
+
+
+            console.log(_G.current_id, ensembl_id);
+            generateMediationPlot(ensembl_id, marker);
+
+
+
+
+        });
+
+
+        myPlot.on('plotly_hover', function(data){
+            console.log('plotly_hover=', data);
+
+            var infotext = data.points.map(function(d){
+              return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3));
+            });
+
+        }).on('plotly_unhover', function(data){
+            //hoverInfo.innerHTML = '';
+        });
+
+        $("#tester-wait").html("");
+
+
+
+
+    }
+
+
+
+    function generateLODPlot(ensembl_id) {
+        _G.current_id = ensembl_id;
+        $("#tester").html("");
+        $("#tester-wait").html("<img src='http://cgd.jax.org/mda/v1/static/images/ajax-blocks-128x128.gif'/>");
+
+        var q = d3.queue()
+                .defer(downloadLODData, ensembl_id)
+                .await(function(error, data) {
+                    console.log('Queue done');
+                    console.log('data=', data);
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    /*
+                    if (error) {
+                        console.log('error=',error);
+                        throw error;
+                    }
+                    */
+
+                    //plotLOD(data.data, data.min, data.max);
+                    plotLOD(data.data, 0, 7, ensembl_id);
+
+                });
+    }
+
+
+
+    function plotMediation(data) {
+  var dataByChrom = {};
+
+        //'LOD': 3.4188, 'chr' : "11", id: "ENSMUSG00000099291", pos:87448734, symbol: "ACEA_U3"
+        console.log('data=', data);
+
+
+
+        var x_coord = [];
+        var y_coord = [];
+        var text = [];
+
+        // probably easier d3 function but just looping for now
+
+        $.each(data, function(index, element) {
+            //console.log('element=', element);
+            if (element.chr in Object.keys(_G.chromosomes.nameToIdx)) {
+
+                var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element.chr]];
+                var x = chr.start + (element.pos);
+                var y = element.LOD;
+
+                x_coord.push(x);
+                y_coord.push(y);
+                text.push(element.symbol);
+            }
+        });
+
+        var traces = [];
+        traces.push({
+            x: x_coord,
+            y: y_coord,
+            text: text,
+            mode: 'markers',
+            type: 'scatter',
+            marker: {
+                size: 5,
+                color: 'rgb(255,255,255)',
+                line: {
+                    color: 'rgb(139,26,26)',
+                    width: 1
+                }
+            }
+        });
+
+        var axis_tick_vals = [];
+        var axis_tick_text = [];
+
+        // rectangles to display
+        var chrom_shapes = [];
+        var data_chr = {};
+
+        $.each(_G.chromosomes.idx, function(index, element) {
+
+            axis_tick_vals.push(element.mid);
+            axis_tick_text.push(element.name);
+
+            data_chr[element.name] = {};
+            data_chr[element.name].data = [];
+
+            var fill_color = '#ffffff';
+            if ((index % 2) == 0) {
+                fill_color = '#222222';
+            }
+            var s =  {
+                type: 'rect',
+                // x-reference is assigned to the x-values
+                xref: 'x',
+                // y-reference is assigned to the paper space (0 to 1)
+                yref: 'paper',
+                x0: element.start,
+                y0: 0,
+                x1: element.end,
+                y1: 1,
+                fillcolor: fill_color,
+                opacity: 0.2,
+                line: {
+                    width: 0.0
+                },
+            };
+
+            chrom_shapes.push(s);
+        });
+
+
+        //console.log(JSON.stringify(chrom_shapes));
+
+        var data = [];
+
+        var layout = {
+            xaxis: {
+                //title: ensembl_id + " (" + _G.searchResults[ensembl_id].symbol + ")",
+                showgrid: false,
+                zeroline: true,
+                showline: true,
+                mirror: 'ticks',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+                zerolinecolor: '#969696',
+                zerolinewidth: 4,
+                linecolor: '#636363',
+                linewidth: 1,
+                side: 'top',
+                autorange: false,
+                tickvals: axis_tick_vals,
+                ticktext: axis_tick_text,
+                range: [0, _G.chromosomes.totalLength],
+                tickfont: {
+                    color: 'rgb(0,0,0)',
+                    size:12
+                },
+                tickangle: 0,
+
+            },
+            yaxis: {
+                title: 'lod',
+                showgrid: false,
+                zeroline: false,
+                showline: true,
+                mirror: 'all',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+                zerolinecolor: '#969696',
+                zerolinewidth: 1,
+                linecolor: '#636363',
+                linewidth: 1,
+                range: [-2,22],
+                tickwidth:2,
+                tickmode:'array',
+                tickangle: 0,
+
+            },
+
+            showlegend: false,
+            shapes: chrom_shapes,
+            hovermode: 'closest',
+
+        };
+
+        /*
+        if (_G.plotlyLod) {
+            Plotly.deleteTraces('tester');
+        }
+        */
+
+
+        _G.plotlyMediate = Plotly.newPlot('tester2',
+                    traces,
+                    layout,
+                    {
+                        scrollZoom: false,
+                        displaylogo: false,
+                        showLink: false,
+                        modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'hoverCompareCartesian', 'hoverClosestCartesian'],
+                        logging: 5,
+                    }
+        );
+
+        $("#tester2-wait").html("");
+
+        /*
+
+        var myPlot = document.getElementById('tester2');
+
+        myPlot.on('plotly_click', function(data){
+
+            console.log('plotly_click=', data);
+            var pts = '';
+            for(var i=0; i < data.points.length; i++){
+                pts = 'x = '+data.points[i].x +'\ny = '+
+                    data.points[i].y.toPrecision(4) + '\n\n';
+            }
+
+
+            console.log('Closest point clicked:\n\n'+pts);
+
+
+        });
+
+
+        myPlot.on('plotly_hover', function(data){
+            console.log('plotly_hover=', data);
+
+            var infotext = data.points.map(function(d){
+              return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3));
+            });
+
+        }).on('plotly_unhover', function(data){
+            //hoverInfo.innerHTML = '';
+        });
+        */
+
+
+    }
+
+    function downloadMediationData(ensembl_id, marker_id, callback) {
+        var elem = _G.genes[ensembl_id];
+
+        console.log("//127.0.0.1:8082/proxy/http://127.0.0.1:18001/mediate?myid=" + ensembl_id + "&" + "mymrk=" + marker_id);
+
+
+
+        $.ajax("//127.0.0.1:8082/proxy/http://127.0.0.1:18001/mediate?myid=" + ensembl_id + "&" + "mymrk=" + marker_id)
+                .done(function(data, textStatus, jqXHR) {
+                    console.log("mediate download success", data);
+                    callback(null, data);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    console.log("mediate download failure");
+                    callback(errorThrown, null);
+                });
+
+    }
+
+    function generateMediationPlot(ensembl_id, marker_id) {
+        console.log(ensembl_id, marker_id);
+        $("#tester2").html("");
+        $("#tester2-wait").html("<img src='http://cgd.jax.org/mda/v1/static/images/ajax-blocks-128x128.gif'/>");
+        var q = d3.queue()
+                .defer(downloadMediationData, ensembl_id, marker_id)
+                .await(function(error, data) {
+                    console.log('Queue done');
+                    console.log('data=', data);
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    /*
+                    if (error) {
+                        console.log('error=',error);
+                        throw error;
+                    }
+                    */
+
+                    //plotLOD(data.data, data.min, data.max);
+                    //plotMediation(data.data, 0, 7, ensembl_id);
+                    console.log("PLOT MEDIATE")
+                    plotMediation(data);
+
+
+                });
+    }
+
+
+
+    function loadOptions(callback) {
+        /*
+        From d3.js documentation:
+
+         When a task completes, it must call the provided callback.
+
+         The first argument to the callback should be null if the task is successfull,
+         or the error if the task failed.
+
+         The optional second argument to the callback is the return value of the task.
+         (To return multiple values from a single callback, wrap the results in an object or array.)
+        */
+        $.ajax({
+            url: "//127.0.0.1:8082/proxy/http://127.0.0.1:18001/options",
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("options download success");
+            console.log("options=", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("options download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadChromsomes(callback) {
+        $.ajax({
+            url: "//127.0.0.1:8082/static/chromosomes.mm.38.NO_Y.json",
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("chromosome download success");
+            console.log('chromosome data=',data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("chromosome download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadGenes(callback) {
+        //$.ajax("//127.0.0.1:8082/static/genes.json")
+        $.ajax({
+            url: "//127.0.0.1:8082/proxy/http://127.0.0.1:18001/ids",
+            method: "GET"
+        })
+        .done(function(data, textStatus, jqXHR) {
+            console.log("genes download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("genes download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+
+    function init() {
+        console.log('initializing...');
+        $('#searchTerm').keypress(function(e) {
+            var code = e.which ? e.which : e.keyCode;
+            if (code === 13) {
+                $(this).blur();
+                $('#btnGo').focus().click();
+            }
+        });
+
+        $('#btnGo').button().click(function() {
+            findGene();
+            return false;
+        });
+
+        console.log('DONE initializing!')
+    }
+
+
+
+
+    $().ready(function () {
+        init();
+
+        console.log('Starting Queue...');
+        var q = d3.queue()
+                .defer(loadOptions)
+                .defer(loadChromsomes)
+                .defer(loadGenes)
+                .await(function(error, options, chromosomes, genes) {
+                    console.log('Queue done');
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    /*
+                    if (error) {
+                        console.log('error=',error);
+                        throw error;
+                    }
+                    */
+
+                    console.log(options);
+
+                    _G.chromosomes = {'idx': chromosomes.chromosomes, 'nameToIdx': {}};
+
+                    $.each(chromosomes.chromosomes, function(index, element) {
+
+                        _G.chromosomes['nameToIdx'][element.name] = index;
+                    });
+
+                    _G.chromosomes['totalLength'] = _G.chromosomes.idx[_G.chromosomes.idx.length-1].end;
+
+
+                    //console.log(genes);
+
+                    _G.genes = {};
+
+                    console.log(genes.ids);
+
+                    $.each(genes.ids, function(index, element) {
+                        if (!(element in _G.genes)) {
+                            _G.genes[element] = {'id': element, 'idx':[]}
+                        }
+
+                        _G.genes[element]['idx'].push(index);
+                    });
+
+                    console.log('genes=', _G.genes);
+
+
+                });
+    });
+    //-->
+    </script>
+
+
+</body>
+</html>
+
+
+
+
+

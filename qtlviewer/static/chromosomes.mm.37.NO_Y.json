@@ -1,0 +1,184 @@
+{
+  "chromosomes": [
+    {
+      "chromosome": 1,
+      "end": 197195432,
+      "name": 1,
+      "mid": 98597716,
+      "start": 0,
+      "length": 197195432,
+      "order": 1
+    },
+    {
+      "chromosome": 2,
+      "end": 378943520,
+      "name": 2,
+      "mid": 288069476,
+      "start": 197195433,
+      "length": 181748087,
+      "order": 2
+    },
+    {
+      "chromosome": 3,
+      "end": 538543304,
+      "name": 3,
+      "mid": 458743412,
+      "start": 378943521,
+      "length": 159599783,
+      "order": 3
+    },
+    {
+      "chromosome": 4,
+      "end": 694173425,
+      "name": 4,
+      "mid": 616358365,
+      "start": 538543305,
+      "length": 155630120,
+      "order": 4
+    },
+    {
+      "chromosome": 5,
+      "end": 846710685,
+      "name": 5,
+      "mid": 770442055,
+      "start": 694173426,
+      "length": 152537259,
+      "order": 5
+    },
+    {
+      "chromosome": 6,
+      "end": 996227723,
+      "name": 6,
+      "mid": 921469204,
+      "start": 846710686,
+      "length": 149517037,
+      "order": 6
+    },
+    {
+      "chromosome": 7,
+      "end": 1148752277,
+      "name": 7,
+      "mid": 1072490000,
+      "start": 996227724,
+      "length": 152524553,
+      "order": 7
+    },
+    {
+      "chromosome": 8,
+      "end": 1280491149,
+      "name": 8,
+      "mid": 1214621713,
+      "start": 1148752278,
+      "length": 131738871,
+      "order": 8
+    },
+    {
+      "chromosome": 9,
+      "end": 1404567322,
+      "name": 9,
+      "mid": 1342529236,
+      "start": 1280491150,
+      "length": 124076172,
+      "order": 9
+    },
+    {
+      "chromosome": 10,
+      "end": 1534560578,
+      "name": 10,
+      "mid": 1469563950,
+      "start": 1404567323,
+      "length": 129993255,
+      "order": 10
+    },
+    {
+      "chromosome": 11,
+      "end": 1656404435,
+      "name": 11,
+      "mid": 1595482507,
+      "start": 1534560579,
+      "length": 121843856,
+      "order": 11
+    },
+    {
+      "chromosome": 12,
+      "end": 1777661966,
+      "name": 12,
+      "mid": 1717033201,
+      "start": 1656404436,
+      "length": 121257530,
+      "order": 12
+    },
+    {
+      "chromosome": 13,
+      "end": 1897946279,
+      "name": 13,
+      "mid": 1837804123,
+      "start": 1777661967,
+      "length": 120284312,
+      "order": 13
+    },
+    {
+      "chromosome": 14,
+      "end": 2023141144,
+      "name": 14,
+      "mid": 1960543712,
+      "start": 1897946280,
+      "length": 125194864,
+      "order": 14
+    },
+    {
+      "chromosome": 15,
+      "end": 2126636119,
+      "name": 15,
+      "mid": 2074888632,
+      "start": 2023141145,
+      "length": 103494974,
+      "order": 15
+    },
+    {
+      "chromosome": 16,
+      "end": 2224955270,
+      "name": 16,
+      "mid": 2175795695,
+      "start": 2126636120,
+      "length": 98319150,
+      "order": 16
+    },
+    {
+      "chromosome": 17,
+      "end": 2320227922,
+      "name": 17,
+      "mid": 2272591596,
+      "start": 2224955271,
+      "length": 95272651,
+      "order": 17
+    },
+    {
+      "chromosome": 18,
+      "end": 2410999954,
+      "name": 18,
+      "mid": 2365613938,
+      "start": 2320227923,
+      "length": 90772031,
+      "order": 18
+    },
+    {
+      "chromosome": 19,
+      "end": 2472342385,
+      "name": 19,
+      "mid": 2441671170,
+      "start": 2410999955,
+      "length": 61342430,
+      "order": 19
+    },
+    {
+      "chromosome": "X",
+      "end": 2638992682,
+      "name": "X",
+      "mid": 2555667534,
+      "start": 2472342386,
+      "length": 166650296,
+      "order": 20
+    }
+  ]
+}

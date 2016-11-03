@@ -1,0 +1,2411 @@
+<!--
+Copyright (c) 2015 Matthew Vincent, The Churchill Lab
+
+This software was developed by Gary Churchill's Lab.
+(see http://research.jax.org/faculty/churchill)
+
+This is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This software is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this software. If not, see <http://www.gnu.org/licenses/>.
+//-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>QTL Viewer</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{request.URL_BASE}}/static/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{request.URL_BASE}}/static/font-awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{request.URL_BASE}}/static/DataTables-1.10.12/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="{{request.URL_BASE}}/static/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css">
+    <link rel="stylesheet" href="{{request.URL_BASE}}/static/bootstrap-select/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="{{request.URL_BASE}}/static/bootstrap-multiselect/css/bootstrap-multiselect.css">
+    <link rel="stylesheet" href="{{request.URL_BASE}}/static/css/style.css">
+    <!--
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+    //-->
+    <link rel="shortcut icon" href="{{request.URL_BASE}}/static/images/favicon.ico">
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div class="container-fluid">
+        <!--
+        START ROW ONE
+        //-->
+        <div class="row" style="margin-top: 5px">
+            <!--
+            START COLUMN ONE
+            //-->
+            <div class="col-sm-4">
+                <div class="row">
+                    <!--
+                    START SEARCH PORTLET
+                    //-->
+                    <div id="portletSearchTitle" class="portlet">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="glyphicon glyphicon-search"></i>
+                                <span class="caption-subject bold font-yellow-crusta uppercase">Search</span>
+                                <span class="caption-helper"></span>
+                            </div>
+                            <div class="actions">
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label id="lbl_mrna" class="btn grey-salsa active">
+                                        <input type="radio" name="search_level" id="level_mrna" class="toggle" value="mrna" autocomplete="off" checked> mRNA
+                                    </label>
+                                    <label id="lbl_protein" class="btn grey-salsa">
+                                        <input type="radio" name="search_level" id="level_protein" lass="toggle"  value="protein" autocomplete="off"> Protein
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="portletSearchBody" class="portlet-body">
+                            <div>
+                                <ul class="nav nav-tabs" role="tablist">
+                                    <li role="presentation" class="active"><a href="#search_home_tab" aria-controls="search_home_tab" role="tab" data-toggle="tab">Search</a></li>
+                                    <li role="presentation"><a href="#search_history_tab" aria-controls="search_history_tab" role="tab" data-toggle="tab">History</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane active" id="search_home_tab">
+                                        <div class="row-spacer"></div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="input-group">
+                                                    <input type="text" id="searchTerm" class="form-control input-circle-left" placeholder="Example: Kit, Ren1"  value="{{ search_term }}">
+                                                    <span class="input-group-btn">
+                                                        <button id="btnGo" class="btn btn-circle-right btn-primary" data-loading-text="<i class='fa fa-spinner fa-spin'></i>" type="submit">Go!</button>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div id="searchResults"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div role="tabpanel" class="tab-pane" id="search_history_tab">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div id="searchHistoryStatus"></div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div id="searchHistory"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                    END SEARCH PORTLET
+                    //-->
+                </div>
+                <div class="row">
+                    <div id="profilePlot" class="hidden portlet">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="fa fa-bar-chart"></i>
+                                <span class="caption-subject bold font-yellow-crusta uppercase">Profile Plot</span>
+                                <span class="caption-helper"></span>
+                            </div>
+                        </div>
+                        <div class="portlet-body">
+                            <!--
+                            START PROFILE PLOT
+                            //-->
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-8">
+                                    <div id="factor-view-select-wrapper">
+                                        <select id="factor-view-select" multiple="multiple">
+                                            <option value="age" order="1" selected>Age</option>
+                                            <option value="sex" order="2">Sex</option>
+                                            <option value="generation" order="3">Generation</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2">
+                                    <button id="btnFactPlot" type="button" class="btn btn-sm btn-primary">Update</button>
+                                </div>
+                            </div>
+                            <div class="row row-spacer">
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-offset-1 col-sm-10">
+                                    <div id="fact-svg-panel">
+                                        <svg id="fact-svg-chart" width="100%" height="400px"></svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--
+                            END PROFILE PLOT
+                            //-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--
+            END COLUMN ONE
+            //-->
+            <!--
+            START COLUMN TWO
+            //-->
+            <div class="col-sm-8">
+                <div class="row">
+                    <!--
+                    START LOD PLOT PORTLET
+                    //-->
+                    <div id="portletLODPlotTitle" class="portlet margin-bottom-30">
+                        <div class="portlet-title">
+                            <div class="caption">
+                                <i class="fa fa-line-chart"></i>
+                                <span class="caption-subject bold font-yellow-crusta uppercase">LOD Plot</span>
+                                <span class="caption-helper"></span>
+                            </div>
+                        </div>
+                        <div id="portletLODPlotBody" class="portlet-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="current_gene_information"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <strong>Scan Type</strong>
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label id="lbl_default" class="btn btn-xs btn-default active">
+                                            <input type="radio" name="cond" id="cond_default" value="default" autocomplete="off" checked> Default
+                                        </label>
+                                        <label id="lbl_local" class="btn btn-xs btn-default">
+                                            <input type="radio" name="cond" id="cond_local" value="local" autocomplete="off"> Local
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="plot_lod" style="width: 100%; height: 100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                    END LOD PLOT PORTLET
+                    //-->
+                </div>
+                <div class="row" style="margin-top: 5px">
+                    <!--
+                    START PLOTS ON RIGHT SIDE
+                    //-->
+                    <div id="plot_lod_event_panel" class="hidden">
+                        <strong>Graph to plot on selection</strong>
+                        <!-- Nav tabs -->
+                        <ul id="secondaryPlotTabs" class="nav nav-tabs" role="tablist">
+                            <li name="plot_effect" role="presentation" class="active"><a href="#tab_effect" aria-controls="tab_effect" role="tab" data-toggle="tab">Effect</a></li>
+                            <li name="plot_mediation" role="presentation"><a href="#tab_mediation" aria-controls="tab_mediation" role="tab" data-toggle="tab">Mediation</a></li>
+                        </ul>
+
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="tab_effect">
+                                <div class="row row-spacer"></div>
+                                <div class="row">
+                                    <div class="col-sm-offset-1 col-sm-11" id="plot_effect_settings">
+                                        <strong>Settings</strong>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-offset-1 col-sm-11">
+                                         Best Linear Unbiased Predictors (BLUPs)
+                                        <input id="mediate_blup" name="mediate_blup" type="checkbox" data-size="mini">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="plot_effect">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="tab_mediation">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="plot_mediation" style="width:100%; height:100%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--
+                    END PLOTS ON RIGHT SIDE
+                    //-->
+                </div>
+            </div>
+        </div>
+        <!--
+        END ROW ONE
+        //-->
+    </div>
+    <!-- /.container -->
+
+
+    <script src="{{request.URL_BASE}}/static/js/jquery-2.0.3.min.js"></script>
+    <script src="{{request.URL_BASE}}/static/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="http://churchill-lab.jax.org/whoz/api/js/whoz_api.js"></script>
+    <script src="{{request.URL_BASE}}/static/js/jquery.blockUI.min.js"></script>
+    <script src="{{request.URL_BASE}}/static/DataTables-1.10.12/media/js/jquery.dataTables.min.js"></script>
+    <script src="{{request.URL_BASE}}/static/DataTables-1.10.12/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{request.URL_BASE}}/static/js/plotly-latest.js"></script>
+
+    <!--
+    If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
+    //-->
+
+    <script src="{{request.URL_BASE}}/static/js/d3.v3.js"></script>
+    <script src="{{request.URL_BASE}}/static/js/d3-queue.min.js"></script>
+    <script src="{{request.URL_BASE}}/static/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script src="{{request.URL_BASE}}/static/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="{{request.URL_BASE}}/static/bootstrap-notify-3.1.3/bootstrap-notify.min.js"></script>
+    <script src="{{request.URL_BASE}}/static/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+    <script src="{{request.URL_BASE}}/static/js/seedrandom.js"></script>
+    <script src="{{request.URL_BASE}}/static/js/factexpviewer.js"></script>
+    <script src="{{request.URL_BASE}}/static/js/js.cookie.js"></script>
+
+    <script>
+    <!--
+    // GLOBALS AND VARIABLES
+    var _G = {};
+
+    // information on chromosomes
+    _G.chromosomes = {'idx': [], 'nameToIdx': {}, 'totalLength':-1};
+
+    // gene ids
+    /*
+       gene_ids: {
+          "ENSMUSG00000000001": {id:"ENSMUSG00000000001"},
+          "ENSMUSG00000000008": {id:"ENSMUSG00000000008"}
+       }
+    */
+    _G.genes = {gene_ids:{}};
+
+    // protein ids and gene ids
+    /*
+       gene_ids: {
+          "ENSMUSG00000000001": {
+              id:"ENSMUSG00000000001",
+              protein_ids:["ENSMUSP00000000001"]
+          },
+          "ENSMUSG00000000002": {
+              id:"ENSMUSG00000000002",
+              protein_ids:["ENSMUSP00000000049","ENSMUSP00000000050"]
+          }
+       },
+       proteins_ids : [
+           "ENSMUSP00000000001",
+           "ENSMUSP00000000049",
+           "ENSMUSP00000000090"
+       ]
+    */
+    _G.proteins = {gene_ids:{}, proteins_ids: []};
+
+    // gene id to search result map
+    _G.searchResults = null;
+
+    // this can be different from "_G.current_level"
+    _G.searchResultsLevel = null;
+
+    // APIS
+    _G.api_root = "http://127.0.0.1:18001";
+    _G.url_proxy = "//127.0.0.1:19890/proxy/";
+    _G.url_chromosomes = "/static/chromosomes.mm.38.NO_Y.json";
+
+    _G.url_apis = {
+        options: _G.api_root + '/options',
+        ids: _G.api_root + '/ids',
+        lod: _G.api_root + '/lodscan',
+        mediate: _G.api_root + '/mediate',
+        effect: _G.api_root + '/foundercoefs',
+        expression: _G.api_root + '/expression',
+        genes: 'http://churchill-lab.jax.org/whoz/api/id/',
+    };
+
+    // search/click history
+    _G.historyTable = null;
+
+    // PLOTS
+
+    _G.plots = {
+        lod: {
+            el: 'plot_lod',
+            obj: null,
+            clear: function() {
+            //    $("#plot_lod").html('');
+            }
+        },
+        mediation: {
+            el: 'plot_mediation',
+            obj: null,
+            clear: function() {
+                $("#plot_mediation").html('');
+            }
+        },
+        effect: {
+            el: 'plot_effect',
+            obj: null,
+            clear: function() {
+                $("#plot_effect").html('');
+            }
+        },
+        profile: {
+            el: 'plot_profile',
+            obj: null,
+            clear: function() {
+                $("#fact-svg-panel").html('<svg id="fact-svg-chart" width="100%" height="400px"></svg>');
+            }
+        }
+    };
+
+
+    _G.current_gene = null;
+    _G.current_gene_id = null;
+    _G.current_protein_id = null;
+    _G.current_level = "mrna";
+    _G.cond = "default";
+
+    var SPIN_INFINITY = '<svg width="128px" height="128px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" xmlns:xlink="http://www.w3.org/1999/xlink" class="uil-inf"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><path id="uil-inf-path" d="M24.3,30C11.4,30,5,43.3,5,50s6.4,20,19.3,20c19.3,0,32.1-40,51.4-40 C88.6,30,95,43.3,95,50s-6.4,20-19.3,20C56.4,70,43.6,30,24.3,30z" fill="none" stroke="#c0bb9c" stroke-width="1px" stroke-dasharray="5px"></path><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.08s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.16s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.25s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.33s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle></svg>';
+    var SPIN_MAGNIFY = '<svg width="128px" height="128px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-magnify"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><g><circle fill="#8b8bfc" cx="47" cy="47" r="20" opacity="0.5"></circle><path d="M77.5,69.3l-6.2-6.2c-0.7-0.7-1.3-1.2-1.9-1.6c2.6-4,4.1-8.8,4.1-14c0-14.4-11.7-26.1-26.1-26.1S21.3,33.2,21.3,47.5 S33,73.6,47.4,73.6c5.4,0,10.4-1.6,14.5-4.4c0.5,0.7,1.1,1.4,1.9,2.2l5.8,5.8c2.9,2.9,7.1,3.5,9.2,1.3C81,76.4,80.4,72.2,77.5,69.3z M47.4,66.2c-10.3,0-18.7-8.4-18.7-18.6s8.4-18.6,18.7-18.6s18.7,8.4,18.7,18.6S57.7,66.2,47.4,66.2z" fill="#424242"></path><animateTransform attributeName="transform" type="translate" from="15 15" to="15 15" dur="1s" repeatCount="indefinite" values="15 15;-15 15;0 -10.98;15 15" keyTimes="0;0.33;0.66;1"></animateTransform></g></svg>';
+    var BLOCK_STATE_GENE_CLICK = 1;
+    var BLOCK_STATE_LOD_CLICK = 2;
+
+
+    function blockUser(state) {
+        if (state == BLOCK_STATE_GENE_CLICK) {
+            $("#portletLODPlotBody").block({message:SPIN_INFINITY, overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#portletSearchBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#btnFactPlot").disable(true);
+            $(".modebar").addClass("hidden")
+        } else if (state === BLOCK_STATE_LOD_CLICK) {
+            $("#plot_lod_event_panel").block({message:SPIN_INFINITY, overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#portletLODPlotBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#portletSearchBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#btnFactPlot").disable(true);
+            $(".modebar").addClass("hidden")
+        }
+    }
+
+    function unblockUser(state) {
+        if (state == BLOCK_STATE_GENE_CLICK) {
+            $("#portletLODPlotBody").unblock();
+            $("#portletSearchBody").unblock();
+            $("#btnFactPlot").disable(false);
+            $(".modebar").removeClass("hidden")
+        } else if (state === BLOCK_STATE_LOD_CLICK) {
+            $("#plot_lod_event_panel").unblock();
+            $("#portletLODPlotBody").unblock();
+            $("#portletSearchBody").unblock();
+            $("#btnFactPlot").disable(false);
+            $(".modebar").removeClass("hidden")
+        }
+    }
+
+
+
+    var WHOZ = null;
+
+    function formatMbp(Mbp) {
+        return Number(Mbp).toFixed(2);
+    }
+
+    function arraymove(arr, fromIndex, toIndex) {
+        var element = arr[fromIndex];
+        arr.splice(fromIndex, 1);
+        arr.splice(toIndex, 0, element);
+    }
+
+    // Extended disable function
+    jQuery.fn.extend({
+        disable: function(state) {
+            return this.each(function() {
+                var $this = $(this);
+                if($this.is('input, button, textarea, select'))
+                  this.disabled = state;
+                else
+                  $this.toggleClass('disabled', state);
+            });
+        }
+    });
+
+    function clearAllPlots() {
+        for (p in _G.plots) {
+            _G.plots[p].clear();
+        }
+
+        if (!$("#plot_lod_event_panel").hasClass('hidden')) {
+            $("#plot_lod_event_panel").addClass('hidden');
+        }
+
+        if (!$("#profilePlot").hasClass('hidden')) {
+            $("#profilePlot").addClass('hidden');
+        }
+
+        $("#current_gene_information").html('');
+    }
+
+    function findGene() {
+        $("#btnGo").button('loading');
+        $("#searchTerm").disable(true);
+        var searchTerm = $('#searchTerm').val().trim().toUpperCase();
+        if (searchTerm.length == 0) {
+            $('#searchTerm').focus();
+            $("#btnGo").button('reset');
+            $("#searchTerm").disable(false);
+            return;
+        }
+
+        console.log("Calling api");
+        WHOZ.search(searchTerm, {species: 'Mm'}, searchCallback);
+    }
+
+    function addHistory(gene_id, protein_id, symbol, level) {
+        var unique_id = gene_id;
+
+        if (protein_id) {
+            unique_id += "," + protein_id;
+        }
+
+        // cookies, everywhere cookie
+        var history_data = Cookies.getJSON("history_data");
+        var index = -1;
+
+        // build the history of 'clicked' genes
+        if (history_data) {
+            // move to the top if already here
+            for (var i in history_data) {
+                if (history_data[i]['id'] === unique_id) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index > 0) {
+                arraymove(history_data, index, 0);
+            } else if (index == -1) {
+                var history_info = {'id': unique_id, 'g': gene_id, 'p': protein_id, 's': symbol, 'l':level};
+                history_data.unshift(history_info);
+
+                if (history_data.length > 20) {
+                    history_data.pop();
+                }
+            } else {
+                console.log('doing nothing, returning');
+            }
+        } else {
+            var history_info = {'id': unique_id, 'g': gene_id, 'p': protein_id, 's': symbol, 'l':level};
+            history_data = [history_info];
+        }
+
+        // attempt to set the cookie, if there is to much data the cookie won't set, so we need to check and adjust the array size
+        Cookies.set("history_data", history_data);
+
+    }
+
+
+    function searchCallback() {
+        if (WHOZ.results == null) {
+            $('#searchResultsStatus').html("<br><span class='text-danger'>Error searching.</span>");
+            $('#searchResults').html("");
+            return;
+        }
+
+        var results = WHOZ.results;
+
+        var tbl = '<table id="searchTable" class="compact table table-striped table-bordered" cellspacing="0" width="100%"></table>';
+        $('#searchResults').html(tbl);
+
+        var searchResults = {};
+        for (var d in results) {
+            var _match = results[d];
+            searchResults[_match.ensembl_gene_id] = _match;
+        }
+
+        //console.log(results);
+
+        var _columns = [];
+
+        if (_G.current_level === "mrna") {
+            _columns.push({
+                title:'ID',
+                data:"ensembl_gene_id",
+                render: function(data, type, row, meta) {
+                    if (type === 'display') {
+                        if (_G.genes.gene_ids[data]) {
+                            return '<small><span id="matchInfo" gene_id="' + data + '" class="glyphicon glyphicon-info-sign"></span> <a href="#" gene_id="' + data + '">' + data + '</a></small>';
+                        }else {
+                            return '<small><span id="matchInfo" gene_id="' + data + '" class="glyphicon glyphicon-info-sign"></span> ' + data + '</small>';
+                        }
+
+                    } else {
+                        return data;
+                    }
+
+                }
+            });
+        } else {
+            _columns.push({
+                title:'ID',
+                data:"ensembl_gene_id",
+                render: function(data, type, row, meta) {
+                    if (type === 'display') {
+                        //console.log('data=', data);
+                        var ps = []
+                        if (_G.proteins.gene_ids[data]) {
+                            var ret = '<small><span id="matchInfo" gene_id="' + data + '" class="glyphicon glyphicon-info-sign"></span> ' + data;
+                            ret += '<br><div style="padding-left: 20px;">';
+                            ret += '<em>';
+
+                            for (p in _G.proteins.gene_ids[data].protein_ids) {
+                                ps.push('<a href="#" gene_id="' + data + '" protein_id="' + _G.proteins.gene_ids[data].protein_ids[p] + '">' + _G.proteins.gene_ids[data].protein_ids[p] + '</a>');
+                            }
+
+                            return  ret +  ps.join('<br>') + "</em></div></small>";
+
+                        }else {
+                            return '<small><span id="matchInfo" gene_id="' + data + '" class="glyphicon glyphicon-info-sign"></span> ' + data +'</small>';
+                        }
+                    } else {
+                        return data;
+                    }
+
+                }
+            });
+        }
+
+        _columns.push({
+                title:'Symbol',
+                data:"symbol"
+            }
+        );
+
+        $("#searchTable").DataTable({
+            data: results,
+            paging: false,
+            order: [],   // prevent automatic ordering
+            scrollY: 400,
+            searching: false,
+            lengthChange: false,
+            scrollCollapse: true,
+            columns: _columns
+        });
+
+        if (results.length == 1) {
+           $('#searchTable_info').html(results.length.toLocaleString() + " result");
+        } else {
+           $('#searchTable_info').html(results.length.toLocaleString() + " results");
+        }
+
+
+        $("#searchTable a").click(function (e) {
+            e.preventDefault();
+
+            var _this = $(this);
+            console.log(_this);
+
+            _G.current_gene_id = _this.attr('gene_id');
+            _G.current_protein_id = _this.attr('protein_id');
+
+            clearAllPlots();
+
+            var _gene = _G.searchResults[_G.current_gene_id];
+            addHistory(_G.current_gene_id, _G.current_protein_id, _gene.symbol, _G.searchResultsLevel);
+            buildHistory();
+
+            // make sure the profile plot is now visible
+            $("#profilePlot").removeClass("hidden");
+
+            generateLODPlot(_G.current_gene_id, _G.current_protein_id, _G.searchResultsLevel);
+
+            return false;
+        });
+
+
+        to = setTimeout(function () {
+            $("[id='matchInfo']").each(function () {
+                var that = $(this);
+
+                $(this).popover({
+                    placement: 'right',
+                    html: true,
+                    trigger: 'hover',
+                    container: 'body',
+                    template:'<div class="popover container my-custom-class" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+                    content: function () {
+                        //console.log('that=',that);
+                        //console.log('that[0].getAttribute("feature_id")=', that[0].getAttribute("feature_id"));
+                        var d = searchResults[that[0].getAttribute("gene_id")];
+                        var h = '<table class="table table-condensed">';
+                        h += '<tr><td><strong>Symbol</strong> </td><td>' + d['symbol'] + '</td></tr>';
+                        h += '<tr><td><strong>Location</strong> </td><td>' + d['chromosome'] + ':' + d['position_start'] + '-' + d['position_end'] + '</td></tr>';
+                        h += '<tr><td><strong>Name</strong> </td><td>' + d['name'] + '</td></tr>';
+                        h += '<tr><td><strong>Synonyms</strong> </td><td>';
+
+                        var s = d['synonyms'];
+                        if (s) {
+                            if (s.length > 5) {
+                                var s2 = s.slice(1, 6);
+                                h += s2.join("<br>");
+                                h += "<br><i>(" + (s.length - s2.length) + " more synonyms)</i>";
+                            } else {
+                                h += s.join("<br>");
+                            }
+                        }
+                        h += '</td></tr>';
+                        h += '<tr><td><strong>Match Reason</strong> </td><td>' + d['match_reason'] + '</td></tr>';
+                        h += '<tr><td><strong>Match Value</strong> </td><td>' + d['match_value'] + '</td></tr>';
+                        h += '</table>';
+
+                        return h;
+                    }
+                });
+            });
+        });
+
+        _G.searchResults = searchResults;
+        _G.searchResultsLevel = _G.current_level;
+        $("#btnGo").button('reset');
+        $("#searchTerm").disable(false);
+
+        if (Object.keys(_G.searchResults).length == 1) {
+            $("#searchTable a")[0].click();
+        }
+    }
+
+
+    function plotLOD(lods, gene_id, protein_id, level) {
+        var dataByChrom = {};
+
+        // current {"id":"1_12097218","chr":"1","pos":12097218,"pheno1":1.9185}
+        // old     {rs: "rs4222106", chromosome: 19, position: 57.10794, lod: 0.17895197357}
+
+        console.log('lods=', lods);
+
+        var max_element = lods[0];
+
+        $.each(lods, function(index, element) {
+            //console.log('element=', element);
+            var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element.chr]];
+            var x = chr.start + (element.pos);
+            var y = element.pheno1;
+
+            if (element.pheno1 > max_element.pheno1) {
+                max_element = element;
+            }
+
+
+            // chr = {chromosome: "Y", end:2725521390, length: 91744698,
+            //        mid: 2679649040, name: "Y", order: 21, start: 2633776692 }
+            if (!(chr.chromosome in dataByChrom)) {
+                dataByChrom[chr.chromosome] = {'x':[], 'y':[], 'text':[], 'id':[]};
+            }
+            //console.log(dataByChrom[chr.chromosome]['x']);
+            dataByChrom[chr.chromosome]['x'].push(x);
+            dataByChrom[chr.chromosome]['y'].push(y);
+            dataByChrom[chr.chromosome]['text'].push(element.pheno1+'');
+            dataByChrom[chr.chromosome]['id'].push(element.id);
+        });
+
+
+    _G.lod_traces = {};
+
+        var traces = [];
+
+        $.each(dataByChrom, function(key, value) {
+            //console.log(key);
+            //console.log(value);
+            var trace = {
+                type: 'scatter',
+                x: value['x'],
+                y: value['y'],
+                text: value['id'],
+                //name: value['text'],
+                name: key,
+                hoverinfo:'text',
+                mode: 'lines',
+                opacity: 100.0,
+                line: {
+                    color: 'rgb(0,0,0)',
+                    width: 1
+                }
+
+            };
+
+            _G.lod_traces[key] = trace;
+            traces.push(trace);
+        });
+
+
+        var axis_tick_vals = [];
+        var axis_tick_text = [];
+
+        // rectangles to display
+        var chrom_shapes = [];
+        var data_chr = {};
+
+        // lines
+        {% if CONF.PLOT_LOD_LINES %}
+        var line_vals = [
+            {% for l in CONF.PLOT_LOD_LINES %}
+            {'val':{{l.val}}, 'color':'{{l.color}}', 'text':'{{l.text }}' },
+            {% endfor %}
+        ];
+
+        var line_annotations = [];
+
+        for (var l in line_vals) {
+            chrom_shapes.push({
+                type: 'line',
+                // x-reference is assigned to the x-values
+                xref: 'paper',
+                // y-reference is assigned to the y-values
+                //yref: 'paper',
+                x0: 0,
+                y0: line_vals[l].val,
+                x1: 1,
+                y1: line_vals[l].val,
+                line: {
+                    color: line_vals[l].color,
+                    width: 1.5
+                },
+                layer: 'above',
+            });
+
+            line_annotations.push({
+                x: 1,
+                y: line_vals[l].val,
+                xref: 'paper',
+                yref: 'y',
+                text: line_vals[l].text,
+                xanchor: 'left',
+                yanchor: 'middle',
+                showarrow: false,
+            });
+        }
+        {% endif %}
+
+
+        $.each(_G.chromosomes.idx, function(index, element) {
+
+            axis_tick_vals.push(element.mid);
+            axis_tick_text.push(element.name);
+
+            data_chr[element.name] = {};
+            data_chr[element.name].data = [];
+
+            var fill_color = '#ffffff';
+            if ((index % 2) == 0) {
+                fill_color = '#222222';
+            }
+            var s =  {
+                type: 'rect',
+                // x-reference is assigned to the x-values
+                xref: 'x',
+                // y-reference is assigned to the paper space (0 to 1)
+                yref: 'paper',
+                x0: element.start,
+                y0: 0,
+                x1: element.end,
+                y1: 1,
+                fillcolor: fill_color,
+                opacity: 0.2,
+                line: {
+                    width: 0.0
+                },
+            };
+
+            chrom_shapes.push(s);
+        });
+
+
+        //console.log(JSON.stringify(chrom_shapes));
+
+        var data = [];
+
+        var _title = '';
+        if (level === 'mrna') {
+            _title = gene_id + " (" + _G.current_gene.symbol + ")";
+        } else {
+            _title = protein_id + " (" + _G.current_gene.symbol + ")";
+
+        }
+
+        var layout = {
+            annotations: line_annotations,
+            xaxis: {
+                title: _title,
+                showgrid: false,
+                zeroline: true,
+                showline: true,
+                mirror: 'ticks',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+                zerolinecolor: '#969696',
+                zerolinewidth: 4,
+                linecolor: '#636363',
+                linewidth: 1,
+                side: 'top',
+                autorange: false,
+                tickvals: axis_tick_vals,
+                ticktext: axis_tick_text,
+                range: [0, _G.chromosomes.totalLength],
+                tickfont: {
+                    color: 'rgb(0,0,0)',
+                    size:12
+                },
+                tickangle: 0,
+                //fixedrange: true,
+
+            },
+            yaxis: {
+                title: '{{CONF.PLOT_LOD_XAXIS_TEXT}}',
+                showgrid: false,
+                zeroline: false,
+                showline: true,
+                mirror: 'all',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+                zerolinecolor: '#969696',
+                zerolinewidth: 1,
+                linecolor: '#636363',
+                linewidth: 1,
+                range: [-2,max_element.pheno1+5],
+                tickwidth:2,
+                tickmode:'array',
+                tickangle: 0,
+                fixedrange: true, //Determines whether or not this axis is zoom-able. If true, then zoom is disabled.
+
+            },
+
+            showlegend: false,
+            shapes: chrom_shapes,
+            hovermode: 'closest',
+
+        };
+
+
+
+        console.log(traces[0]);
+
+        var testButton = {
+            name: 'zoom2daaa',
+            title: 'woooohoooooo',
+            attr: 'dragmode',
+            val: 'zoom',
+            //icon: Icons.zoombox,
+            click: function(a,b,c) {
+                console.log('a=',a);
+                console.log('b=',b);
+                console.log('c=',c);
+            },
+        };
+
+
+        //console.log(JSON.stringify(traces[0]));
+        //console.log(JSON.stringify(layout));
+
+        _G.plots.lod.plotly = Plotly.newPlot(_G.plots.lod.el,
+            traces,
+            layout,
+            {
+                displayModeBar: true, // true to always display top bar, false to hide
+                scrollZoom: false,    // true to allow zoom with mouse wheel, false to prevent
+                displaylogo: false,   // true to display Plotly logo, false to hide
+                showLink: false,      // true to show edit on Plotly website, false to hide
+                modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'hoverCompareCartesian', 'hoverClosestCartesian'],
+                //modeBarButtonsToAdd: [testButton],
+                logging:true,
+            }
+        );
+
+        Plotly.setPlotConfig({logging:true});
+
+        var myPlot = document.getElementById(_G.plots.lod.el);
+
+        myPlot.on('plotly_click', function(data){
+
+            console.log('plotly_click=', data);
+            var marker = '';
+            var pts = '';
+            var chromosome = '';
+            for(var i=0; i < data.points.length; i++){
+                pts = 'x = '+data.points[i].x +'\ny = '+
+                    data.points[i].y.toPrecision(4) + '\n\n';
+
+
+
+                console.log(data.points[i].pointNumber);
+                console.log(data.points[i].data.text[data.points[i].pointNumber]);
+
+                marker = data.points[i].data.text[data.points[i].pointNumber];
+                chromosome = data.points[i].data.name;
+
+
+            }
+
+
+            console.log('Closest point clicked:\n\n'+pts);
+            //console.log(_G.current_id, ensembl_id);
+
+            var plot=$("#secondaryPlotTabs").find('.active').attr("name");
+
+            console.log('plot=',plot);
+
+            if (plot === "plot_mediation") {
+                generateMediationPlot(_G.current_gene_id, marker);
+            } else if (plot === "plot_effect") {
+                generateEffectPlot(_G.current_gene_id, chromosome);
+            } else {
+                alert('oops');
+            }
+
+
+            //generateEffectPlot
+
+
+
+
+        });
+
+
+        myPlot.on('plotly_hover', function(data){
+            console.log('plotly_hover=', data);
+
+            var infotext = data.points.map(function(d){
+              return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3));
+            });
+
+        }).on('plotly_unhover', function(data){
+            //hoverInfo.innerHTML = '';
+        });
+
+        $("#plot_lod_event_panel").removeClass('hidden'); // to show
+    }
+
+    function plotEffect(effect) {
+        console.log('EFFECT=', effect);
+        var strainInfo = {};
+
+        {% for s in CONF.PLOT_EFFECT_STRAINS %}
+            strainInfo["{{ s['key'] }}"] = {
+                'color':"{{ s['color'] }}",
+                'name':"{{ s['name'] }}",
+                'data':[]
+            };
+        {% endfor %}
+
+        var x = [];
+        var ids = [];
+
+        var chr = null;
+
+        var min_pos = Infinity;
+        var max_pos = -Infinity;
+
+        var _currentChromInfo = _G.chromosomes.idx[_G.chromosomes.nameToIdx[_G.current_chromosome]];
+        var numTicks = Math.floor(_currentChromInfo.length / 20000000);
+        var _x_tick_vals = [];
+        var _x_tick_text = [];
+
+        for (var i = 1; i <= numTicks; i++) {
+            _x_tick_vals.push(20000000 * i);
+            _x_tick_text.push((20 * i) + "Mb")
+        }
+
+        $.each(effect.data, function(index, element) {
+            //console.log('element=', element);
+
+            //{"A":-0.1224,..."H":1.45,"chr":"4","id":"4_156339889","pos":156.3399}
+
+            strainInfo['A']['data'].push(element.A);
+            strainInfo['B']['data'].push(element.B);
+            strainInfo['C']['data'].push(element.C);
+            strainInfo['D']['data'].push(element.D);
+            strainInfo['E']['data'].push(element.E);
+            strainInfo['F']['data'].push(element.F);
+            strainInfo['G']['data'].push(element.G);
+            strainInfo['H']['data'].push(element.H);
+
+            var _pos = element.pos * 1000000;
+
+            x.push(_pos);
+            ids.push(element.id);
+            chr = element.chr;
+
+            if (max_pos < _pos) {
+                max_pos = _pos;
+            }
+            if (min_pos > _pos) {
+                min_pos = _pos;
+            }
+        });
+
+        console.log('MINPOS========',min_pos);
+        console.log('MAXPOS========',max_pos);
+        console.log('CHR========',chr);
+        var c = _G.chromosomes.idx[_G.chromosomes.nameToIdx[chr]];
+        console.log(c);
+
+        var traces = [];
+
+        $.each(strainInfo, function(key, value) {
+            traces.push({
+                  type: 'scatter',
+                  x: x,
+                  y: value['data'],
+                  text: ids,
+                  //name: value['text'],
+                  name: value['name'],
+                  hoverinfo:'text',
+                  mode: 'lines',
+                  opacity: 100.0,
+                  line: {
+                    color: value['color'],
+                    width: 1.5
+                  }
+
+            });
+        });
+
+        var _title = _G.current_gene_id;
+
+        if (_G.current_level === 'protein') {
+            _title =  _G.current_protein_id;
+        }
+
+        // TODO: add range
+
+
+        console.log('x_tick_vals=', _x_tick_vals);
+        console.log('x_tick_text=', _x_tick_text);
+
+
+
+
+        var layout = {
+            title: _title,
+            xaxis: {
+                fixedrange: true, // Determines whether or not this axis is zoom-able. If true, then zoom is disabled.
+                showgrid: true,
+                zeroline: false,
+                showline: true,
+                mirror: 'all',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+            tickwidth: 1,
+                linecolor: '#636363',
+                linewidth: 1,
+                showticklabels: false, // hide the tick labels on bottom so graph underneath shows up correctly (no bleed through)
+            },
+            yaxis: {
+                fixedrange: true, // Determines whether or not this axis is zoom-able. If true, then zoom is disabled.
+                title: 'Founder Effects',
+                showgrid: true,
+                zeroline: false,
+                showline: true,
+                mirror: 'all',
+                gridcolor: '#dddddd',
+                gridwidth: 1,
+            tickwidth: 1,
+                linecolor: '#636363',
+                linewidth: 1
+            },
+
+            //shapes: chrom_shapes,
+            hovermode: 'closest',
+
+        };
+
+        console.log(traces);
+
+
+        // ADD BOTTOM TO PLOT
+        var temp_trace = _G.lod_traces[_G.current_chromosome];
+
+
+        //var x_vals = [];
+        //for (
+
+        console.log('temp_trace=', temp_trace);
+
+        var bottom_trace = {
+                  type: 'scatter',
+                  x: x, //temp_trace['x'],
+                  y: temp_trace['y'],
+                  title: 'LOD',
+                  mode: 'lines',
+                  opacity: 100.0,
+                  line: {
+                      width: 1.5,
+                      color: 'rgb(0,0,0)',
+                  },
+                  xaxis: 'x2',
+                  yaxis: 'y2',
+            showlegend: false,
+            hoverinfo:'text',
+
+
+            };
+
+        console.log('bottom_trace=', bottom_trace);
+
+        layout['yaxis']['domain'] = [.3, 1];
+
+        layout['yaxis2'] = {
+            domain: [0, .3],
+                fixedrange: true, // Determines whether or not this axis is zoom-able. If true, then zoom is disabled.
+            title: 'LOD',
+            showgrid: true,
+            zeroline: false,
+            showline: true,
+            mirror: 'all',
+            gridcolor: '#dddddd',
+            gridwidth: 1,
+            tickwidth: 1,
+            linecolor: '#636363',
+            linewidth: 1
+        };
+
+
+        layout['xaxis2'] = {
+                title: 'Chromosome ' + _currentChromInfo.name,
+            anchor:'y2',
+                fixedrange: true, // Determines whether or not this axis is zoom-able. If true, then zoom is disabled.
+            tickvals: _x_tick_vals,
+            ticktext: _x_tick_text,
+            showgrid: true,
+            zeroline: false,
+            showline: true,
+            mirror: 'all',
+                gridcolor: '#bdbdbd',
+            gridwidth: 2,
+            tickwidth: 1,
+            linecolor: '#636363',
+            linewidth: 1
+        };
+            //showlegend: false,
+
+        traces.push(bottom_trace);
+
+
+
+        _G.plots.effect.plotly = Plotly.newPlot(_G.plots.effect.el,
+            traces,
+            layout,
+            {
+
+                displayModeBar: true, // true to always display top bar, false to hide
+                scrollZoom: false,    // true to allow zoom with mouse wheel, false to prevent
+                displaylogo: false,   // true to display Plotly logo, false to hide
+                showLink: false,      // true to show edit on Plotly website, false to hide
+                modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'hoverCompareCartesian', 'hoverClosestCartesian'],
+
+
+                //modeBarButtonsToAdd: [testButton],
+            }
+        );
+
+        $("#" + _G.plots.effect.el_wait).html("");
+
+    }
+
+
+
+    function plotMediation(data) {
+        var x_coord = [];
+        var y_coord = [];
+        var text = [];
+
+        // probably easier d3 function but just looping for now
+        //'LOD': 3.4188, 'chr' : "11", id: "ENSMUSG00000099291", pos:87448734, symbol: "ACEA_U3"
+
+        $.each(data, function(index, element) {
+            //console.log('element=', element);
+            //if (element.chr in Object.keys(_G.chromosomes.nameToIdx)) {
+            if (element.chr in _G.chromosomes.nameToIdx) {
+
+                var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element.chr]];
+                var x = chr.start + (element.pos);
+                var y = element.LOD;
+
+                /*
+                if (element.chr === 'X') {
+                    console.log(chr, x, y);
+                }
+                */
+
+                x_coord.push(x);
+                y_coord.push(y);
+                text.push(element.symbol);
+            } else {
+                //console.log(element);
+            }
+        });
+
+        var traces = [];
+        traces.push({
+            x: x_coord,
+            y: y_coord,
+            text: text,
+            mode: 'markers',
+            type: 'scatter',
+            hoverinfo: 'text',
+            marker: {
+                size: 5,
+                color: 'rgb(255,255,255)',
+                line: {
+                    color: 'rgb(139,26,26)',
+                    width: 1
+                }
+            }
+        });
+
+        var axis_tick_vals = [];
+        var axis_tick_text = [];
+
+        // rectangles to display
+        var chrom_shapes = [];
+        var data_chr = {};
+
+        $.each(_G.chromosomes.idx, function(index, element) {
+
+            axis_tick_vals.push(element.mid);
+            axis_tick_text.push(element.name);
+
+            data_chr[element.name] = {};
+            data_chr[element.name].data = [];
+
+            var fill_color = '#ffffff';
+            if ((index % 2) == 0) {
+                fill_color = '#222222';
+            }
+            var s =  {
+                type: 'rect',
+                // x-reference is assigned to the x-values
+                xref: 'x',
+                // y-reference is assigned to the paper space (0 to 1)
+                yref: 'paper',
+                x0: element.start,
+                y0: 0,
+                x1: element.end,
+                y1: 1,
+                fillcolor: fill_color,
+                opacity: 0.2,
+                line: {
+                    width: 0.0
+                },
+            };
+
+            chrom_shapes.push(s);
+        });
+
+
+        //console.log(JSON.stringify(chrom_shapes));
+
+        var data = [];
+
+
+        var _title = _G.current_gene_id;
+
+        if (_G.current_level === 'protein') {
+            _title =  _G.current_protein_id;
+        }
+
+        var layout = {
+            title: _title,
+            xaxis: {
+                showgrid: false,
+                zeroline: true,
+                showline: true,
+                mirror: 'ticks',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+                zerolinecolor: '#969696',
+                zerolinewidth: 4,
+                linecolor: '#636363',
+                linewidth: 1,
+                side: 'top',
+                autorange: false,
+                tickvals: axis_tick_vals,
+                ticktext: axis_tick_text,
+                range: [0, _G.chromosomes.totalLength],
+                tickfont: {
+                    color: 'rgb(0,0,0)',
+                    size:12
+                },
+                tickangle: 0,
+
+            },
+            yaxis: {
+                title: 'lod',
+                showgrid: false,
+                zeroline: false,
+                showline: true,
+                mirror: 'all',
+                gridcolor: '#bdbdbd',
+                gridwidth: 2,
+                zerolinecolor: '#969696',
+                zerolinewidth: 1,
+                linecolor: '#636363',
+                linewidth: 1,
+                //range: [-2,22],
+                tickwidth:2,
+                tickmode:'array',
+                tickangle: 0,
+
+            },
+
+            showlegend: false,
+            shapes: chrom_shapes,
+            hovermode: 'closest',
+
+        };
+
+        _G.plots.mediation.plotly = Plotly.newPlot(_G.plots.mediation.el,
+            traces,
+            layout,
+            {
+                scrollZoom: false,
+                displaylogo: false,
+                showLink: false,
+                modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'hoverCompareCartesian', 'hoverClosestCartesian'],
+                logging: 5,
+            }
+        );
+
+        $("#" + _G.plots.mediation.el_wait).html("");
+    }
+
+    function plotProfile_new(ensembl_gene_id, ensembl_protein_id, profile_data, profiles) {
+
+
+        var profile_info = {};
+
+        $.each(profile_data.data_types, function(key, value) {
+
+            profile_info[key] = {levels: value, name: key, kind: "factor", values: []};
+        });
+
+        console.log('profile_info=',profile_info);
+
+
+        var samples = [];
+        var expression = [];
+
+        $.each(profile_data.data, function(index, element) {
+            samples.push(element.mouse_id);
+
+            $.each(profile_data.data_types, function(key, value) {
+                profile_info[key].values.push(element[key]+"");
+            });
+
+            expression.push(element.expression);
+        });
+
+
+        var xvar = [];
+        $.each(profiles, function(index, element) {
+            xvar.push(profile_info[element]);
+        });
+
+
+        var yname = ensembl_gene_id;
+        if (_G.current_level == "mrna") {
+            yname = ensembl_gene_id;
+        } else {
+            yname = ensembl_protein_id;
+        }
+
+
+
+        var yvar = [];
+        yvar.push({
+            kind: "number",
+            name: yname,
+            values: expression,
+        });
+
+
+
+
+        var plotParams = {
+            //title: ensembl_id,
+            sampleCount: samples.length,
+            xAxis: {
+                jitterPx: 25,
+                min: null,
+                max: null,
+                variables: xvar,
+                tickLabelRotationDeg: -45
+            },
+            yAxis: {
+                min: null,
+                max: null,
+                variables: yvar,
+                whiskers: {
+                    units: "stderr",
+                    dist: 1
+                }
+            }
+        };
+
+        _G.fact = {};
+
+        _G.fact.plotParams = plotParams;
+
+        _G.fact.samples = samples;
+
+        // using this so plots have same jitter
+
+        Math.seedrandom('whozapi');
+
+
+        _G.fact.jsobject = new FactExpPlot({
+            svg: d3.select("#fact-svg-chart"),
+            pointSizePx: 5,
+        });
+
+        // not using mouseOverPoint because it wasn't showing tooltip on initial hover
+        /*
+        _G.fact.jsobject.mouseOverPoint = function(a, b) {
+            console.log(a, b);
+            console.log($(b));
+            $(b).popover({
+                placement: 'auto',
+                html: true,
+                trigger: 'hover',
+                container: 'body',
+                content: function () {
+                    return _G.fact.samples[a];
+                }
+            });
+        }*/
+
+
+        /**
+         * Here we do some styling.  This is hard coded right now.
+         */
+         _G.fact.jsobject.postProcessPoint = function(sampleIndex, d3Node) {
+             //console.log(sampleIndex, d3Node);
+             //console.log(profile_info['sex'].values[sampleIndex]);
+                    d3Node.classed("female", profile_info['sex'].values[sampleIndex] == "F");
+                    d3Node.classed("male", profile_info['sex'].values[sampleIndex] == "M");
+
+             if (profile_info['age'].values[sampleIndex] == "6") {
+                 _G.fact.jsobject.setPointShape(d3Node, DataPointShape.SQUARE);
+             } else if (profile_info['age'].values[sampleIndex] == "12") {
+                 _G.fact.jsobject.setPointShape(d3Node, DataPointShape.DIAMOND);
+             } else if (profile_info['age'].values[sampleIndex] == "12") {
+                 _G.fact.jsobject.setPointShape(d3Node, DataPointShape.STAR);
+             }
+
+
+                };
+
+        _G.fact.jsobject.renderPlot(plotParams);
+
+
+        $("#points-group use").each(function () {
+            var that = $(this);
+            var sample_index = parseInt($(this).attr('sample-index'));
+            $(this).popover({
+                placement: 'left',
+                html: true,
+                trigger: 'hover',
+                container: 'body',
+                content: function () {
+                    return _G.fact.samples[sample_index];
+                }
+            });
+        });
+
+
+
+
+    }
+
+
+
+
+    /**
+     * Download LOD scan data from the server
+     */
+    function downloadLODData(gene_id, protein_id, level, callback) {
+        var _url = _G.url_apis.lod + "/" + level;
+
+        if (level == "mrna") {
+            _url += "?id=" + gene_id;
+        } else {
+            _url += "?id=" + protein_id;
+        }
+
+        if (_G.cond === "local") {
+            _url += "&regress_local=TRUE";
+        }
+
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("lod download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("lod download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+
+    function downloadMediationData(ensembl_id, marker_id, callback) {
+        var _url = _G.url_apis.mediate + "?id=" + ensembl_id + "&" + "mid=" + marker_id;
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("mediate download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("mediate download failure");
+            callback(errorThrown, null);
+        });
+
+    }
+
+    function downloadEffectData(ensembl_id, chromosome, callback) {
+        var _url = _G.url_apis.effect + "?id=" + ensembl_id + "&" + "chr=" + chromosome;
+
+        if ($("#mediate_blup").is(':checked')) {
+            _url += '&blup=TRUE';
+        }
+
+        if (_G.cond === "local") {
+            _url += "&regress_local=TRUE";
+        }
+
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: _url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("foundercoefs download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("foundercoefs download failure");
+            callback(errorThrown, null);
+        });
+
+    }
+
+    function downloadProfileData(ensembl_gene_id, ensembl_protein_id, profiles, callback) {
+        var _url = _G.url_apis.expression + "/" + _G.current_level;
+
+        if (_G.current_level == "mrna") {
+            _url += "?id=" + ensembl_gene_id;
+        } else {
+            _url += "?id=" + ensembl_protein_id;
+        }
+
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("expression download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("expression download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+    function downloadGeneInformation(ensembl_gene_id, callback) {
+        var _url = _G.url_apis.genes + ensembl_gene_id;
+        var cache_url = _G.url_proxy + _url;
+        //var cache_url = _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("gene download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("gene download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+
+    function generateLODPlot(gene_id, protein_id, level) {
+        blockUser(BLOCK_STATE_GENE_CLICK);
+        _G.current_gene_id = gene_id;
+        _G.current_protein_id = protein_id;
+
+        $("#plot_lod_event_panel").addClass('hidden'); // to hide
+
+        var q = d3.queue()
+                .defer(downloadGeneInformation, gene_id)
+                .defer(downloadLODData, gene_id, protein_id, level)
+                .await(function(error, gene_data, lod_data) {
+                    console.log('Queue done');
+                    console.log('gene_data=', gene_data);
+                    console.log('lod_data=', lod_data);
+                    console.log('error=', error);
+
+                    // TODO: handle errors, if error comes back we won't have data
+
+                    if (error) {
+                        var _message = "Unable to download data for <strong><em>";
+                        if (level == "mrna") {
+                            _message += gene_id;
+                        } else {
+                            _message += protein_id;
+                        }
+                        _message += "</em></strong>.";
+
+                        displayError("API Server Error", _message);
+                        _G.busy_state = false;
+                        unblockUser(BLOCK_STATE_GENE_CLICK);
+
+                        return;
+                    }
+
+
+                    console.log("\n\nlevel=", level);
+
+                    console.log("PLOT LOD");
+                    _G.current_gene = gene_data[0];
+                    displayGeneInformation(_G.current_gene);
+                    plotLOD(lod_data.data, gene_id, protein_id, level);
+                    unblockUser(BLOCK_STATE_GENE_CLICK);
+                });
+    }
+
+    function generateMediationPlot(ensembl_id, marker_id) {
+        blockUser(BLOCK_STATE_LOD_CLICK);
+
+        var q = d3.queue()
+                .defer(downloadMediationData, ensembl_id, marker_id)
+                .await(function(error, data) {
+                    console.log('Queue done');
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    if (error) {
+                        var _message = "Unable to download mediation data for <strong><em>";
+                        _message += ensembl_id;
+                        _message += "</em></strong> on ";
+                        _message += "<strong><em>";
+                        _message += marker_id;
+                        _message += "</em></strong>";
+
+                        displayError("API Server Error", _message);
+                        unblockUser(BLOCK_STATE_LOD_CLICK);
+                        return;
+                    }
+
+                    console.log("PLOT MEDIATE");
+                    plotMediation(data);
+                    unblockUser(BLOCK_STATE_LOD_CLICK);
+                });
+    }
+
+    function generateEffectPlot(ensembl_id, chromosome) {
+        blockUser(BLOCK_STATE_LOD_CLICK);
+
+        _G.current_chromosome = chromosome;
+        console.log(ensembl_id, chromosome);
+
+        var q = d3.queue()
+                .defer(downloadEffectData, ensembl_id, chromosome)
+                .await(function(error, data) {
+                    console.log('Queue done');
+                    console.log('data=', data);
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    if (error) {
+                        var _message = "Unable to download mediation data for <strong><em>";
+                        _message += ensembl_id;
+                        _message += "</em></strong> on chromosome ";
+                        _message += "<strong><em>";
+                        _message += chromosome;
+                        _message += "</em></strong>";
+
+                        displayError("API Server Error", _message);
+                        unblockUser(BLOCK_STATE_LOD_CLICK);
+                        return;
+                    }
+
+                    console.log("PLOT EFFECT")
+                    plotEffect(data);
+                    unblockUser(BLOCK_STATE_LOD_CLICK);
+
+
+                });
+    }
+
+    function generateProfilePlot(ensembl_gene_id, ensembl_protein_id, profiles) {
+        $("#plot_profile").html("");
+        $("#plot_profile_wait").html("<img src='http://cgd.jax.org/mda/v1/static/images/ajax-blocks-128x128.gif'/>");
+
+        console.log("Generating profile plot", ensembl_gene_id, ensembl_protein_id, profiles);
+        var q = d3.queue()
+                .defer(downloadProfileData, ensembl_gene_id, ensembl_protein_id, profiles)
+                .await(function(error, data) {
+                    console.log('Queue done');
+                    console.log('data=', data);
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    if (error) {
+                        var _message = "Unable to download profile data for <strong><em>";
+                        _message += ensembl_id;
+                        _message += "</em></strong>.";
+
+                        displayError("API Server Error", _message);
+                        return;
+                    }
+
+                    console.log("PLOT PROFILE")
+                    plotProfile_new(ensembl_gene_id, ensembl_protein_id, data, profiles);
+
+
+                });
+    }
+
+    function loadOptions(callback) {
+        /*
+        From d3.js documentation:
+
+         When a task completes, it must call the provided callback.
+
+         The first argument to the callback should be null if the task is successfull,
+         or the error if the task failed.
+
+         The optional second argument to the callback is the return value of the task.
+         (To return multiple values from a single callback, wrap the results in an object or array.)
+        */
+        var _url = _G.url_proxy + _G.url_apis.options;
+        $.ajax({
+            url: _url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("options download success");
+            console.log("options=", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("options download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadChromsomes(callback) {
+        var _url = _G.url_chromosomes;
+        console.log("Downloading chromosomes: ", _url);
+
+        $.ajax({
+            url: _url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("chromosome download success");
+            console.log('chromosome data=',data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("chromosome download failure");
+            console.log("genes download failure");
+            console.log('jqXHR=', jqXHR);
+            console.log('textStatus=', textStatus);
+            console.log('errorThrown=', errorThrown);
+            displayError("Server Error", "Unable to download chromosome information");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadGenes(callback) {
+        var _url = _G.url_proxy + _G.url_apis.ids + "?id_type=mrna";
+        console.log("Downloading genes: ", _url);
+
+        $.ajax({
+            url: _url,
+            method: "GET"
+        })
+        .done(function(data, textStatus, jqXHR) {
+            console.log("genes download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("genes download failure");
+            console.log('jqXHR=', jqXHR);
+            console.log('textStatus=', textStatus);
+            console.log('errorThrown=', errorThrown);
+            displayError("API Server Error", "Error downloading gene information");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadProteins(callback) {
+        var _url = _G.url_proxy + _G.url_apis.ids + "?id_type=protein";
+        console.log("Downloading proteins: ", _url);
+
+        $.ajax({
+            url: _url,
+            method: "GET"
+        })
+        .done(function(data, textStatus, jqXHR) {
+            console.log("proteins download success");
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("proteins download failure");
+            console.log('jqXHR=', jqXHR);
+            console.log('textStatus=', textStatus);
+            console.log('errorThrown=', errorThrown);
+            displayError("API Server Error", "Error downloading protein information");
+            callback(errorThrown, null);
+        });
+    }
+
+    function findBootstrapEnvironment() {
+        var envs = ["xs", "sm", "md", "lg"];
+        var doc = window.document;
+        var temp = doc.createElement("div");
+
+        doc.body.appendChild(temp);
+
+        for (var i = envs.length - 1; i >= 0; i--) {
+            var env = envs[i];
+
+            temp.className = "hidden-" + env;
+
+            if (temp.offsetParent === null) {
+                doc.body.removeChild(temp);
+                return env;
+            }
+        }
+        return "";
+    }
+
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
+var debounceLayoutCheck = debounce(function() {
+    var bse = findBootstrapEnvironment();
+    console.log('bse=',bse);
+    if (_G.bootstrapEnv != bse) {
+        console.log(_G.bootstrapEnv + ' != ' + bse + ' so redrawing')
+
+        // resize all the graphs
+        $.each($(".js-plotly-plot"), function(index, element) {
+            Plotly.Plots.resize($("#" + $(element).attr("id"))[0]);
+        });
+        _G.fact.jsobject.renderPlot(_G.fact.plotParams);
+
+        _G.bootstrapEnv = bse;
+    }
+}, 250);
+
+
+function getFactorOrder() {
+    var selected = [];
+    $('#factor-view-select option:selected').each(function() {
+        selected.push([$(this).val(), $(this).attr('order')]);
+    });
+
+    selected.sort(function(a, b) {
+        return a[1] - b[1];
+    });
+
+    var ordered = [];
+    for (var i = 0; i < selected.length; i++) {
+        ordered.push(selected[i][0]);
+    }
+
+    console.log('ordered=',ordered);
+
+    return ordered;
+
+}
+
+
+
+    function displayError(_title, _message) {
+        $.notify({
+            title:"<h5>" + _title + "</h5>",
+            message:_message
+        }, {
+            type: 'danger'
+        });
+
+        // make sure all waiting images are no longer
+        $.each($("div[id$='wait']"), function(index, element) {
+            $(element).html("");
+        });
+    }
+
+    function displayGeneInformation(geneData) {
+        var _gene = geneData;
+        console.log(_gene);
+        var _startFormat = formatMbp(_gene.start/1000000);
+        var _endFormat = formatMbp(_gene.end/1000000);
+        var _mbpDesc = 'Mbp';
+
+        console.log(_startFormat);
+
+        if ( _startFormat < 1) {
+            _startFormat = _gene.start;
+            _endFormat = _gene.end;
+            _mbpDesc = 'bp';
+        }
+
+        var _synonyms = "";
+
+        if (_gene.synonyms) {
+            _synonyms = _gene.synonyms.join("<br>");
+        }
+
+        var _strand = "forward";
+
+        if (_gene.strand === "-") {
+            _strand = "negative";
+        }
+
+        //$("#current_gene_information").html("");
+
+        var _html = `<div class="well well-sm">
+                <a data-toggle="collapse" data-target="#collapseDiv" href="#"><i class="glyphicon glyphicon-plus-sign"></i></a>
+
+                <em>${_gene.symbol}</em> <strong>${_gene.id}</strong>,
+                located at chromosome ${_gene.chromosome} (${_startFormat} - ${_endFormat} ${_mbpDesc}, ${_strand} strand)
+                [
+                <a target="_newwin" href="http://www.ensembl.org/id/${_gene.id}">Ensembl <small><i class="fa fa-external-link fa-1" aria-hidden="true"></i></small></a>
+
+                <a target="_newwin" href="http://www.informatics.jax.org/marker/${_gene.id}">MGI <small><i class="fa fa-external-link fa-1" aria-hidden="true"></i></small></a>
+                ]
+                <div class="collapse" id="collapseDiv">
+                    <div class="row">
+                        <div class="col-sm-offset-1 col-sm-11">
+                            <table class="whoa">
+                                <tr><td valign="top"><strong>ID</strong></td><td>${_gene.id||''}</td></tr>
+                                <tr><td valign="top"><strong>Symbol</strong></td><td>${_gene.symbol||''}</td></tr>
+                                <tr><td valign="top"><strong>Chromosome</strong></td><td>${_gene.chromosome||''}</td></tr>
+                                <tr><td valign="top"><strong>Start Position</strong></td><td>${_gene.start||''}</td></tr>
+                                <tr><td valign="top"><strong>End Position</strong></td><td>${_gene.end||''}</td></tr>
+                                <tr><td valign="top"><strong>Strand</strong></td><td>${_gene.strand||''}</td></tr>
+                                <tr><td valign="top"><strong>Description</strong></td><td>${_gene.description||''}</td></tr>
+                                <tr><td valign="top"><strong>Synonyms</strong></td><td>${_synonyms||''}</td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>`;
+
+        $("#current_gene_information").html(_html);
+
+         $('#collapseDiv').on('shown.bs.collapse', function () {
+           $(".glyphicon").removeClass("glyphicon-plus-sign").addClass("glyphicon-minus-sign");
+        });
+
+        $('#collapseDiv').on('hidden.bs.collapse', function () {
+           $(".glyphicon").removeClass("glyphicon-minus-sign").addClass("glyphicon-plus-sign");
+        });
+
+        console.log('Done displaying gene information:', _G.current_gene_id);
+    }
+
+    function cookiesEnabled() {
+        var isValid = Cookies.set('checkme', 'valid', {expires: 1}) && Cookies.get('checkme') === 'valid';
+        Cookies.remove('checkme');
+        return isValid;
+    }
+
+function buildHistory() {
+    // cookies, everywhere cookie
+    var history_data = Cookies.getJSON("history_data");
+
+    var historyTableData = [];
+    var historyDict = {};
+
+    for (var _h in history_data) {
+        var h = history_data[_h];
+        var d = {
+            'gene_id': h['g'],
+            'symbol': h['s'],
+            'protein_id': h['p'],
+            'level': h['l']
+        };
+
+        historyDict[h['id']] = {'symbol': h['s'], 'level': h['l']};
+
+        historyTableData.push(d);
+    }
+
+    console.log('historyTableData=', historyTableData);
+
+    console.log('checking history');
+    if (!cookiesEnabled()) {
+        $('#searchHistory').html("<br><span class='text-danger'>History requires that cookies are enabled in your browser.</span>");
+        return;
+    }
+
+    if (history_data) {
+        if (history_data.length == 1) {
+           $('#searchHistoryStatus').html("<p class='text-right text-muted'><em><small>Showing last gene viewed</small></em></p>");
+        } else {
+           $('#searchHistoryStatus').html("<p class='text-right text-muted'><em><small>Showing last " + history_data.length.toLocaleString() + " genes viewed</small></em></p>");
+        }
+
+        var tbl = '<table id="historyTable" class="compact table table-striped table-bordered" cellspacing="0" width="100%"></table>';
+        $('#searchHistory').html(tbl);
+
+        var historyTableColumns = [];
+
+        historyTableColumns.push({
+            title:'ID',
+            data:"gene_id",
+            render: function(data, type, row, meta) {
+                if (row['level'] === 'mrna') {
+                    if (type === 'display') {
+                        if (_G.genes.gene_ids[data]) {
+                            return '<small><a href="#" gene_id="' + data + '">' + data + '</a></small>';
+                        }
+
+                        return '<small>' + data + '</small>';
+                    }
+
+                    return data;
+                } else {
+                    if (type === 'display') {
+                        console.log('data=', data);
+                        var ps = [];
+                        if (_G.proteins.gene_ids[data]) {
+                            var ret = '<small>' + data;
+                            ret += '<br><div style="padding-left: 20px;">';
+                            ret += '<em>';
+
+                            for (p in _G.proteins.gene_ids[data].protein_ids) {
+                                ps.push('<a href="#" gene_id="' + data + '" protein_id="' + _G.proteins.gene_ids[data].protein_ids[p] + '">' + _G.proteins.gene_ids[data].protein_ids[p] + '</a>');
+                            }
+
+                            return ret + ps.join('<br>') + "</em></div></small>";
+
+                        }
+
+                        return '<small>' + data + '</small>';
+                    }
+
+                    return data;
+                }
+            }
+        });
+
+        historyTableColumns.push({
+                title:'Symbol',
+                data:"symbol"
+            }
+        );
+
+
+        _G.historyTable = $("#historyTable").DataTable({
+            data: historyTableData,
+            paging: false,
+            order: [],   // prevent automatic ordering
+            scrollY: 400,
+            searching: false,
+            lengthChange: false,
+            scrollCollapse: true,
+            columns: historyTableColumns
+        });
+
+        console.log('done');
+
+        $("#historyTable a").click(function (e) {
+            e.preventDefault();
+
+            var _this = $(this);
+            console.log(_this);
+
+            _G.current_gene_id = _this.attr('gene_id');
+            _G.current_protein_id = _this.attr('protein_id');
+
+            var unique_id = _G.current_gene_id;
+
+            if (_G.current_protein_id) {
+                unique_id += "," + _G.current_protein_id;
+            }
+
+
+            clearAllPlots();
+
+            addHistory(_G.current_gene_id, _G.current_protein_id, historyDict[unique_id]['symbol'], historyDict[unique_id]['level']);
+            buildHistory();
+
+            // make sure the profile plot is now visible
+            $("#profilePlot").removeClass("hidden");
+
+            generateLODPlot(_G.current_gene_id, _G.current_protein_id, historyDict[unique_id]['level']);
+
+            return false;
+        });
+
+    } else {
+        $('#searchHistory').html("<br><span class='text-danger'>No results found.</span>");
+    }
+
+}
+
+
+    function init() {
+        console.log('initializing...');
+
+
+
+
+
+        _G.bootstrapEnv = findBootstrapEnvironment();
+        window.addEventListener('resize', debounceLayoutCheck);
+
+        $('#searchTerm').keypress(function(e) {
+            var code = e.which ? e.which : e.keyCode;
+            if (code === 13) {
+                $(this).blur();
+                $('#btnGo').focus().click();
+            }
+        });
+
+        $('#btnGo').button().click(function() {
+            findGene();
+            return false;
+        });
+
+        $('#lbl_mrna').on("click", function() {
+            _G.current_level = "mrna";
+            findGene();
+
+            // TODO: clear lod if PROTEIN and lod mrna
+            // what if multiple proteins?
+            //return false;
+        });
+
+        $('#lbl_protein').on("click", function() {
+            _G.current_level = "protein";
+            findGene();
+
+            // TODO: clear lod if MRNA and lod protein
+            // what if multiple proteins?
+            //return false;
+        });
+
+        $('#lbl_default').on("click", function() {
+            _G.cond = "default";
+            if (_G.current_gene_id != null) {
+                generateLODPlot(_G.current_gene_id, _G.current_protein_id, _G.current_level);
+            }
+
+        });
+
+        $('#lbl_local').on("click", function() {
+            _G.cond = "local";
+            if (_G.current_gene_id != null) {
+                generateLODPlot(_G.current_gene_id, _G.current_protein_id, _G.current_level);
+            }
+        });
+
+
+        _G.orderCount = getFactorOrder().length;
+
+
+
+
+        $('#factor-view-select').multiselect({
+            onChange: function(option, checked) {
+                if (checked) {
+                    _G.orderCount++;
+                    $(option).attr('order', _G.orderCount);
+                }
+                else {
+                    $(option).attr('order', '');
+                }
+            },
+            maxHeight: 400,
+            dropUp: false,
+            buttonWidth: '100%',
+            buttonText: function(options) {
+                if (options.length === 0) {
+                    return 'None selected';
+                }
+                else {
+                    var selected = [];
+                    options.each(function() {
+                        selected.push([$(this).text(), $(this).attr('order')]);
+                    });
+
+                    selected.sort(function(a, b) {
+                        return a[1] - b[1];
+                    });
+
+                    var text = '';
+                    for (var i = 0; i < selected.length; i++) {
+                        text += ((i+1) + ": " + selected[i][0] + ', ');
+                    }
+
+                    return text.substr(0, text.length -2);
+                }
+            },
+        });
+
+
+        $("#btnFactPlot").on('click', function() {
+            console.log("getFactorOrder=", getFactorOrder());
+            generateProfilePlot(_G.current_gene_id, _G.current_protein_id, getFactorOrder());
+        });
+
+        // make sure history draw correctly
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            if (_G.historyTable) {
+                _G.historyTable.draw();
+            }
+        });
+
+        console.log('DONE initializing!')
+    }
+
+    $().ready(function () {
+        init();
+
+        WHOZ = new whoz({
+            search_limit: 100,
+        });
+
+        console.log('Starting Queue...');
+        var q = d3.queue()
+            .defer(loadOptions)
+            .defer(loadChromsomes)
+            .defer(loadGenes)
+            .defer(loadProteins)
+            .await(function(error, options, chromosomes, genes, proteins) {
+                console.log('Queue done');
+
+                // TODO: handle errors, if error comes back we won't have data
+                if (error) {
+                    console.log('ERROR: ', error);
+                    //displayError(error);
+                    //throw error;
+                    return;
+                }
+
+                console.log(options);
+
+                _G.chromosomes = {'idx': chromosomes.chromosomes, 'nameToIdx': {}};
+
+                $.each(chromosomes.chromosomes, function(index, element) {
+                    _G.chromosomes['nameToIdx'][element.name] = index;
+                });
+
+                _G.chromosomes['totalLength'] = _G.chromosomes.idx[_G.chromosomes.idx.length-1].end;
+
+
+                console.log(genes);
+                var _gene_ids = {};
+
+                $.each(genes.ids, function(index, element) {
+                    //console.log(index, element);
+                    if (!(element.gene_id in _gene_ids)) {
+                        _gene_ids[element.gene_id] = {'id': element.gene_id}
+                    }
+                });
+
+                _G.genes = {gene_ids:_gene_ids};
+                console.log('genes=', _G.genes);
+
+                console.log(proteins);
+                _gene_ids = {};
+                var _protein_ids = [];
+
+                $.each(proteins.ids, function(index, element) {
+                    //console.log(index, element);
+                    if (!(element.gene_id in _gene_ids)) {
+                        _gene_ids[element.gene_id] = {'id': element.gene_id, 'protein_ids':[]}
+                    }
+                    _protein_ids.push(element.protein_id)
+                    _gene_ids[element.gene_id]['protein_ids'].push(element.protein_id);
+                });
+
+                _G.proteins = {gene_ids:_gene_ids, proteins_ids: _protein_ids};
+                console.log('proteins=', _G.proteins);
+
+
+                buildHistory();
+
+                {% if search_term %}
+                    console.log('Finding gene now...');
+                    findGene();
+                {% endif %}
+
+            });
+    });
+    //-->
+    </script>
+
+
+</body>
+</html>
+
+
+
+
+
