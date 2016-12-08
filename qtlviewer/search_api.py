@@ -168,11 +168,11 @@ def index():
     return render_template('index.html', search_term=search_term, CONF=CONF)
 
 
-@app.route("/new")
-def new():
+@app.route("/old")
+def old():
     search_term = request.values.get('search_term', '')
 
-    return render_template('new.html', search_term=search_term, CONF=CONF)
+    return render_template('old.html', search_term=search_term, CONF=CONF)
 
 
 @app.route("/blank")
@@ -181,11 +181,6 @@ def blank():
 
     return render_template('blank.html', search_term=search_term, CONF=CONF)
 
-@app.route("/hc")
-def hc():
-    search_term = request.values.get('search_term', '')
-
-    return render_template('hc.html', search_term=search_term, CONF=CONF)
 
 def run(host, port, debug):
     print("running...")

@@ -30,17 +30,17 @@ along with this software. If not, see <http://www.gnu.org/licenses/>.
     <title>QTL Viewer</title>
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="{{request.URL_BASE}}/static/bootstrap-3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{{request.URL_BASE}}/static/font-awesome-4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="{{request.URL_BASE}}/static/DataTables-1.10.12/media/css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="{{request.URL_BASE}}/static/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css">
-    <link rel="stylesheet" href="{{request.URL_BASE}}/static/bootstrap-select/css/bootstrap-select.min.css">
-    <link rel="stylesheet" href="{{request.URL_BASE}}/static/bootstrap-multiselect/css/bootstrap-multiselect.css">
-    <link rel="stylesheet" href="{{request.URL_BASE}}/static/css/style.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/bootstrap-3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/font-awesome-4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/DataTables-1.10.12/media/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/bootstrap-select/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/bootstrap-multiselect/css/bootstrap-multiselect.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/css/style.css">
     <!--
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
     //-->
-    <link rel="shortcut icon" href="{{request.URL_BASE}}/static/images/favicon.ico">
+    <link rel="shortcut icon" href="{{g.URL_BASE}}/static/images/favicon.ico">
 
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -52,7 +52,7 @@ along with this software. If not, see <http://www.gnu.org/licenses/>.
 </head>
 
 <body>
-    <div id="content" class="container-fluid">
+    <div class="container-fluid">
         <!--
         START ROW ONE
         //-->
@@ -276,27 +276,27 @@ along with this software. If not, see <http://www.gnu.org/licenses/>.
     <!-- /.container -->
 
 
-    <script src="{{request.URL_BASE}}/static/js/jquery-2.0.3.min.js"></script>
-    <script src="{{request.URL_BASE}}/static/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/js/jquery-2.0.3.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/bootstrap-3.3.5/js/bootstrap.min.js"></script>
     <script src="http://churchill-lab.jax.org/whoz/api/js/whoz_api.js"></script>
-    <script src="{{request.URL_BASE}}/static/js/jquery.blockUI.min.js"></script>
-    <script src="{{request.URL_BASE}}/static/DataTables-1.10.12/media/js/jquery.dataTables.min.js"></script>
-    <script src="{{request.URL_BASE}}/static/DataTables-1.10.12/media/js/dataTables.bootstrap.min.js"></script>
-    <script src="{{request.URL_BASE}}/static/js/plotly-latest.js"></script>
+    <script src="{{g.URL_BASE}}/static/js/jquery.blockUI.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/DataTables-1.10.12/media/js/jquery.dataTables.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/DataTables-1.10.12/media/js/dataTables.bootstrap.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/js/plotly-latest.js"></script>
 
     <!--
     If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
     //-->
 
-    <script src="{{request.URL_BASE}}/static/js/d3.v3.js"></script>
-    <script src="{{request.URL_BASE}}/static/js/d3-queue.min.js"></script>
-    <script src="{{request.URL_BASE}}/static/bootstrap-switch/js/bootstrap-switch.min.js"></script>
-    <script src="{{request.URL_BASE}}/static/bootstrap-select/js/bootstrap-select.min.js"></script>
-    <script src="{{request.URL_BASE}}/static/bootstrap-notify-3.1.3/bootstrap-notify.min.js"></script>
-    <script src="{{request.URL_BASE}}/static/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
-    <script src="{{request.URL_BASE}}/static/js/seedrandom.js"></script>
-    <script src="{{request.URL_BASE}}/static/js/factexpviewer.js"></script>
-    <script src="{{request.URL_BASE}}/static/js/js.cookie.js"></script>
+    <script src="{{g.URL_BASE}}/static/js/d3.v3.js"></script>
+    <script src="{{g.URL_BASE}}/static/js/d3-queue.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/bootstrap-notify-3.1.3/bootstrap-notify.min.js"></script>
+    <script src="{{g.URL_BASE}}/static/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+    <script src="{{g.URL_BASE}}/static/js/seedrandom.js"></script>
+    <script src="{{g.URL_BASE}}/static/js/factexpviewer.js"></script>
+    <script src="{{g.URL_BASE}}/static/js/js.cookie.js"></script>
 
     <script>
     <!--
@@ -342,9 +342,9 @@ along with this software. If not, see <http://www.gnu.org/licenses/>.
     _G.searchResultsLevel = null;
 
     // APIS
-    _G.api_root = "http://127.0.0.1:18001";
-    _G.url_proxy = "//127.0.0.1:19890/proxy/";
-    _G.url_chromosomes = "/static/chromosomes.mm.38.NO_Y.json";
+    _G.api_root = "{{ CONF.API_R_BASE }}";
+    _G.url_proxy = "{{ g.URL_BASE }}/proxy/";
+    _G.url_chromosomes = "{{ g.URL_BASE }}/static/chromosomes.mm.38.NO_Y.json";
 
     _G.url_apis = {
         options: _G.api_root + '/options',
@@ -1611,7 +1611,7 @@ along with this software. If not, see <http://www.gnu.org/licenses/>.
     }
 
     function downloadEffectData(ensembl_id, chromosome, callback) {
-        var _url = _G.url_apis.effect + "?id=" + ensembl_id + "&" + "chr=" + chromosome;
+        var _url = _G.url_apis.effect + "?id=" + ensembl_id + "&" + "chrom=" + chromosome;
 
         if ($("#mediate_blup").is(':checked')) {
             _url += '&blup=TRUE';

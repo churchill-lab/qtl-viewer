@@ -1,390 +1,109 @@
-body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 12px;
-	background: white;
-}
-
-
-
-
-/*																																															/*
- * Row with equal height columns
- * --------------------------------------------------
- */
-.row-eq-height {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display:         flex;
-}
-
-
-.table-condensed > thead > tr > th,
-.table-condensed > tbody > tr > th,
-.table-condensed > tfoot > tr > th,
-.table-condensed > thead > tr > td,
-.table-condensed > tbody > tr > td,
-.table-condensed > tfoot > tr > td {
-  padding: 3px;
-}
-
-div.popover.my-custom-class{
-    max-width: 400px;
-    min-width: 300px;
-}
-
-.row .row-spacer {
-	padding-top:10px;
-}
-
-
-.whoa td {
-	padding-left:10px;padding-top:5px;
-}
-
-
-/* portlets */
-.content {
-	padding: 30px;
-	background: #f1f3fa;
-}
-
-.margin-bottom-30 {
-	margin-bottom: 30px;
-}
-
-/* Portlet */
-.portlet {
-	background: #fff;
-	padding: 20px;
-}
-
-.portlet.portlet-gray {
-	background: #f7f7f7;
-}
-
-.portlet.portlet-bordered {
-	border: 1px solid #eee;
-}
-
-/* Portlet Title */
-.portlet-title {
-	padding: 0;
-  	min-height: 40px;
-  	border-bottom: 1px solid #eee;
-  	margin-bottom: 18px;
-}
-
-.portlet-title-nobody {
-	padding: 0;
-  	min-height: 30px;
-}
-
-.caption {
-	float: left;
-	display: inline-block;
-	font-size: 18px;
-	line-height: 18px;
-}
-
-.caption.caption-green .caption-subject,
-.caption.caption-green i {
-	color: #4db3a2;
-	font-weight: 200;
-}
-
-.caption.caption-red .caption-subject,
-.caption.caption-red i {
-	color: #e26a6a;
-	font-weight: 200;
-}
-
-.caption.caption-purple .caption-subject,
-.caption.caption-purple i {
-	color: #8775a7;
-	font-weight: 400;
-}
-
-.caption i {
-	color: #777;
-	font-size: 15px;
-	font-weight: 300;
-	margin-top: 3px;
-}
-
-.caption-subject {
-	color: #666;
-	font-size: 16px;
-	font-weight: 600;
-}
-
-.caption-helper {
-	padding: 0;
-	margin: 0;
-	line-height: 13px;
-	color: #9eacb4;
-	font-size: 13px;
-	font-weight: 400;
-}
-
-/* Actions */
-.actions {
-	float: right;
-  	display: inline-block;
-}
-
-.actions a {
-	margin-left: 3px;
-}
-
-.actions .btn {
-	color: #666;
-	padding: 3px 9px;
-	font-size: 13px;
-  	line-height: 1.5;
-  	background-color: #fff;
-  	border-color: #ccc;
-  	border-radius: 50px;
-}
-
-.actions .btn i {
-	font-size: 12px;
-}
-
-.actions .btn:hover {
-	background: #f2f2f2;
-}
-
-/* Pagination */
-.pagination {
-	margin: -3px 0 0;
-	border-radius: 50px;
-}
-
-.pagination > li > a,
-.pagination > li > span {
-	padding: 4px 10px;
-	font-size: 12px;
-	color: #8775a7;
-	background: #f7f7f7;
-}
-
-.pagination > li:hover > a,
-.pagination > li.active > a,
-.pagination > li.active:hover > a {
-	color: #fff;
-	background: #8775a7;
-	border-color: #8775a7;
-}
-
-/* Inputs */
-.inputs {
-	float: right;
-	display: inline-block;
-	padding: 4px 0;
-	margin-top: -10px;
-}
-
-.input-inline {
-	width: 240px;
-	display: inline-block;
-	vertical-align: middle;
-}
-
-/* Tab */
-.portlet-title > .nav-tabs {
-	background: none;
-	margin: 0;
-	float: right;
-	display: inline-block;
-	border: 0;
-}
-
-.portlet-title > .nav-tabs > li {
-	background: none;
-	margin: 0;
-	border: 0;
-}
-
-.portlet-title > .nav-tabs > li > a {
-	background: none;
-	border: 0;
-	padding: 2px 10px 13px;
-	color: #444;
-}
-
-.portlet-title > .nav-tabs > li.active,
-.portlet-title > .nav-tabs > li.active:hover {
-  	border-bottom: 4px solid #46aace;
-  	position: relative;
-  }
-
-  .portlet-title > .nav-tabs > li:hover {
-  	border-bottom: 4px solid #4fbfe8;
-  }
-
-.portlet-title > .nav-tabs > li.active > a,
-.portlet-title > .nav-tabs > li:hover > a {
-	color: #333;
-	background: #fff;
-	border: 0;
-}
-
-/* Btn Circle */
-.actions .btn.btn-circle {
-	width: 28px;
-	height: 28px;
-	padding: 3px 7px;
-	text-align: center;
-}
-
-.actions .btn.btn-circle i {
-	font-size: 11px;
-}
-
-/* Btn Grey Salsa */
-.actions .btn.grey-salsa {
-	border: none;
-	margin-left: 3px;
-	box-shadow: none;
-	border-radius: 50px !important;
-}
-
-.actions .btn.grey-salsa.active {
-	color: #fafcfb;
-	background: #8e9bae;
-}
-  .actions .grey-salsa.btn:hover,
-  .actions .grey-salsa.btn:focus,
-  .actions .grey-salsa.btn:active,
-  .actions .grey-salsa.btn.active {
-	color: #fafcfb;
-	background: #97a3b4;
-}
-
-/* Btn Red */
-.actions .btn.btn-red.active,
-.actions .btn.btn-red:hover {
-	color: #fff;
-	box-shadow: none;
-	background: #e26a6a;
-	border-color: #e26a6a;
-}
-
-/* Btn Purple */
-.actions .btn.btn-purple.active,
-.actions .btn.btn-purple:hover {
-	color: #fff;
-	box-shadow: none;
-	background: #8775a7;
-	border-color: #8775a7;
-}
-
-/* Btn Blue */
-.actions .btn.btn-blue.active,
-.actions .btn.btn-blue:hover {
-	color: #fff;
-	box-shadow: none;
-	background: #337ab7;
-	border-color: #337ab7;
-}
-
-
-
-
-
-
-
-
-
-
-/* D3 style */
-#fact-svg-chart            .chart {
-            }
-
-#fact-svg-chart            .plot-content text {
-                font-family: 'Ubuntu', sans-serif;
-            }
-
-#fact-svg-chart            .axis line, .axis path {
-                shape-rendering: auto;
-                stroke: black;
-                fill: none;
-            }
-
-#fact-svg-chart            .centered-checkbox {
-                vertical-align: middle !important;
-                margin: 0px !important;
-                font-weight: normal;
-            }
-
-#fact-svg-chart            #cursor-status {
-                display: none;
-                position: absolute;
-                background-color: rgba(228, 255, 136, 0.3);
-                pointer-events: none;
-                white-space: nowrap;
-            }
-
-#fact-svg-chart            #cursor-status td {
-                border: 2px solid lightgrey;
-            }
-
-#fact-svg-chart            .separator-line {
-                stroke: lightgray;
-            }
-
-#fact-svg-chart            .plot-title {
-                font-size: x-large !important;
-            }
-
-#fact-svg-chart            .axis-label {
-                font-size: large !important;
-            }
-
-#fact-svg-chart            .whiskers {
-                stroke: black;
-	            stroke-width: 1px;
-            }
-
-/*
-
-#fact-svg-chart            .data-point {
-                fill: rgba(70, 130, 180, 0.25);
-            }
-
-#fact-svg-chart            .circle-data-point {
-                fill:whitesmoke;
-	            stroke: steelblue;
-	              stroke-width: 1px;
-	              r: 2px;
-	shape-rendering: auto;
-
-            }
-*/
-#fact-svg-chart .x-axis { font-family: 'Ubuntu', sans-serif; font-size: 10px; fill: black; font-weight:bold; }
-#fact-svg-chart .x-axis-label { font-family: 'Ubuntu', sans-serif; font-size: 16px; fill: black; font-weight:bold; }
-#fact-svg-chart .x-axis line { fill: none; stroke: black; shape-rendering: auto; }
-#fact-svg-chart .x.axis path { fill: none; stroke: none; shape-rendering: auto; }
-#fact-svg-chart .y-axis { font-family: 'Ubuntu', sans-serif; font-size: 10px; fill:black; font-weight:bold; }
-#fact-svg-chart .y-axis line { fill: none; stroke: white; shape-rendering: auto; }
-#fact-svg-chart .y-axis path { fill: none; stroke: none; shape-rendering: auto; }
-#fact-svg-chart .y-axis-label { font-family: 'Ubuntu', sans-serif; font-size: 16px; fill:black; font-weight:bold; }
+
+
+
+    .row .row-spacer {
+        padding-top:10px;
+    }
+
+        /*																																															/*
+         * Row with equal height columns
+         * --------------------------------------------------
+         */
+        .row-eq-height {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display:         flex;
+        }
+
+
+        /* D3 style */
+        #fact-svg-chart            .chart {
+        }
+
+        #fact-svg-chart            .plot-content text {
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        #fact-svg-chart            .axis line, .axis path {
+            shape-rendering: auto;
+            stroke: black;
+            fill: none;
+        }
+
+        #fact-svg-chart            .centered-checkbox {
+            vertical-align: middle !important;
+            margin: 0px !important;
+            font-weight: normal;
+        }
+
+        #fact-svg-chart            #cursor-status {
+            display: none;
+            position: absolute;
+            background-color: rgba(228, 255, 136, 0.3);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        #fact-svg-chart            #cursor-status td {
+            border: 2px solid lightgrey;
+        }
+
+        #fact-svg-chart            .separator-line {
+            stroke: lightgray;
+        }
+
+        #fact-svg-chart            .plot-title {
+            font-size: x-large !important;
+        }
+
+        #fact-svg-chart            .axis-label {
+            font-size: large !important;
+        }
+
+        #fact-svg-chart            .whiskers {
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        /*
+
+        #fact-svg-chart            .data-point {
+                        fill: rgba(70, 130, 180, 0.25);
+                    }
+
+        #fact-svg-chart            .circle-data-point {
+                        fill:whitesmoke;
+                        stroke: steelblue;
+                          stroke-width: 1px;
+                          r: 2px;
+            shape-rendering: auto;
+
+                    }
+        */
+        #fact-svg-chart .x-axis { font-family: 'Ubuntu', sans-serif; font-size: 10px; fill: black; font-weight:bold; }
+        #fact-svg-chart .x-axis-label { font-family: 'Ubuntu', sans-serif; font-size: 16px; fill: black; font-weight:bold; }
+        #fact-svg-chart .x-axis line { fill: none; stroke: black; shape-rendering: auto; }
+        #fact-svg-chart .x.axis path { fill: none; stroke: none; shape-rendering: auto; }
+        #fact-svg-chart .y-axis { font-family: 'Ubuntu', sans-serif; font-size: 10px; fill:black; font-weight:bold; }
+        #fact-svg-chart .y-axis line { fill: none; stroke: white; shape-rendering: auto; }
+        #fact-svg-chart .y-axis path { fill: none; stroke: none; shape-rendering: auto; }
+        #fact-svg-chart .y-axis-label { font-family: 'Ubuntu', sans-serif; font-size: 16px; fill:black; font-weight:bold; }
 
 
 
         .female {
-                fill: rgb(0,191,196);
-                /*stroke: black;*/
-	              /*stroke-width: 1px;*/
-            }
-       .male {
-                fill: rgb(248,118,109);
-                /*stroke: black;*/
-	              /*stroke-width: 1px;*/
-            }
+            fill: rgb(0,191,196);
+            /*stroke: black;*/
+            /*stroke-width: 1px;*/
+        }
+        .male {
+            fill: rgb(248,118,109);
+            /*stroke: black;*/
+            /*stroke-width: 1px;*/
+        }
 
 
-#fact-svg-chart	   .whiskers  {
-	stroke-width: 3;
-}
+        #fact-svg-chart	   .whiskers  {
+            stroke-width: 3;
+        }
