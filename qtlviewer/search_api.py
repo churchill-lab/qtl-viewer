@@ -124,7 +124,9 @@ def proxy_get(url):
 
     #_params = {} if params is None else params
     r = requests.get(_url)  # , params=_params)
-    #print("From cache: {}".format(r.from_cache))
+    #print("\nFrom cache: {}".format(r.from_cache))
+
+    #print(str(CACHE.urls))
 
     if _url in CACHE.urls:
         CACHE.urls[_url]['hits'] += 1
@@ -165,6 +167,25 @@ def index():
 
     return render_template('index.html', search_term=search_term, CONF=CONF)
 
+
+@app.route("/new")
+def new():
+    search_term = request.values.get('search_term', '')
+
+    return render_template('new.html', search_term=search_term, CONF=CONF)
+
+
+@app.route("/blank")
+def blank():
+    search_term = request.values.get('search_term', '')
+
+    return render_template('blank.html', search_term=search_term, CONF=CONF)
+
+@app.route("/hc")
+def hc():
+    search_term = request.values.get('search_term', '')
+
+    return render_template('hc.html', search_term=search_term, CONF=CONF)
 
 def run(host, port, debug):
     print("running...")

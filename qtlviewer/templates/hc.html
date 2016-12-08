@@ -1,0 +1,3661 @@
+<!DOCTYPE html>
+<!--
+This is a starter template page. Use this page to start your new project from
+scratch. This page gets rid of all links and provides the needed markup only.
+-->
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>QTL Viewer</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/AdminLTE-2.3.7/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/datatables/dataTables.bootstrap.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/AdminLTE-2.3.7/dist/css/AdminLTE.css">
+    <!-- AdminLTE Skins. We have chosen the skin-blue for this starter
+          page. However, you can choose any other skin. Make sure you
+          apply the skin class to the body tag so the changes take effect.
+    -->
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/AdminLTE-2.3.7/dist/css/skins/skin-blue-light.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/bootstrap-select/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/bootstrap-multiselect/css/bootstrap-multiselect.css">
+ <link rel="stylesheet" href="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/ionslider/ion.rangeSlider.css">
+  <!-- ion slider Nice -->
+  <link rel="stylesheet" href="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/ionslider/ion.rangeSlider.skinNice.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/Highcharts-5.0.2/code/css/highcharts.css">
+    <style>
+
+
+
+.row .row-spacer {
+	padding-top:10px;
+}
+
+        /*																																															/*
+         * Row with equal height columns
+         * --------------------------------------------------
+         */
+        .row-eq-height {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display:         flex;
+        }
+
+
+        /* D3 style */
+        #fact-svg-chart            .chart {
+        }
+
+        #fact-svg-chart            .plot-content text {
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        #fact-svg-chart            .axis line, .axis path {
+            shape-rendering: auto;
+            stroke: black;
+            fill: none;
+        }
+
+        #fact-svg-chart            .centered-checkbox {
+            vertical-align: middle !important;
+            margin: 0px !important;
+            font-weight: normal;
+        }
+
+        #fact-svg-chart            #cursor-status {
+            display: none;
+            position: absolute;
+            background-color: rgba(228, 255, 136, 0.3);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        #fact-svg-chart            #cursor-status td {
+            border: 2px solid lightgrey;
+        }
+
+        #fact-svg-chart            .separator-line {
+            stroke: lightgray;
+        }
+
+        #fact-svg-chart            .plot-title {
+            font-size: x-large !important;
+        }
+
+        #fact-svg-chart            .axis-label {
+            font-size: large !important;
+        }
+
+        #fact-svg-chart            .whiskers {
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        /*
+
+        #fact-svg-chart            .data-point {
+                        fill: rgba(70, 130, 180, 0.25);
+                    }
+
+        #fact-svg-chart            .circle-data-point {
+                        fill:whitesmoke;
+                        stroke: steelblue;
+                          stroke-width: 1px;
+                          r: 2px;
+            shape-rendering: auto;
+
+                    }
+        */
+        #fact-svg-chart .x-axis { font-family: 'Ubuntu', sans-serif; font-size: 10px; fill: black; font-weight:bold; }
+        #fact-svg-chart .x-axis-label { font-family: 'Ubuntu', sans-serif; font-size: 16px; fill: black; font-weight:bold; }
+        #fact-svg-chart .x-axis line { fill: none; stroke: black; shape-rendering: auto; }
+        #fact-svg-chart .x.axis path { fill: none; stroke: none; shape-rendering: auto; }
+        #fact-svg-chart .y-axis { font-family: 'Ubuntu', sans-serif; font-size: 10px; fill:black; font-weight:bold; }
+        #fact-svg-chart .y-axis line { fill: none; stroke: white; shape-rendering: auto; }
+        #fact-svg-chart .y-axis path { fill: none; stroke: none; shape-rendering: auto; }
+        #fact-svg-chart .y-axis-label { font-family: 'Ubuntu', sans-serif; font-size: 16px; fill:black; font-weight:bold; }
+
+
+
+        .female {
+            fill: rgb(0,191,196);
+            /*stroke: black;*/
+            /*stroke-width: 1px;*/
+        }
+        .male {
+            fill: rgb(248,118,109);
+            /*stroke: black;*/
+            /*stroke-width: 1px;*/
+        }
+
+
+        #fact-svg-chart	   .whiskers  {
+            stroke-width: 3;
+        }
+    </style>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+</head>
+<!--
+BODY TAG OPTIONS:
+=================
+Apply one or more of the following classes to get the
+desired effect
+|---------------------------------------------------------|
+| SKINS         | skin-blue                               |
+|               | skin-black                              |
+|               | skin-purple                             |
+|               | skin-yellow                             |
+|               | skin-red                                |
+|               | skin-green                              |
+|---------------------------------------------------------|
+|LAYOUT OPTIONS | fixed                                   |
+|               | layout-boxed                            |
+|               | layout-top-nav                          |
+|               | sidebar-collapse                        |
+|               | sidebar-mini                            |
+|---------------------------------------------------------|
+-->
+<body class="hold-transition skin-blue-light layout-top-nav">
+<div class="wrapper">
+    <header class="main-header">
+        <nav class="navbar navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="#" class="navbar-brand"><b>QTL</b> Viewer</a>
+                    <!--
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    //-->
+                </div>
+            </div>
+        </nav>
+    </header>
+
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+        <!-- Content Header (Page header)
+        <section class="content-header">
+            <h1>
+                QTL Viewer
+                <small>Optional description</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+                <li class="active">Here</li>
+            </ol>
+        </section>
+        //-->
+
+        <!-- Main content -->
+        <section class="content">
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="search_box_div" class="box box-default">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title"><i class="fa fa-search"></i> Search</h3>
+                                    <div class="box-tools pull-right">
+                                        <div class="btn-group" data-toggle="buttons">
+                                            <label id="lbl_level_mrna" class="btn btn-sm btn-flat btn-primary active">
+                                                <input type="radio" name="radio_level" id="radio_level" autocomplete="off" checked> mRNA
+                                            </label>
+                                            <label id="lbl_level_protein" class="btn btn-primary btn-sm btn-flat">
+                                                <input type="radio" name="radio_level" id="radio_level" autocomplete="off"> Protein
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div class="nav-tabs-custom">
+                                        <ul class="nav nav-tabs">
+                                            <li class="active"><a href="#tab_1-1" data-toggle="tab">Search</a></li>
+                                            <li><a href="#tab_2-2" data-toggle="tab">History</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane active" id="tab_1-1">
+                                            <div class="input-group">
+                                                <input type="text" id="searchTerm" name="searchTerm" class="form-control" placeholder="">
+                                                <span class="input-group-btn">
+                                                    <button type="submit" name="search" id="btnGo" class="btn btn-flat btn-default"><i class="fa fa-search"></i></button>
+                                                </span>
+                                            </div>
+                                            <div id="search_results_div"></div>
+                                        </div>
+                                        <!-- /.tab-pane -->
+                                        <div class="tab-pane" id="tab_2-2">
+                                            <div id="search_history_div" style="width:100%">
+                                            </div>
+                                        </div>
+                                        <!-- /.tab-pane -->
+                                    </div>
+                                    <!-- /.tab-content -->
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                            <!-- /.box -->
+                        </div>
+                        <!-- .col -->
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="profile_plot_container_div" class="box box-default hidden">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Profile Plot</h3>
+                                    <div class="box-tools pull-right">
+                                    </div>
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-sm-offset-1 col-sm-8">
+                                            <div id="factor-view-select-wrapper">
+                                                <select id="factor-view-select" multiple="multiple">
+                                                    <option value="age" order="1" selected>Age</option>
+                                                    <option value="sex" order="2">Sex</option>
+                                                    <option value="generation" order="3">Generation</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button id="btnFactPlot" type="button" class="btn btn-sm btn-flat btn-primary">
+                                                <span class="fa fa-refresh" aria-hidden="true"></span> Update</button>
+                                        </div>
+                                    </div>
+                                    <div class="row row-spacer">
+                                    </div>
+                                    <div class="row row-spacer">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-offset-1 col-sm-10">
+                                            <div id="fact-svg-panel">
+                                                <svg id="fact-svg-chart" width="100%" height="400px"></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--
+
+                COLUMN 2
+
+                //-->
+
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="gene_information_div" class="box box-default collapsed-box">
+                                <div class="box-header with-border">
+                                    <div id="div_current_gene_information_header">
+                                        Please search for a gene of interest. 
+                                    </div>
+                                </div>
+                                <div class="box-body">
+                                    <div id="div_current_gene_information_body"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="lod_plot_container_div" class="box box-default hidden">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">LOD Plot</h3>
+                                    <div class="box-tools pull-right">
+                                    </div>
+                                </div>
+                                <!-- /.box-header -->
+                                <div id="plot_lod_box_body" class="box-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <strong>Scan Type</strong>
+                                            <div class="btn-group" data-toggle="buttons">
+                                                <label id="lbl_default" class="btn btn-xs btn-flat btn-default active">
+                                                    <input type="radio" name="cond" id="cond_default" value="default" autocomplete="off" checked> Default
+                                                </label>
+                                                <label id="lbl_local" class="btn btn-xs btn-flat btn-default">
+                                                    <input type="radio" name="cond" id="cond_local" value="local" autocomplete="off"> Local
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div id="plot_lod" style="width: 100%"></div>
+                                            <!--
+                                            Plotly.relayout('plot_lod', {'width':$("#plot_lod").width()});
+                                            //-->
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-offset-8 col-sm-4">
+                                            <input id="range_1" type="text" name="range_1" value="">
+                                            Number of Data Points
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div id="secondary_plot_container_div" class="nav-tabs-custom hidden">
+                                <ul id="secondaryPlotTabs" class="nav nav-tabs">
+                                    <li name="plot_effect" class="active"><a href="#tab_effect" data-toggle="tab">Effect Plot</a></li>
+                                    <li name="plot_mediation"><a href="#tab_mediation" data-toggle="tab">Mediation Plot</a></li>
+                                    <li name="plot_snpassoc"><a href="#tab_snpassoc" data-toggle="tab">SNP Association Plot</a></li>
+                                    <li class="pull-right"><a href="#" class="text-muted">Click on the LOD plot to generate the selected graph</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="tab_effect">
+                                        <div class="row row-spacer"></div>
+                                        <div class="row">
+                                            <div class="col-sm-offset-1 col-sm-11" id="plot_effect_settings">
+                                                <strong>Settings</strong>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-offset-1 col-sm-11">
+                                                 Best Linear Unbiased Predictors (BLUPs)
+                                                <input id="mediate_blup" name="mediate_blup" type="checkbox" data-size="mini">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div id="plot_effect">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div id="plot_effect_2">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.tab-pane -->
+                                    <div class="tab-pane" id="tab_mediation">
+                                        <div id="plot_mediation" style="width:100%; height:100%">
+                                        </div>
+                                    </div>
+                                    <!-- /.tab-pane -->
+                                    <div class="tab-pane" id="tab_snpassoc">
+                                        <div class="row">
+                                            <div class="col-sm-offset-6 col-sm-4">
+                                                <input id="rangeSNPWindow" type="text" name="rangeSNPWindow" value="1000000">
+                                                SNP Window Size
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button id="btnSNPAssocRefresh" type="button" class="btn btn-sm btn-flat btn-primary">
+                                                    <span class="fa fa-refresh" aria-hidden="true"></span> Update</button>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div id="plot_snpassoc">
+                                                    <div id="containerSNPs"></div>
+                                                    <div id="containerGenes"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <!-- To the right -->
+        <div class="pull-right hidden-xs">
+
+        </div>
+        <!-- Default to the left -->
+        <strong>Created by <a href="http://churchill-lab.jax.org">The Churchill Lab</a>.</strong>
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Create the tabs -->
+        <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+            <li class="active"><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
+            <li><a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <!-- Home tab content -->
+            <div class="tab-pane active" id="control-sidebar-home-tab">
+                <h3 class="control-sidebar-heading">Recent Activity</h3>
+                <ul class="control-sidebar-menu">
+                    <li>
+                        <a href="javascript::;">
+                            <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+
+                            <div class="menu-info">
+                                <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
+
+                                <p>Will be 23 on April 24th</p>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                <!-- /.control-sidebar-menu -->
+
+                <h3 class="control-sidebar-heading">Tasks Progress</h3>
+                <ul class="control-sidebar-menu">
+                    <li>
+                        <a href="javascript::;">
+                            <h4 class="control-sidebar-subheading">
+                                Custom Template Design
+                <span class="pull-right-container">
+                  <span class="label label-danger pull-right">70%</span>
+                </span>
+                            </h4>
+
+                            <div class="progress progress-xxs">
+                                <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                <!-- /.control-sidebar-menu -->
+
+            </div>
+            <!-- /.tab-pane -->
+            <!-- Stats tab content -->
+            <div class="tab-pane" id="control-sidebar-stats-tab">Stats Tab Content</div>
+            <!-- /.tab-pane -->
+            <!-- Settings tab content -->
+            <div class="tab-pane" id="control-sidebar-settings-tab">
+                <form method="post">
+                    <h3 class="control-sidebar-heading">General Settings</h3>
+
+                    <div class="form-group">
+                        <label class="control-sidebar-subheading">
+                            Report panel usage
+                            <input type="checkbox" class="pull-right" checked>
+                        </label>
+
+                        <p>
+                            Some information about this general settings option
+                        </p>
+                    </div>
+                    <!-- /.form-group -->
+                </form>
+            </div>
+            <!-- /.tab-pane -->
+        </div>
+    </aside>
+    <!-- /.control-sidebar -->
+    <!-- Add the sidebar's background. This div must be placed
+         immediately after the control sidebar -->
+    <div class="control-sidebar-bg"></div>
+</div>
+<!-- ./wrapper -->
+
+
+
+<div id="question" style="display:none; cursor: default">
+    <h1>Generating graph...</h1>
+    <input type="button" id="stopGenerating" value="Stop" />
+</div>
+
+<!-- REQUIRED JS SCRIPTS -->
+
+<!-- jQuery 2.2.3 -->
+<script src="{{g.URL_BASE}}/static/js/jquery-2.0.3.min.js"></script>
+<!--
+<script src="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/jQuery/jquery-2.2.3.min.js"></script>
+//-->
+<!-- Bootstrap 3.3.6 -->
+<script src="{{g.URL_BASE}}/static/AdminLTE-2.3.7/bootstrap/js/bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="{{g.URL_BASE}}/static/AdminLTE-2.3.7/dist/js/app.js"></script>
+<!-- DataTables -->
+<script src="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/datatables/dataTables.bootstrap.min.js"></script>
+<!-- SlimScroll -->
+<script src="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/fastclick/fastclick.js"></script>
+
+
+<script src="http://localhost:9010/js/whoz_api.js"></script>
+<script src="{{g.URL_BASE}}/static/js/jquery.blockUI.min.js"></script>
+<script src="{{g.URL_BASE}}/static/js/plotly-latest.js"></script>
+<!--
+<script src="https://code.highcharts.com/highcharts.js"></script>
+//-->
+<script src="//code.highcharts.com/stock/highstock.js"></script>
+<script src="//code.highcharts.com/highcharts-more.js"></script>
+<script src="//code.highcharts.com/modules/boost.js"></script>
+<script src="{{g.URL_BASE}}/static/js/highcharts-downsample.max.js"></script>
+<script src="//code.highcharts.com/modules/exporting.js"></script>
+<script src="//code.highcharts.com/modules/offline-exporting.js"></script>
+<script src="{{g.URL_BASE}}/static/js/plotly-latest.js"></script>
+
+<!--
+If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
+//-->
+
+<script src="{{g.URL_BASE}}/static/js/d3.v3.js"></script>
+<script src="{{g.URL_BASE}}/static/js/d3-queue.min.js"></script>
+<script src="{{g.URL_BASE}}/static/bootstrap-switch/js/bootstrap-switch.min.js"></script>
+<script src="{{g.URL_BASE}}/static/bootstrap-select/js/bootstrap-select.min.js"></script>
+<script src="{{g.URL_BASE}}/static/bootstrap-notify-3.1.3/bootstrap-notify.min.js"></script>
+<script src="{{g.URL_BASE}}/static/bootstrap-multiselect/js/bootstrap-multiselect.js"></script>
+<script src="{{g.URL_BASE}}/static/js/seedrandom.js"></script>
+<script src="{{g.URL_BASE}}/static/js/factexpviewer.js"></script>
+<script src="{{g.URL_BASE}}/static/js/js.cookie.js"></script>
+<script src="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/ionslider/ion.rangeSlider.min.js"></script>
+<script>
+    <!--
+    // GLOBALS AND VARIABLES
+    var _G = {};
+
+    // information on chromosomes
+    _G.chromosomes = {'idx': [], 'nameToIdx': {}, 'totalLength':-1};
+
+    // gene ids
+    /*
+     gene_ids: {
+     "ENSMUSG00000000001": {id:"ENSMUSG00000000001"},
+     "ENSMUSG00000000008": {id:"ENSMUSG00000000008"}
+     }
+     */
+    _G.genes = {gene_ids:{}};
+
+    // protein ids and gene ids
+    /*
+     gene_ids: {
+     "ENSMUSG00000000001": {
+     id:"ENSMUSG00000000001",
+     protein_ids:["ENSMUSP00000000001"]
+     },
+     "ENSMUSG00000000002": {
+     id:"ENSMUSG00000000002",
+     protein_ids:["ENSMUSP00000000049","ENSMUSP00000000050"]
+     }
+     },
+     proteins_ids : [
+     "ENSMUSP00000000001",
+     "ENSMUSP00000000049",
+     "ENSMUSP00000000090"
+     ]
+     */
+    _G.proteins = {gene_ids:{}, proteins_ids: []};
+
+    // gene id to search result map
+    _G.searchResults = null;
+
+    // this can be different from "_G.current_level"
+    _G.searchResultsLevel = null;
+
+    // APIS
+    _G.api_root = "{{ CONF.API_R_BASE }}";
+    _G.url_proxy = "{{ g.URL_BASE }}/proxy/";
+    _G.url_chromosomes = "{{ g.URL_BASE }}/static/chromosomes.mm.38.NO_Y.json";
+
+    _G.url_apis = {
+        options: _G.api_root + '/options',
+        ids: _G.api_root + '/ids',
+        lod: _G.api_root + '/lodscan',
+        mediate: _G.api_root + '/mediate',
+        effect: _G.api_root + '/foundercoefs',
+        expression: _G.api_root + '/expression',
+        snpassoc: _G.api_root + '/snpassoc',
+        genes: 'http://churchill-lab.jax.org/whoz/api/id/',
+        genesByLocation: 'http://churchill-lab.jax.org/whoz/api/search',
+    };
+
+    // search/click history
+    _G.historyTable = null;
+
+    // PLOTS
+
+    _G.plots = {
+        lod: {
+            el: 'plot_lod',
+            obj: null,
+        },
+        mediation: {
+            el: 'plot_mediation',
+            obj: null,
+        },
+        effect: {
+            el: 'plot_effect',
+            obj: null,
+        },
+        snpassoc: {
+            el: 'snp_assoc',
+            obj: null,
+        },
+        profile: {
+            el: 'plot_profile',
+            obj: null,
+        }
+    };
+
+
+    _G.current_gene = null;
+    _G.current_gene_id = null;
+    _G.current_protein_id = null;
+    _G.current_level = "mrna";
+    _G.cond = "default";
+
+
+
+
+
+    var SPIN_GEARS = '<svg width="128px" height="128px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-gears"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><g transform="translate(-20,-20)"><path d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z" fill="#000000"><animateTransform attributeName="transform" type="rotate" from="90 50 50" to="0 50 50" dur="1s" repeatCount="indefinite"></animateTransform></path></g><g transform="translate(20,20) rotate(15 50 50)"><path d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z" fill="#ffffff"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="90 50 50" dur="1s" repeatCount="indefinite"></animateTransform></path></g></svg>';
+    var SPIN_INFINITY = '<svg width="128px" height="128px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" xmlns:xlink="http://www.w3.org/1999/xlink" class="uil-inf"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><path id="uil-inf-path" d="M24.3,30C11.4,30,5,43.3,5,50s6.4,20,19.3,20c19.3,0,32.1-40,51.4-40 C88.6,30,95,43.3,95,50s-6.4,20-19.3,20C56.4,70,43.6,30,24.3,30z" fill="none" stroke="#c0bb9c" stroke-width="1px" stroke-dasharray="5px"></path><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.08s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.16s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.25s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.33s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle></svg>';
+    var SPIN_MAGNIFY = '<svg width="128px" height="128px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-magnify"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><g><circle fill="#8b8bfc" cx="47" cy="47" r="20" opacity="0.5"></circle><path d="M77.5,69.3l-6.2-6.2c-0.7-0.7-1.3-1.2-1.9-1.6c2.6-4,4.1-8.8,4.1-14c0-14.4-11.7-26.1-26.1-26.1S21.3,33.2,21.3,47.5 S33,73.6,47.4,73.6c5.4,0,10.4-1.6,14.5-4.4c0.5,0.7,1.1,1.4,1.9,2.2l5.8,5.8c2.9,2.9,7.1,3.5,9.2,1.3C81,76.4,80.4,72.2,77.5,69.3z M47.4,66.2c-10.3,0-18.7-8.4-18.7-18.6s8.4-18.6,18.7-18.6s18.7,8.4,18.7,18.6S57.7,66.2,47.4,66.2z" fill="#424242"></path><animateTransform attributeName="transform" type="translate" from="15 15" to="15 15" dur="1s" repeatCount="indefinite" values="15 15;-15 15;0 -10.98;15 15" keyTimes="0;0.33;0.66;1"></animateTransform></g></svg>';
+    var BLOCK_STATE_SEARCHING = 1;
+    var BLOCK_STATE_SEARCH_SELECTION = 2;
+    var BLOCK_STATE_PROFILE_UPDATE = 3;
+    var BLOCK_STATE_LOD_SELECTION = 4;
+    var BLOCK_STATE_LOD_SCAN = 5;
+
+
+    function blockUser(state) {
+        if (state == BLOCK_STATE_SEARCHING) {
+            $("#search_box_div").block({message:SPIN_MAGNIFY, overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#gene_information_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#profile_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#lod_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#secondary_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+        } else if (state == BLOCK_STATE_SEARCH_SELECTION) {
+            $("#search_box_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#gene_information_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#profile_plot_container_div").block({message:SPIN_GEARS, overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#lod_plot_container_div").block({message:SPIN_GEARS, overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#secondary_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+        } else if (state == BLOCK_STATE_PROFILE_UPDATE) {
+            $("#search_box_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#gene_information_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#profile_plot_container_div").block({message:SPIN_GEARS, overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#lod_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#secondary_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+        } else if (state == BLOCK_STATE_LOD_SELECTION) {
+            $("#search_box_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#gene_information_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#profile_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#lod_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#secondary_plot_container_div").block({message:SPIN_GEARS, overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+        } else if (state == BLOCK_STATE_LOD_SCAN) {
+            $("#search_box_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#gene_information_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#profile_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#lod_plot_container_div").block({message:SPIN_GEARS, overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+            $("#secondary_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
+        }
+        
+        /*
+        if (state == BLOCK_STATE_GENE_CLICK) {
+            $("#portletLODPlotBody").block({message:SPIN_INFINITY, overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#portletSearchBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#btnFactPlot").disable(true);
+            $(".modebar").addClass("hidden")
+        } else if (state === BLOCK_STATE_LOD_CLICK) {
+            $("#plot_lod_event_panel").block({message:SPIN_INFINITY, overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#portletLODPlotBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#portletSearchBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
+            $("#btnFactPlot").disable(true);
+            $(".modebar").addClass("hidden")
+        }
+        */
+    }
+
+    function unblockUser(state) {
+            $("#search_box_div").unblock();
+            $("#gene_information_div").unblock();
+            $("#profile_plot_container_div").unblock();
+            $("#lod_plot_container_div").unblock();
+            $("#secondary_plot_container_div").unblock();
+/*
+        if (state == BLOCK_STATE_GENE_CLICK) {
+            $("#search_box_div").unblock();
+            $("#profile_plot_container_div").unblock();
+            $("#lod_plot_container_div").unblock();
+            $("secondary_plot_container_div").unblock();
+        } else if (state === BLOCK_STATE_LOD_CLICK) {
+            $("#plot_lod_event_panel").unblock();
+            $("#portletLODPlotBody").unblock();
+            $("#portletSearchBody").unblock();
+            $("#btnFactPlot").disable(false);
+            $(".modebar").removeClass("hidden")
+        }
+        */
+    }
+
+
+    /**
+     * Create a global getSVG method that takes an array of charts as an argument. The SVG is returned as an argument in the callback.
+     */
+    Highcharts.getSVG = function (charts, options, callback) {
+        var svgArr = [],
+            top = 0,
+            width = 0,
+            svgResult = function (svgres) {
+                // Grab width/height from exported chart
+                var svgWidth = +svgres.match(
+                        /^<svg[^>]*width\s*=\s*\"?(\d+)\"?[^>]*>/
+                    )[1],
+                    svgHeight = +svgres.match(
+                        /^<svg[^>]*height\s*=\s*\"?(\d+)\"?[^>]*>/
+                    )[1],
+                    // Offset the position of this chart in the final SVG
+                    svg = svgres.replace('<svg', '<g transform="translate(0,' + top + ')" ');
+                svg = svg.replace('</svg>', '</g>');
+                top += svgHeight;
+                width = Math.max(width, svgWidth);
+                svgArr.push(svg);
+                if (svgArr.length === charts.length) {
+                    return callback('<svg height="' + top + '" width="' + width + '" version="1.1" xmlns="http://www.w3.org/2000/svg">' + svgArr.join('') + '</svg>');
+                }
+            };
+        for (var i = 0; i < charts.length; ++i) {
+            console.log(charts[i]);
+            charts[i].getSVGForLocalExport(options, {}, function () {
+                console.log("Failed to get SVG");
+            }, svgResult);
+        }
+    };
+
+    /**
+     * Create a global exportCharts method that takes an array of charts as an argument,
+     * and exporting options as the second argument
+     */
+    Highcharts.exportCharts = function (charts, options) {
+        options = Highcharts.merge(Highcharts.getOptions().exporting, options);
+
+		// Get SVG asynchronously and then download the resulting SVG
+        Highcharts.getSVG(charts, options, function (svg) {
+            Highcharts.downloadSVGLocal(svg, options, function () {
+                console.log("Failed to export on client side");
+            });
+        });
+    };
+
+    // Set global default options for all charts
+    Highcharts.setOptions({
+        exporting: {
+            fallbackToExportServer: false // Ensure the export happens on the client side or not at all
+        }
+    });
+
+
+    var WHOZ = null;
+
+    function formatMbp(Mbp) {
+        return Number(Mbp).toFixed(2);
+    }
+
+    function arraymove(arr, fromIndex, toIndex) {
+        var element = arr[fromIndex];
+        arr.splice(fromIndex, 1);
+        arr.splice(toIndex, 0, element);
+    }
+
+    // Extended disable function
+    jQuery.fn.extend({
+        disable: function(state) {
+            return this.each(function() {
+                var $this = $(this);
+                if($this.is('input, button, textarea, select'))
+                    this.disabled = state;
+                else
+                    $this.toggleClass('disabled', state);
+            });
+        }
+    });
+
+    function resetUI() {
+    }
+
+    function resetSecondaryPlots() {
+        $("#plot_mediation").html('');
+        $("#plot_effect").html('');
+        //$("#plot_snpassoc").html('');
+    }
+
+    function findGene() {
+        $("#btnGo").button('loading');
+        $("#searchTerm").disable(true);
+        var searchTerm = $('#searchTerm').val().trim().toUpperCase();
+        if (searchTerm.length == 0) {
+            $('#searchTerm').focus();
+            $("#btnGo").button('reset');
+            $("#searchTerm").disable(false);
+            return;
+        }
+
+        console.log("Calling api");
+        WHOZ.search(searchTerm, {species: 'Mm'}, searchCallback);
+    }
+
+    function addHistory(gene_id, protein_id, symbol, level) {
+        var unique_id = gene_id;
+
+        if (protein_id) {
+            unique_id += "," + protein_id;
+        }
+
+        // cookies, everywhere cookie
+        var history_data = Cookies.getJSON("history_data");
+        var index = -1;
+
+        // build the history of 'clicked' genes
+        if (history_data) {
+            // move to the top if already here
+            for (var i in history_data) {
+                if (history_data[i]['id'] === unique_id) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index > 0) {
+                arraymove(history_data, index, 0);
+            } else if (index == -1) {
+                var history_info = {'id': unique_id, 'g': gene_id, 'p': protein_id, 's': symbol, 'l':level};
+                history_data.unshift(history_info);
+
+                if (history_data.length > 20) {
+                    history_data.pop();
+                }
+            } else {
+                console.log('doing nothing, returning');
+            }
+        } else {
+            var history_info = {'id': unique_id, 'g': gene_id, 'p': protein_id, 's': symbol, 'l':level};
+            history_data = [history_info];
+        }
+
+        // attempt to set the cookie, if there is to much data the cookie won't set, so we need to check and adjust the array size
+        Cookies.set("history_data", history_data);
+
+    }
+
+
+    function searchCallback() {
+        if (WHOZ.response == null) {
+            $('#search_results_div').html("");
+            return;
+        }
+
+        var response = WHOZ.response;
+
+        console.log('RESPONSE=', response);
+
+        var tbl = '<table id="search_results_table" class="table table-bordered table-hover table-condensed"></table>';
+        $('#search_results_div').html(tbl);
+
+        var searchResults = {};
+        for (var d in response.result.matches) {
+            var _match = response.result.matches[d];
+            searchResults[_match.ensembl_gene_id] = _match;
+        }
+
+        //console.log(results);
+
+        var _columns = [];
+
+        if (_G.current_level === "mrna") {
+            _columns.push({
+                title:'ID',
+                data:"ensembl_gene_id",
+                render: function(data, type, row, meta) {
+                    if (type === 'display') {
+                        if (_G.genes.gene_ids[data]) {
+                            return '<div style="white-space: nowrap"><span id="matchInfo" gene_id="' + data + '" class="glyphicon glyphicon-info-sign"></span> <a href="#" gene_id="' + data + '">' + data + '</a></div>';
+                        }else {
+                            return '<div style="white-space: nowrap"><span id="matchInfo" gene_id="' + data + '" class="glyphicon glyphicon-info-sign"></span> ' + data + '</div>';
+                        }
+
+                    } else {
+                        return data;
+                    }
+
+                }
+            });
+        } else {
+            _columns.push({
+                title:'ID',
+                data:"ensembl_gene_id",
+                render: function(data, type, row, meta) {
+                    if (type === 'display') {
+                        //console.log('data=', data);
+                        var ps = []
+                        if (_G.proteins.gene_ids[data]) {
+                            var ret = '<div style="white-space: nowrap"><span id="matchInfo" gene_id="' + data + '" class="glyphicon glyphicon-info-sign"></span> ' + data;
+                            ret += '</div><div style="padding-left: 20px;">';
+                            ret += '<em>';
+
+                            for (p in _G.proteins.gene_ids[data].protein_ids) {
+                                ps.push('<a href="#" gene_id="' + data + '" protein_id="' + _G.proteins.gene_ids[data].protein_ids[p] + '">' + _G.proteins.gene_ids[data].protein_ids[p] + '</a>');
+                            }
+
+                            return  ret +  ps.join('<br>') + "</em></div>";
+
+                        }else {
+                            return '<div style="white-space: nowrap"><span id="matchInfo" gene_id="' + data + '" class="glyphicon glyphicon-info-sign"></span> ' + data +'</div>';
+                        }
+                    } else {
+                        return data;
+                    }
+
+                }
+            });
+        }
+
+        _columns.push({
+                    title:'Symbol',
+                    data:"symbol"
+                }
+        );
+
+        _G.searchTable = $("#search_results_table").DataTable({
+            data: response.result.matches,
+            paging: false,
+            order: [],   // prevent automatic ordering
+            scrollY: 200,
+            searching: false,
+            lengthChange: false,
+            scrollCollapse: true,
+            responsive: true,
+            columns: _columns
+        });
+
+        if (response.result.num_results == 1) {
+            $('#search_results_table_info').html(response.result.matches.length.toLocaleString() + " result");
+        } else if (response.result.matches.num_matches < 100) {
+            $('#search_results_table_info').html(response.result.matches.length.toLocaleString() + " results");
+        } else {
+            $('#search_results_table_info').html("Showing first " + response.result.matches.length.toLocaleString() + " of " + response.result.num_results.toLocaleString() + " results");
+        }
+
+
+        $("#search_results_table a").click(function (e) {
+            e.preventDefault();
+            var _this = $(this);
+            selectGeneProtein(_this.attr('gene_id'), _this.attr('protein_id'));
+            return false;
+        });
+
+
+        to = setTimeout(function () {
+            $("[id='matchInfo']").each(function () {
+                var that = $(this);
+
+                $(this).popover({
+                    placement: 'right',
+                    html: true,
+                    trigger: 'hover',
+                    container: 'body',
+                    template:'<div class="popover container my-custom-class" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
+                    content: function () {
+                        //console.log('that=',that);
+                        //console.log('that[0].getAttribute("feature_id")=', that[0].getAttribute("feature_id"));
+                        var d = searchResults[that[0].getAttribute("gene_id")];
+                        var h = '<table class="table table-condensed">';
+                        h += '<tr><td><strong>Symbol</strong> </td><td>' + d['symbol'] + '</td></tr>';
+                        h += '<tr><td><strong>Location</strong> </td><td>' + d['chromosome'] + ':' + d['position_start'] + '-' + d['position_end'] + '</td></tr>';
+                        h += '<tr><td><strong>Name</strong> </td><td>' + d['name'] + '</td></tr>';
+                        h += '<tr><td><strong>Synonyms</strong> </td><td>';
+
+                        var s = d['synonyms'];
+                        if (s) {
+                            if (s.length > 5) {
+                                var s2 = s.slice(1, 6);
+                                h += s2.join("<br>");
+                                h += "<br><i>(" + (s.length - s2.length) + " more synonyms)</i>";
+                            } else {
+                                h += s.join("<br>");
+                            }
+                        }
+                        h += '</td></tr>';
+                        h += '<tr><td><strong>Match Reason</strong> </td><td>' + d['match_reason'] + '</td></tr>';
+                        h += '<tr><td><strong>Match Value</strong> </td><td>' + d['match_value'] + '</td></tr>';
+                        h += '</table>';
+
+                        return h;
+                    }
+                });
+            });
+        });
+
+        _G.searchResults = searchResults;
+        _G.searchResultsLevel = _G.current_level;
+        $("#btnGo").button('reset');
+        $("#searchTerm").disable(false);
+
+        if (Object.keys(_G.searchResults).length == 1) {
+            $("#search_results_table a")[0].click();
+        }
+    }
+
+    // download***   download the data
+    // display***      actually put on the screen
+    // generate***     call both download and than display
+
+    function generateGeneData(geneID, proteinID) {
+        var q = d3.queue()
+                .defer(downloadGeneData, geneID)
+                .await(function(error, geneData) {
+                    console.log('Queue done');
+                    console.log('geneData=', geneData);
+                    console.log('error=', error);
+
+                    // TODO: handle errors, if error comes back we won't have data
+
+                    if (error) {
+                        var message = "Unable to download data for <strong><em>";
+                        if (level == "mrna") {
+                            message += geneID;
+                        } else {
+                            message += proteinID;
+                        }
+                        message += "</em></strong>.";
+
+                        displayError("API Server Error", message);
+                        return;
+                    }
+
+
+                    _G.current_gene = geneData[0];
+                    displayGeneData(_G.current_gene);
+                    //plotLOD(lod_data.data, gene_id, protein_id, level);
+                    //unblockUser(BLOCK_STATE_GENE_CLICK);
+                });
+
+    }
+
+
+
+    /**
+     * Handle what should happen upon a new gene selection.
+     */
+    function selectGeneProtein(geneID, proteinID) {
+        blockUser(BLOCK_STATE_SEARCH_SELECTION);
+        _G.current_gene_id = geneID;
+        _G.current_protein_id = proteinID;
+        $("#profile_plot_container_div").removeClass('hidden');
+        $("#lod_plot_container_div").removeClass('hidden');
+        $("#secondary_plot_container_div").removeClass('hidden');
+
+        var q = d3.queue()
+                .defer(downloadGeneData, geneID)
+                .defer(downloadLODData, geneID, proteinID, _G.searchResultsLevel)
+                .defer(downloadProfileData, geneID, proteinID, getFactorOrder())
+                .await(function(error, geneData, lodData, profileData) {
+                    console.log('Queue done');
+                    console.log('error=', error);
+
+                    if (error) {
+                        var message = "Unable to download data for <strong><em>";
+                        if (_G.searchResultsLevel == "mrna") {
+                            message += geneID;
+                        } else {
+                            message += proteinID;
+                        }
+                        message += "</em></strong>.";
+                        unblockUser();
+
+                        displayError("API Server Error", message);
+                        return;
+                    }
+
+                    _G.current_gene = geneData[0];
+                    _G.current_gene_id = geneID;
+                    _G.current_protein_id = proteinID;
+                    displayGeneData(_G.current_gene);
+                    resetSecondaryPlots();
+                    _G.slider.reset();
+
+                    plotLOD(lodData.data, geneID, proteinID, _G.searchResultsLevel);
+                    plotProfile_new(geneID, proteinID, profileData, getFactorOrder());
+                    var gene = _G.searchResults[_G.current_gene_id];
+                    addHistory(_G.current_gene_id, _G.current_protein_id, gene.symbol, _G.searchResultsLevel);
+                    buildHistory();
+                    unblockUser();
+                });
+
+/*
+        $("#profile_plot_container_div").removeClass('hidden');
+        $("#lod_plot_container_div").removeClass('hidden');
+        $("#secondary_plot_container_div").removeClass('hidden');
+
+        generateGeneData(geneID, proteinID);
+        generateLODPlot(geneID, proteinID, _G.searchResultsLevel);
+        generateProfilePlot(geneID, proteinID, getFactorOrder());
+
+        var gene = _G.searchResults[_G.current_gene_id];
+        addHistory(_G.current_gene_id, _G.current_protein_id, gene.symbol, _G.searchResultsLevel);
+        buildHistory();
+*/
+    }
+
+
+    /**
+    * Plot LOD data.
+    *
+    * Note: This function can be called without data and wull generate a base graph.
+    */
+    function plotLOD(data, gene_id, protein_id, level) {
+        var dataByChrom = {};
+        var maxLOD = -Infinity;
+        var minLOD = Infinity;
+        var xAxisTitle = '';
+
+
+        var newD = [];
+        var newD2 = [];
+
+        if (data != null) {
+            maxLOD = data[0].pheno1;
+            minLOD = -2;
+
+            if (level === 'mrna') {
+                xAxisTitle = gene_id + " (" + _G.current_gene.symbol + ")";
+            } else if (level === 'protein') {
+                xAxisTitle = protein_id + " (" + _G.current_gene.symbol + ")";
+            } else {
+                xAxisTitle = '';
+            }
+
+            $.each(data, function(index, element) {
+                //
+                // element = {"id":"1_12097218","chr":"1","pos":12097218,"pheno1":1.9185}
+                //
+                var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element.chr]];
+                var x = chr.start + (element.pos);
+                var y = element.pheno1;
+
+                //
+                // chr = {chromosome: "Y", end:2725521390, length: 91744698,
+                //        mid: 2679649040, name: "Y", order: 21, start: 2633776692 }
+                //
+                if (!(chr.chromosome in dataByChrom)) {
+                    dataByChrom[chr.chromosome] = [];
+                }
+
+                var d = {
+                    x: x, 
+                    y: y, 
+                    id: element.id, 
+                    text: element.pheno1,
+                    chr: chr.chromosome,
+                    chrPos: element.pos,
+                };
+
+                newD.push(d);
+                dataByChrom[chr.chromosome].push(d);
+
+                if (element.pheno1 > maxLOD) {
+                    maxLOD = element.pheno1;
+                }
+            });
+
+            maxLOD += 5;
+        }
+
+
+
+
+        function compareMe(a,b) {
+        if (a.x  < b.x)
+            return -1;
+        if (a.x > b.x)
+            return 1;
+        return 0;
+        }
+
+        function compareMe2(a,b) {
+        if (a[0]  < b[0])
+            return -1;
+        if (a[0] > b[0])
+            return 1;
+        return 0;
+        }
+
+        newD.sort(compareMe);
+        newD2.sort(compareMe2);
+/*
+
+        var sampler = modeMax()
+            .bucketSize(100)
+            .value(function(d) { return d['y']; });
+                
+        _G.aaaaaa = sampler(newD);
+  */      
+
+        _G.lod_traces = {};
+
+        _G.lodDataByChromosome = dataByChrom; 
+
+
+        // create traces for each chromosome
+        var series = [];
+        $.each(dataByChrom, function(key, value) {
+            //console.log(value);
+            var s = {
+                type: 'scatter',
+                x: value['x'],
+                y: value['y'],
+                text: value['id'],
+                name: key,
+                hoverinfo: 'text',
+                mode: 'lines',
+                opacity: 100.0,
+                line: {
+                    color: 'rgb(0,0,0)',
+                    width: 1
+                },
+           //     xAxis:0
+
+            };
+
+            _G.lod_traces[key] = s;
+            series.push(s);
+        });
+
+
+        var plotShapes = [];
+        var plotAnnotations = [];
+
+        {% if CONF.PLOT_LOD_LINES %}
+        //
+        // build the horizontal lines
+        //
+        var lineVals = [
+            {% for l in CONF.PLOT_LOD_LINES %}
+                {'val':{{l.val}}, 'color':'{{l.color}}', 'text':'{{l.text }}' },
+            {% endfor %}
+        ];
+var _plotLines = [
+            {% for l in CONF.PLOT_LOD_LINES %}
+                {value:{{l.val}}, color:'{{l.color}}', zIndex:5, width:2, label:{
+                    text:'{{l.text }}', align:'right'
+                } },
+            {% endfor %}
+            ];
+        for (var l in lineVals) {
+            plotShapes.push({
+                type: 'line',
+                xref: 'paper',
+                x0: 0,
+                y0: lineVals[l].val,
+                x1: 1,
+                y1: lineVals[l].val,
+                line: {
+                    color: lineVals[l].color,
+                    width: 1.5
+                },
+                layer: 'above',
+            });
+
+            plotAnnotations.push({
+                x: 1,
+                y: lineVals[l].val,
+                xref: 'paper',
+                yref: 'y',
+                text: lineVals[l].text,
+                xanchor: 'left',
+                yanchor: 'middle',
+                showarrow: false,
+            });
+        }
+        {% endif %}
+
+        //
+        // build the vertical chromosome bars
+        //
+        var chromosomeAxisVals = [];
+        var chromosomeAxisText = {};
+        var chromosomeAxisVals2 = [];
+        var chromosomeAxisText2 = {};
+
+        var chromosomeBands = [];
+
+        $.each(_G.chromosomes.idx, function(index, element) {
+
+            chromosomeAxisVals.push(element.start);
+            chromosomeAxisText[element.start] = element.name;
+
+            chromosomeAxisVals2.push(element.mid);
+            chromosomeAxisText2[element.mid] = element.name;
+
+            // TODO: style this
+            var fillColor = '#ffffff';
+            if ((index % 2) == 1) {
+            chromosomeBands.push({
+                color: fillColor,
+                from: element.start,
+                to: element.end
+            });
+            }
+            var s =  {
+                type: 'rect',
+                // x-reference is assigned to the x-values
+                xref: 'x',
+                // y-reference is assigned to the paper space (0 to 1)
+                yref: 'paper',
+                x0: element.start,
+                y0: 0,
+                x1: element.end,
+                y1: 1,
+                fillcolor: fillColor,
+                opacity: 0.2,
+                line: {
+                    width: 0.0
+                }
+            };
+
+
+            plotShapes.push(s);
+        });
+_G.newD = newD;
+_G.lodHover = null;
+//_G.newD = newD2;
+
+        _G.ch = Highcharts.chart({
+            title: {
+                text: xAxisTitle
+            },
+            chart: {
+                alignTicks: false,
+                renderTo: _G.plots.lod.el,
+                zoomType: 'x',
+                events: {
+                    click: function(event) {
+                        var plot=$("#secondaryPlotTabs").find('.active').attr("name");
+                        console.log('\n\n\n\n\n\n\nchart event', event);
+                        console.log('chart this', this);
+                        console.log('hover=', _G.lodHover);
+
+                        if (event.target.tagName === 'tspan') {
+                            return;
+                        }
+
+                        console.log('plot=', plot);
+                        
+                        if (plot === "plot_mediation") {
+                            generateMediationPlot(_G.current_gene_id, _G.lodHover.id);
+                        } else if (plot === "plot_effect") {
+                            generateEffectPlot(_G.current_gene_id, _G.lodHover.chr);
+                        } else if (plot === "plot_snpassoc") {
+                            generateSNPAssocPlot(_G.current_gene_id, _G.lodHover.chr, _G.lodHover.chrPos);
+                        } else {
+                            alert('oops2');
+                        }
+                    }
+                }
+            },
+
+            xAxis: [{
+                opposite: true,
+                tickWidth: 0,
+                labels: {
+                    formatter: function () {
+                        return chromosomeAxisText2[this.value];
+                    }
+                },
+                tickPositions: chromosomeAxisVals2,
+                min:0,
+                floor:0,
+            }, {
+                tickWidth: 0,
+                labels: {
+                    formatter: function () {
+                        ''
+                    }
+                },
+                floor:0,
+                min:0,
+                tickPositions: chromosomeAxisVals,
+                alternateGridColor: '#dddddd',
+            }],            
+         
+            yAxis: {
+                title: {
+                    text: 'LOD'
+                },
+                plotLines: _plotLines
+            },
+
+            tooltip: {
+                formatter: function () {
+                    _G.lodHover = this.point;
+                    return '<b>' + this.point.id + '</b><br/>LOD: ' + this.point.y + '<br/>Chromosome: ' + this.point.chr + '<br/>Position: ' + this.point.chrPos;
+                }
+            },
+
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    events: {
+                        click: function(event) {
+                            //event.point holds a pointer to the nearest point on the graph.
+                            // The this keyword refers to the Series object.
+                            // Log to console
+                            console.log('series',event);
+
+
+                            var plot=$("#secondaryPlotTabs").find('.active').attr("name");
+                            console.log('plot=', plot);
+                            
+                            if (plot === "plot_mediation") {
+                                generateMediationPlot(_G.current_gene_id, event.point.id);
+                            } else if (plot === "plot_effect") {
+                                generateEffectPlot(_G.current_gene_id,  event.point.chr);
+                            } else if (plot === "plot_snpassoc") {
+                                generateSNPAssocPlot(_G.current_gene_id,  event.point.chr, event.point.chrPos);
+                            } else {
+                                alert('oops1');
+                            }
+                        }
+                    }
+                }
+            },
+
+            series: [{
+                type: 'line',
+                turboThreshold: 0,
+                showInLegend: false,
+                downsample: {
+                    threshold: 1000 // 0 disables downsampling
+                },
+                data: newD,
+                lineWidth: 1,
+                color: 'black', // Color value
+                xAxis:1,
+            }, {
+                type: 'line',
+                turboThreshold: 0,
+                showInLegend: false,
+                className:'hidden',
+                marker: {
+                        enabled: false
+                    },
+                data: [
+                    {
+                        x: 0, 
+                        y: 0, 
+                        id: '', 
+                        text: '',
+                        chr: '',
+                        chrPos: 0,
+                    },
+                    {
+                        x: _G.chromosomes.totalLength, 
+                        y: 0, 
+                        id: '', 
+                        text: '',
+                        chr: '',
+                        chrPos: 0,
+                    }
+                ],
+                lineWidth: 0,
+                color: 'black', // Color value
+                xAxis:0,
+            }],
+
+            credits: {
+                enabled: false // A plugin for highcharts is of course using highcharts
+            }
+        });
+
+
+    _G.ch.series[0].setData(newD);
+
+/*
+        var myPlot = document.getElementById(_G.plots.lod.el);
+
+        myPlot.on('plotly_click', function(data){
+            console.log('plotly_click=', data);
+            var marker = '';
+            var pts = '';
+            var chromosome = '';
+            for(var i=0; i < data.points.length; i++){
+                pts = 'x = '+data.points[i].x +'\ny = '+ data.points[i].y.toPrecision(4) + '\n\n';
+                console.log(data.points[i].pointNumber);
+                console.log(data.points[i].data.text[data.points[i].pointNumber]);
+
+                marker = data.points[i].data.text[data.points[i].pointNumber];
+                chromosome = data.points[i].data.name;
+
+            }
+
+            console.log('Closest point clicked:\n\n'+pts);
+            var plot=$("#secondaryPlotTabs").find('.active').attr("name");
+
+            console.log('plot=',plot);
+
+            if (plot === "plot_mediation") {
+                generateMediationPlot(_G.current_gene_id, marker);
+            } else if (plot === "plot_effect") {
+                generateEffectPlot(_G.current_gene_id, chromosome);
+            } else {
+                alert('oops');
+            }
+        });
+
+
+        myPlot.on('plotly_hover', function(data){
+            console.log('plotly_hover=', data);
+
+            var infotext = data.points.map(function(d){
+                return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3));
+            });
+
+        }).on('plotly_unhover', function(data){
+            //hoverInfo.innerHTML = '';
+        });
+
+        $("#plot_lod_event_panel").removeClass('hidden'); // to show
+        */
+    }
+/**************************************************************************
+
+LAYOUT ALGORITHMS
+
+**************************************************************************/
+
+function slotHasSpace(feature, features_in_slot) {
+    if (!features_in_slot) {
+        return true;
+    }
+    for (var i = 0; i < features_in_slot.length; i++) {
+        var subject = features_in_slot[i];
+        var y1 = subject.position_start;
+        var y2 = subject.position_end;
+        var x1 = feature.position_start;
+        var x2 = feature.position_end;
+
+        if (((x1 <= y1) && (x2 >= y1)) ||
+            ((x1 >= y1) && (x1 <= y2))) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function sortFeaturesBySlot(features) {
+    var slots = [];
+    for (var i = 0; i < features.length; i++) {
+        var feature = features[i];
+        if (!slots[feature.slot]) {
+            slots[feature.slot] = [];
+        }
+        slots[feature.slot].push(feature);
+    }
+    return slots;
+}
+
+function layoutFeatures(features) {
+    var allocated = [];
+    var remaining = features;
+    var needed_slots = 0;
+
+    for (var i = 0; i < remaining.length; i++) {
+        var features_by_slot = sortFeaturesBySlot(allocated);
+        var current = remaining[i];
+        var slot = 0;
+        while (true) {
+            if (slotHasSpace(current, features_by_slot[slot])) {
+                current.slot = slot;
+                allocated.push(current);
+                if (slot > needed_slots) {
+                    needed_slots = slot;
+                }
+                break;
+            }
+            slot++;
+        }
+    }
+
+}
+
+        function syncronizeCrossHairsSNPAssoc(chart) {
+            console.log('synch');
+            var container = $(chart.container),
+                offset = container.offset(),
+                x, y, isInside, report;
+
+            container.mousemove(function(evt) {
+
+
+                x = evt.clientX - chart.plotLeft - offset.left;
+                y = evt.clientY - chart.plotTop - offset.top;
+                
+                if (chart == window.chartSNPs) {
+                    var xAxis = chart.xAxis[0];
+                    //remove old plot line and draw new plot line (crosshair) for this chart
+                    var xAxis1 = window.chartSNPs.xAxis[0];
+                    xAxis1.removePlotLine("myPlotLineId");
+                    xAxis1.addPlotLine({
+                        value: chart.xAxis[0].translate(x, true),
+                        width: 1,
+                        color: 'gray',
+                        //dashStyle: 'dash',                   
+                        id: "myPlotLineId"
+                    });
+
+
+                    //remove old crosshair and draw new crosshair on chart2
+                    var xAxis2 = window.chartGenes.yAxis[0];
+                    xAxis2.removePlotLine("myPlotLineId");
+                    xAxis2.addPlotLine({
+                        value: chart.xAxis[0].translate(x, true),
+                        width: 1,
+                        color: 'gray',
+                        //dashStyle: 'dash',                   
+                        id: "myPlotLineId"
+                    });
+                } else {
+                    var xAxis = chart.yAxis[0];
+                    //remove old plot line and draw new plot line (crosshair) for this chart
+                    var xAxis1 = window.chartSNPs.xAxis[0];
+                    xAxis1.removePlotLine("myPlotLineId");
+                    xAxis1.addPlotLine({
+                        value: chart.yAxis[0].translate(x, true),
+                        width: 1,
+                        color: 'gray',
+                        //dashStyle: 'dash',                   
+                        id: "myPlotLineId"
+                    });
+
+
+                    //remove old crosshair and draw new crosshair on chart2
+                    var xAxis2 = window.chartGenes.yAxis[0];
+                    xAxis2.removePlotLine("myPlotLineId");
+                    xAxis2.addPlotLine({
+                        value: chart.xAxis[0].translate(x, true),
+                        width: 1,
+                        color: 'gray',
+                        //dashStyle: 'dash',                   
+                        id: "myPlotLineId"
+                    });
+                    
+                }
+
+                //if other charts need to be syncronized - update their crosshair (plot line) in the same way in this function.                   
+            });
+        }
+
+
+    function plotSNPAssoc(snpData, geneData) {
+        var dataByChrom = {};
+        var maxLODScore = null;
+        var xAxisTitle = '';
+
+        // reset window size
+        //$("#snpWindowSize").val("100000");
+
+        // sort the SNP data
+        snpData.sort(function(a, b) {
+            return a.pos_Mbp - b.pos_Mbp;
+        });
+
+        var snps = [];
+
+        if (snpData) {
+            maxLODScore = snpData[0].lod;
+        }
+        
+
+            var _title = _G.current_gene_id;
+
+        if (_G.current_level === 'protein') {
+            _title =  _G.current_protein_id;
+        }
+
+
+
+        $.each(snpData, function(index, element) {
+
+            if (element.lod > maxLODScore) {
+                maxLODScore = element.lod;
+                console.log('maxLOD = ', maxLODScore);
+
+            }
+
+            snps.push({
+                id: element.snp_id,
+                alleles: element.alleles,
+                lod: element.lod,
+                x: element.pos_Mbp * 1000000,
+                y: element.lod,
+                csq: element.csq
+            })
+        });
+
+
+        console.log('maxLODScore=', maxLODScore);
+        maxLODScore += 1;
+        console.log('maxLODScore=', maxLODScore);
+
+
+
+ window.chartSNPs = Highcharts.chart('containerSNPs', {
+        chart: {
+            marginLeft: 60, // Keep all charts left aligned
+            type: 'scatter',
+            zoomType: 'x',
+            animation: false,
+            events: {
+                redraw: function(e) {
+                    console.log('plotSNPs redraw, e=', e.trigger);
+                }
+            }
+        },
+
+        title:{
+            text:_title,
+        },
+
+                tooltip: {
+                    formatter: function () {
+                        var csq = this.point.csq.split(',');
+                        var csqs = csq.join('<br/>');
+
+                        return '<b>' + this.point.id + '</b><br/>' +
+                               'LOD: ' + this.point.lod + '<br/>' + 
+                               'Position: ' + formatMbp(this.point.x/100000) + '<br/>' +
+                               'Alleles: ' + this.point.alleles  + '<br/>' +
+                               'CSQ: ' + csqs;
+                    }
+                },
+
+
+        xAxis: {
+            label: {
+                display: null
+            },
+            gridLineWidth: 10,    
+            crosshair: true,
+            opposite: true,
+            tickInterval: 500000,            
+            events: {
+                afterSetExtremes: function(event) {
+                    var xMin = event.min;
+                    var xMax = event.max;
+                        
+                    var ex = window.chartGenes.yAxis[0].getExtremes();
+
+                    if (ex.min != xMin || ex.max != xMax) {
+                        window.chartGenes.yAxis[0].setExtremes(xMin, xMax, true, false);
+                    }
+                }
+            }
+            
+        },
+
+        yAxis: {
+            min:0,
+            max: maxLODScore,
+            crosshair: true,
+            title: {
+                text: 'LOD'
+            },
+            
+            allowDecimals: false,
+        },
+
+        plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 2,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+            }
+        },
+        legend: {
+            enabled: false
+        },
+
+        series: [{
+            color: 'rgba(223, 83, 83, .5)',
+            type: 'scatter',
+            name: 'snps',
+            data: snps,
+            turboThreshold: 0,
+        }],
+        credits: {
+            enabled: false // A plugin for highcharts is of course using highcharts
+        },
+        /*
+        exporting: {
+            buttons: {
+                contextButton: {
+                    menuItems: [{
+                        text: 'Download PNG',
+                        onclick: function () {
+                                Highcharts.exportCharts([window.chartSNPs, window.chartGenes]);
+                        }
+                    }, {
+                        text: 'Download PDF',
+                        onclick: function () {
+                                Highcharts.exportCharts([window.chartSNPs, window.chartGenes], {
+                                    type: 'application/pdf'
+                                });
+                        },
+                        separator: false
+                    }]
+                }
+            }
+        }
+        */
+
+    }, function(chart) { //add this function to the chart definition to get synchronized crosshairs
+                    //this function needs to be added to each syncronized chart 
+                    syncronizeCrossHairsSNPAssoc(chart);
+
+                }
+    );
+
+        console.log(geneData);        
+
+        var genes = [];
+    $.each(geneData.genes, function(index, value) {
+        if (value.symbol != null) {
+            console.log('value.symbol=', value.symbol);
+            genes.push(value);
+        }
+    });
+
+
+
+        // generate the gene layout
+        genes.sort(function(a, b) {
+            return a.position_start - b.position_start;
+        });
+        layoutFeatures(genes);
+        genes.sort(function(a, b) {
+            return a.position_start - b.position_start;
+        });
+
+    var series = [];
+    var categories = [];
+    var data = [];
+
+    $.each(genes, function(index, value) {
+        if (!(value.slot in categories)) {
+            categories.push(value.slot);
+        }
+        var e = value;
+        e.x = value.slot;
+        e.low = value.position_start;
+        e.high = value.position_end;
+        data.push(e);
+    });
+
+    series.push({
+        data: data,
+        turboThreshold: 0,
+        events: {
+            show: function() {
+                console.log('series show');
+            }
+        }
+    });
+
+    window.chartGenes = Highcharts.chart('containerGenes', {
+        chart: {
+            panning: true,
+            panKey: 'shift',
+            marginLeft: 60, // Keep all charts left aligned
+            type: 'columnrange',
+            inverted: true,
+            zoomType: 'y',
+            animation: false,
+            /*
+            events: {
+                redraw: function() {
+                    console.log('redraw');
+                    console.log(window.chartSnps);
+                    window.chartSNPs.xAxis[0].update({
+                        tickPositions: window.chartGenes.yAxis[0].tickPositions.slice(),
+                    });
+                    window.chartSNPs.xAxis[0].setExtremes(window.chartGenes.yAxis[0].min, window.chartGenes.yAxis[0].max, true);
+                }
+            }
+            */
+        },
+
+        tooltip: {
+            formatter: function () {
+                //console.log(this);
+
+                return '<b>' + this.point.symbol + '</b><br/>' +
+                        'Ensembl ID: ' + this.point.ensembl_gene_id + '<br/>' + 
+                        'Name: ' + this.point.name + '<br/>' + 
+                        'Position: ' + this.point.match_value + ' (' + this.point.strand + ')';
+            
+                            /*
+                var csq = this.point.csq.split(',');
+                var csqs = csq.join('<br/>');
+
+                return '<b>' + this.point.id + '</b><br/>' +
+                        'LOD: ' + this.point.lod + '<br/>' + 
+                        'Position: ' + formatMbp(this.point.x/100000) + '<br/>' +
+                        'Alleles: ' + this.point.alleles  + '<br/>' +
+                        'CSQ: ' + csqs;
+                */
+                //return 'alkjksdhkdh';
+            }
+        },
+
+        title: {
+            text: '',
+            style: {
+                display: 'none'
+            }
+        },
+        
+        subtitle: {
+            text: '',
+            style: {
+                display: 'none'
+            }
+        },
+
+        yAxis: {
+            crosshair: {
+                snap: false,
+            },
+            scrollbar: {
+                enabled: true
+            },
+            title: {
+                text: '',
+                style: {
+                    display: 'none'
+                }
+            },
+            events: {
+                afterSetExtremes: function(event) {
+                        var xMin = event.min;
+                        var xMax = event.max;
+                    
+                    
+                    console.log(xMin, xMax, event);
+                        
+                    var ex = window.chartSNPs.xAxis[0].getExtremes();
+
+                        if (ex.min != xMin || ex.max != xMax) {
+                            window.chartSNPs.xAxis[0].setExtremes(xMin, xMax, true, false);
+                            /*
+                            window.chartSNPs.xAxis[0].update({
+                                       tickPositions: window.chartGenes.yAxis[0].tickPositions.slice(),
+                           });
+                           */
+                           
+                }
+                    
+                }
+            },
+            tickInterval: 500000,
+
+
+        },
+
+        xAxis: {
+            min: 0,
+            max: 6,
+            categories: categories,
+            lineWidth: 0,
+            minorGridLineWidth: 0,
+            lineColor: 'transparent',
+            labels: {
+                enabled: false
+            },
+            minorTickLength: 0,
+            tickLength: 0,
+        },
+
+        legend: {
+            enabled: false
+        },
+
+        navigator: {
+            enabled: false,
+        },
+
+        plotOptions: {
+            columnrange: {
+                grouping: false,
+
+                dataLabels: {
+                    yLow:15,
+                    enabled: true,
+                    inside: true,
+                    overlap:true,
+                                        align: 'center',
+
+                    
+                    formatter: function() {
+                        if (this.y === this.point.low) {
+                            //                              console.log(this);
+                            var l = '<div style="text-align:center;color:black;width:' + (this.point.plotLow - this.point.plotHigh) + 'px">' +
+                                this.point.symbol;
+                            l += '</div>';
+                            return l;
+                        } else return '';
+                   }
+                    
+                }
+            }
+        },
+        series: series,
+        credits: {
+            enabled: false // A plugin for highcharts is of course using highcharts
+        },
+        /*
+        navigation: {
+            buttonOptions: {
+                enabled: false
+            }
+        },
+        */
+    }, function(chart) { //add this function to the chart definition to get synchronized crosshairs
+                    //this function needs to be added to each syncronized chart 
+                    syncronizeCrossHairsSNPAssoc(chart);
+
+                }
+);
+
+    window.chartGenes.yAxis[0].setExtremes(null, null);
+
+
+    }
+    
+    function plotEffect(effect) {
+        console.log('EFFECT=', effect);
+        var strainInfo = {};
+        {% for s in CONF.PLOT_EFFECT_STRAINS %}
+            strainInfo["{{ s['key'] }}"] = {
+                'color':"{{ s['color'] }}",
+                'name':"{{ s['name'] }}",
+                'data':[]
+            };
+        {% endfor %}
+
+        var x = [];
+        var ids = [];
+
+        var chr = null;
+
+        var min_pos = Infinity;
+        var max_pos = -Infinity;
+
+        var _currentChromInfo = _G.chromosomes.idx[_G.chromosomes.nameToIdx[_G.current_chromosome]];
+        var xAxisTickNum = Math.floor(_currentChromInfo.length / 20000000);
+        var xAxisTickVals = [];
+        var xAxisTickText = [];
+
+        for (var i = 1; i <= xAxisTickNum; i++) {
+            xAxisTickVals.push(20000000 * i);
+            xAxisTickVals.push((20 * i) + "Mb")
+        }
+
+        var series = [];
+
+        var effectMinValue = Infinity;
+        var effectMaxValue = -Infinity;
+
+        $.each(effect.data, function(index, element) {
+            //{"A":-0.1224,..."H":1.45,"chr":"4","id":"4_156339889","pos":156.3399}
+            var _pos = element.pos * 1000000;
+            var m = [];
+
+        {% for s in CONF.PLOT_EFFECT_STRAINS %}
+            strainInfo["{{ s['key'] }}"]['data'].push([_pos, element.{{ s['key'] }}]);
+            m.push(element.{{ s['key'] }});
+        {% endfor %}
+
+            effectMinValue = Math.min(Math.min.apply(null, m), effectMinValue);
+            effectMaxValue = Math.max(Math.max.apply(null, m), effectMaxValue);
+
+            x.push(_pos);
+            ids.push(element.id);
+            chr = element.chr;
+        });
+
+
+        effectMaxValue = Math.ceil(effectMaxValue);
+        effectMinValue = Math.floor(effectMinValue);
+
+        console.log('effectMaxValue=', effectMaxValue);
+        console.log('effectMinValue=', effectMinValue);
+
+        $.each(strainInfo, function(key, value) {
+            var s = {
+                type: 'line',
+                turboThreshold: 0,
+                showInLegend: true,
+                downsample: {
+                    threshold: 0 // 0 disables downsampling
+                },
+                data: value['data'],
+                name: value['name'],
+                color: value['color'],
+                lineWidth: 1,
+                yAxis:'axisEffect',
+                stack: 0,
+                marker: {
+                    symbol: 'circle',
+                },
+                tooltip: {
+                    shared: false,
+                    headerFormat:'<b>{series.name}</b>',
+                    pointFormatter: function() {
+                        return '<br>Effect: ' + this.y + '<br>Position: ' +  (this.x/1000000);          
+                    }
+                }
+
+                            
+            };
+            series.push(s);
+        });
+
+        var _title = _G.current_gene_id;
+
+        if (_G.current_level === 'protein') {
+            _title =  _G.current_protein_id;
+        }
+
+        var lodDataForChromosome = _G.lodDataByChromosome[_currentChromInfo.chromosome];
+        var lodData = [];
+
+        var lodMinValue = Infinity;
+        var lodMaxValue = -Infinity;
+
+        $.each(lodDataForChromosome, function(index, element) {
+            element.x = element.chrPos;
+            lodData.push(element);
+
+            lodMinValue = Math.min(element.y, lodMinValue);
+            lodMaxValue = Math.max(element.y, lodMaxValue);
+        });
+
+        series.push({
+            data: lodData,
+            turboThreshold: 0,
+            yAxis:'axisLOD',
+            stack: 0,
+            name: 'LOD',
+            animation: false,
+            showInLegend: false,
+
+            tooltip: {
+                shared: false,
+                headerFormat:'',
+                pointFormatter: function() {
+                    return '<br>LOD: ' + this.y + '<br>Position: ' +  (this.x/1000000);          
+                }
+            }
+            
+        });
+        
+
+        // determine ticks
+        var effectTickVals = [];
+        for (var i = effectMinValue; i <= effectMaxValue; i += 0.5) {
+            effectTickVals.push(i);
+        }
+
+        var lodTickVals = [];
+        var lodMaxTick = Math.ceil(lodMaxValue / 10) * 10;
+        for (var i = 0; i <= lodMaxTick; i += 10) {
+            lodTickVals.push(i);
+        }
+
+
+        _G.plots.effect.obj = Highcharts.chart({
+            title: {
+                text: _title,
+            },
+
+            chart: {
+                renderTo: _G.plots.effect.el,
+            },
+
+            xAxis: {
+                lineWidth: 1,
+                gridLineWidth: 1,
+                crosshair: true,
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                floating: false,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            },         
+
+            yAxis: [{
+                id: 'axisEffect',
+                title: {
+                    text: 'EFFECT'
+                },
+                offset: 0,
+                height: '70%',
+                tickPositions: effectTickVals,
+                maxPadding: 0,
+                labels: {
+                    formatter: function() {
+                        if (this.isFirst) {
+                            return '';
+                        }
+                        return this.value;
+                    }
+                },
+            }, {
+                id: 'axisLOD',
+                title: {
+                    text: 'LOD'
+                },
+                offset: 0,
+                height: '30%',
+                top: '70%',
+                maxPadding: 0,
+                tickPositions: lodTickVals,
+                labels: {
+                    formatter: function() {
+                        if (this.isLast) {
+                            return '';
+                        }
+                        return this.value;
+                    }
+                },
+                plotLines: [{
+                    value: lodMaxTick,
+                    color: 'black',
+                    zIndex: 5,
+                    width: 2
+                }]
+            }],
+
+            series:series,
+
+            credits: {
+                enabled: false // A plugin for highcharts is of course using highcharts
+            }
+        });
+
+    }
+
+
+
+    function plotMediation(data) {
+        // probably easier d3 function but just looping for now
+        //'LOD': 3.4188, 'chr' : "11", id: "ENSMUSG00000099291", pos:87448734, symbol: "ACEA_U3"
+
+        var n = [];
+
+        $.each(data, function(index, element) {
+            //console.log('element=', element);
+            //if (element.chr in Object.keys(_G.chromosomes.nameToIdx)) {
+            if (element.chr in _G.chromosomes.nameToIdx) {
+
+                var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element.chr]];
+                var x = chr.start + (element.pos);
+                var y = element.LOD;
+
+                /*
+                 if (element.chr === 'X') {
+                 console.log(chr, x, y);
+                 }
+                 */
+
+                 var e = element;
+                 e.x = x;
+                 e.y = y;
+                n.push(e);
+            } else {
+                //console.log(element);
+            }
+        });
+
+
+        var axis_tick_vals = [];
+        var axis_tick_text = [];
+
+        // rectangles to display
+        var chrom_shapes = [];
+        var data_chr = {};
+
+        $.each(_G.chromosomes.idx, function(index, element) {
+
+            axis_tick_vals.push(element.mid);
+            axis_tick_text.push(element.name);
+
+            data_chr[element.name] = {};
+            data_chr[element.name].data = [];
+
+            var fill_color = '#ffffff';
+            if ((index % 2) == 0) {
+                fill_color = '#222222';
+            }
+        });
+
+
+        //
+        // build the vertical chromosome bars
+        //
+        var chromosomeAxisVals = [];
+        var chromosomeAxisText = {};
+
+        var chromosomeBands = [];
+
+        $.each(_G.chromosomes.idx, function(index, element) {
+
+            chromosomeAxisVals.push(element.mid);
+            chromosomeAxisText[element.mid] = element.name;
+
+            // TODO: style this
+            var fillColor = '#ffffff';
+            if ((index % 2) == 1) {
+            chromosomeBands.push({
+                color: fillColor,
+                from: element.start,
+                to: element.end
+            });
+            }
+
+            //plotShapes.push(s);
+        });
+
+
+
+        //console.log(JSON.stringify(chrom_shapes));
+
+        var data = [];
+
+
+        var _title = _G.current_gene_id;
+
+        if (_G.current_level === 'protein') {
+            _title =  _G.current_protein_id;
+        }
+
+
+ _G.ch = Highcharts.chart({
+
+
+        chart: {
+            zoomType: 'xy',
+            renderTo: _G.plots.mediation.el,
+        },
+
+        title: {
+            text:_title,
+        },
+
+                tooltip: {
+                    formatter: function () {
+                        console.log(this);
+                        return '<b>' + this.point.id + '</b><br/>Symbol: ' +
+                        this.point.symbol + '<br/>Chromosome: ' + this.point.chr +
+                        '<br/>Location: ' + this.point.pos + '<br/>LOD: ' +
+                        this.point.LOD;
+                    }
+                },
+        
+
+        xAxis: {
+            opposite: true,
+            tickWidth: 0,
+            labels: {
+                formatter: function () {
+                    return chromosomeAxisText[this.value];
+                }
+            },
+            tickPositions: chromosomeAxisVals,
+            plotBands: chromosomeBands,
+         },    
+
+         yAxis: {
+             title: {
+                 text: 'LOD'
+             }
+         },
+
+plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+            }
+        },
+
+                series: [{
+                    type: 'scatter',
+            turboThreshold: 0,
+            showInLegend: false,
+            downsample: {
+                threshold: 0 // 0 disables downsampling
+            },
+            data: n,
+              color: 'rgba(223, 83, 83, .5)',
+              marker: {
+                  radius:2
+              }
+        }],
+
+         credits: {
+            enabled: false // A plugin for highcharts is of course using highcharts
+        }
+    });
+
+
+
+
+
+        /*
+
+        _G.plots.mediation.plotly = Plotly.newPlot(_G.plots.mediation.el,
+                traces,
+                layout,
+                {
+                    scrollZoom: false,
+                    displaylogo: false,
+                    showLink: false,
+                    modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'hoverCompareCartesian', 'hoverClosestCartesian'],
+                    logging: 5,
+                }
+        );
+        */
+
+        $("#" + _G.plots.mediation.el_wait).html("");
+    }
+
+    function plotProfile_new(ensembl_gene_id, ensembl_protein_id, profile_data, profiles) {
+
+
+        var profile_info = {};
+
+        $.each(profile_data.data_types, function(key, value) {
+
+            profile_info[key] = {levels: value, name: key, kind: "factor", values: []};
+        });
+
+        console.log('profile_info=',profile_info);
+
+
+        var samples = [];
+        var expression = [];
+
+        $.each(profile_data.data, function(index, element) {
+            samples.push(element.mouse_id);
+
+            $.each(profile_data.data_types, function(key, value) {
+                profile_info[key].values.push(element[key]+"");
+            });
+
+            expression.push(element.expression);
+        });
+
+
+        var xvar = [];
+        $.each(profiles, function(index, element) {
+            xvar.push(profile_info[element]);
+        });
+
+
+        var yname = ensembl_gene_id;
+        if (_G.current_level == "mrna") {
+            yname = ensembl_gene_id;
+        } else {
+            yname = ensembl_protein_id;
+        }
+
+
+
+        var yvar = [];
+        yvar.push({
+            kind: "number",
+            name: yname,
+            values: expression,
+        });
+
+
+
+
+        var plotParams = {
+            //title: ensembl_id,
+            sampleCount: samples.length,
+            xAxis: {
+                jitterPx: 25,
+                min: null,
+                max: null,
+                variables: xvar,
+                tickLabelRotationDeg: -45
+            },
+            yAxis: {
+                min: null,
+                max: null,
+                variables: yvar,
+                whiskers: {
+                    units: "stderr",
+                    dist: 1
+                }
+            }
+        };
+
+        _G.fact = {};
+
+        _G.fact.plotParams = plotParams;
+
+        _G.fact.samples = samples;
+
+        // using this so plots have same jitter
+
+        Math.seedrandom('whozapi');
+
+
+        _G.fact.jsobject = new FactExpPlot({
+            svg: d3.select("#fact-svg-chart"),
+            pointSizePx: 5,
+        });
+
+        // not using mouseOverPoint because it wasn't showing tooltip on initial hover
+        /*
+         _G.fact.jsobject.mouseOverPoint = function(a, b) {
+         console.log(a, b);
+         console.log($(b));
+         $(b).popover({
+         placement: 'auto',
+         html: true,
+         trigger: 'hover',
+         container: 'body',
+         content: function () {
+         return _G.fact.samples[a];
+         }
+         });
+         }*/
+
+
+        /**
+         * Here we do some styling.  This is hard coded right now.
+         */
+        _G.fact.jsobject.postProcessPoint = function(sampleIndex, d3Node) {
+            //console.log(sampleIndex, d3Node);
+            //console.log(profile_info['sex'].values[sampleIndex]);
+            d3Node.classed("female", profile_info['sex'].values[sampleIndex] == "F");
+            d3Node.classed("male", profile_info['sex'].values[sampleIndex] == "M");
+
+            if (profile_info['age'].values[sampleIndex] == "6") {
+                _G.fact.jsobject.setPointShape(d3Node, DataPointShape.SQUARE);
+            } else if (profile_info['age'].values[sampleIndex] == "12") {
+                _G.fact.jsobject.setPointShape(d3Node, DataPointShape.DIAMOND);
+            } else if (profile_info['age'].values[sampleIndex] == "12") {
+                _G.fact.jsobject.setPointShape(d3Node, DataPointShape.STAR);
+            }
+
+
+        };
+
+        _G.fact.jsobject.renderPlot(plotParams);
+
+
+        $("#points-group use").each(function () {
+            var that = $(this);
+            var sample_index = parseInt($(this).attr('sample-index'));
+            $(this).popover({
+                placement: 'left',
+                html: true,
+                trigger: 'hover',
+                container: 'body',
+                content: function () {
+                    return _G.fact.samples[sample_index];
+                }
+            });
+        });
+
+
+
+
+    }
+
+
+
+
+    /**
+     * Download LOD scan data from the server
+     */
+    function downloadLODData(gene_id, protein_id, level, callback) {
+        var _url = _G.url_apis.lod + "/" + level;
+
+        if (level == "mrna") {
+            _url += "?id=" + gene_id;
+        } else {
+            _url += "?id=" + protein_id;
+        }
+
+        if (_G.cond === "local") {
+            _url += "&regress_local=TRUE";
+        }
+
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("lod download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("lod download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+    function downloadSNPAssocData(ensembl_id, chrom, location, windowSize, level, callback) {
+        var _url = _G.url_apis.snpassoc + "/" + level;
+        _url += "?id=" + ensembl_id;
+        _url += "&chrom=" + chrom;
+        _url += "&location=" + location;
+        _url += "&window_size=" + windowSize;
+
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("snpassoc download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("snpassoc download failure");
+            callback(errorThrown, null);
+        });
+
+    }
+
+    function downloadMediationData(ensembl_id, marker_id, callback) {
+        var _url = _G.url_apis.mediate + "?id=" + ensembl_id + "&" + "mid=" + marker_id;
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("mediate download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("mediate download failure");
+            callback(errorThrown, null);
+        });
+
+    }
+
+    function downloadEffectData(ensembl_id, chromosome, callback) {
+        var _url = _G.url_apis.effect + "?id=" + ensembl_id + "&" + "chrom=" + chromosome;
+
+        if ($("#mediate_blup").is(':checked')) {
+            _url += '&blup=TRUE';
+        }
+
+        if (_G.cond === "local") {
+            _url += "&regress_local=TRUE";
+        }
+
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("foundercoefs download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("foundercoefs download failure");
+            callback(errorThrown, null);
+        });
+
+    }
+
+    function downloadProfileData(ensembl_gene_id, ensembl_protein_id, profiles, callback) {
+        var _url = _G.url_apis.expression + "/" + _G.current_level;
+
+        if (_G.current_level == "mrna") {
+            _url += "?id=" + ensembl_gene_id;
+        } else {
+            _url += "?id=" + ensembl_protein_id;
+        }
+
+        var cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
+
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("expression download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("expression download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+    function downloadGeneData(geneID, callback) {
+        var URL = _G.url_apis.genes + geneID;
+        var cacheURL = _G.url_proxy + URL;
+        //var cache_url = _url;
+        console.log("AJAX request to: ", cacheURL);
+
+        $.ajax({
+            url: cacheURL,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("gene download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("gene download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+
+    function downloadGenesByLocationData(chrom, start, end, callback) {
+        var URL = _G.url_apis.genesByLocation + "?term=" + chrom + ":" + start + "-" + end;
+        var cacheURL = _G.url_proxy + URL;
+        //var cache_url = _url;
+        console.log("AJAX request to: ", cacheURL);
+
+        $.ajax({
+            url: cacheURL,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("genesByLocation download success", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("genesByLocation download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+    function generateLODPlot(geneID, proteinID, level) {
+        blockUser(BLOCK_STATE_LOD_SCAN);
+        _G.current_gene_id = geneID;
+        _G.current_protein_id = proteinID;
+
+        resetSecondaryPlots();
+
+        var q = d3.queue()
+                //.defer(downloadGeneInformation, gene_id)
+                .defer(downloadLODData, geneID, proteinID, level)
+                .await(function(error, lod_data) {
+                    console.log('Queue done');
+                    console.log('lod_data=', lod_data);
+                    console.log('error=', error);
+
+                    // TODO: handle errors, if error comes back we won't have data
+
+                    if (error) {
+                        var _message = "Unable to download data for <strong><em>";
+                        if (level == "mrna") {
+                            _message += geneID;
+                        } else {
+                            _message += proteinID;
+                        }
+                        _message += "</em></strong>.";
+
+                        displayError("API Server Error", _message);
+                        unblockUser();
+
+                        return;
+                    }
+                    plotLOD(lod_data.data, geneID, proteinID, level);
+                    unblockUser();
+                });
+    }
+
+    function generateSNPAssocPlot(ensembl_id, chrom, position) {
+        blockUser(BLOCK_STATE_LOD_SELECTION);
+
+        _G.snpAssocVars = {
+            ensembl_id: ensembl_id,
+            chrom: chrom,
+            position: position,
+        };
+
+        var snpWindowSize = _G.sliderSNP.result.from_value;
+        var snpWindow = snpWindowSize/2;
+
+        var minPos = Math.max(position - snpWindow, 0);
+        var maxPos = position + snpWindow;
+
+        var eid = ensembl_id; 
+        if (_G.current_level == "protein") {
+            eid = current_protein_id;
+        }
+
+        
+
+        var q = d3.queue()
+                .defer(downloadSNPAssocData, ensembl_id, chrom, position, snpWindow, _G.current_level)
+                .defer(downloadGenesByLocationData, chrom, minPos, maxPos)
+                .await(function(error, snpData, geneData) {
+                    console.log('Queue done');
+                    //console.log('data=', data);
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    if (error) {
+                        var _message = "Unable to download SNP data for <strong><em>";
+                        _message += ensembl_id;
+                        _message += "</em></strong> on chromosome ";
+                        _message += "<strong><em>";
+                        _message += chromosome;
+                        _message += "</em></strong>";
+
+                        displayError("API Server Error", _message);
+                        unblockUser();
+                        return;
+                    }
+
+                    console.log("PLOT SNP ASSOC")
+                    plotSNPAssoc(snpData, geneData);
+                    unblockUser();
+                });
+    }
+
+
+
+    function generateMediationPlot(ensembl_id, marker_id) {
+        blockUser(BLOCK_STATE_LOD_SELECTION);
+
+        var q = d3.queue()
+                .defer(downloadMediationData, ensembl_id, marker_id)
+                .await(function(error, data) {
+                    console.log('Queue done');
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    if (error) {
+                        var _message = "Unable to download mediation data for <strong><em>";
+                        _message += ensembl_id;
+                        _message += "</em></strong> on ";
+                        _message += "<strong><em>";
+                        _message += marker_id;
+                        _message += "</em></strong>";
+
+                        displayError("API Server Error", _message);
+                        unblockUser();
+                        return;
+                    }
+
+                    console.log("PLOT MEDIATE");
+                    plotMediation(data);
+                    unblockUser();
+                });
+    }
+
+    function generateEffectPlot(ensembl_id, chromosome) {
+        blockUser(BLOCK_STATE_LOD_SELECTION);
+        _G.current_chromosome = chromosome;
+        console.log(ensembl_id, chromosome);
+
+        var q = d3.queue()
+                .defer(downloadEffectData, ensembl_id, chromosome)
+                .await(function(error, data) {
+                    console.log('Queue done');
+                    console.log('data=', data);
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    if (error) {
+                        var _message = "Unable to download effect data for <strong><em>";
+                        _message += ensembl_id;
+                        _message += "</em></strong> on chromosome ";
+                        _message += "<strong><em>";
+                        _message += chromosome;
+                        _message += "</em></strong>";
+
+                        displayError("API Server Error", _message);
+                        unblockUser();
+                        return;
+                    }
+
+                    console.log("PLOT EFFECT")
+                    plotEffect(data);
+                    unblockUser();
+
+
+                });
+    }
+
+    function generateProfilePlot(ensembl_gene_id, ensembl_protein_id, profiles) {
+        blockUser(BLOCK_STATE_PROFILE_UPDATE);
+        console.log("Generating profile plot", ensembl_gene_id, ensembl_protein_id, profiles);
+        var q = d3.queue()
+                .defer(downloadProfileData, ensembl_gene_id, ensembl_protein_id, profiles)
+                .await(function(error, data) {
+                    console.log('Queue done');
+                    console.log('data=', data);
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    if (error) {
+                        var _message = "Unable to download profile data for <strong><em>";
+                        _message += ensembl_id;
+                        _message += "</em></strong>.";
+
+                        displayError("API Server Error", _message);
+                        unblockUser();
+                        return;
+                    }
+
+                    console.log("PLOT PROFILE")
+                    plotProfile_new(ensembl_gene_id, ensembl_protein_id, data, profiles);
+                    unblockUser();
+
+
+                });
+    }
+
+    function loadOptions(callback) {
+        /*
+         From d3.js documentation:
+
+         When a task completes, it must call the provided callback.
+
+         The first argument to the callback should be null if the task is successfull,
+         or the error if the task failed.
+
+         The optional second argument to the callback is the return value of the task.
+         (To return multiple values from a single callback, wrap the results in an object or array.)
+         */
+        var _url = _G.url_proxy + _G.url_apis.options;
+        $.ajax({
+            url: _url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("options download success");
+            console.log("options=", data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("options download failure");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadChromsomes(callback) {
+        var _url = _G.url_chromosomes;
+        console.log("Downloading chromosomes: ", _url);
+
+        $.ajax({
+            url: _url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("chromosome download success");
+            console.log('chromosome data=',data);
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("chromosome download failure");
+            console.log("genes download failure");
+            console.log('jqXHR=', jqXHR);
+            console.log('textStatus=', textStatus);
+            console.log('errorThrown=', errorThrown);
+            displayError("Server Error", "Unable to download chromosome information");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadGenes(callback) {
+        var _url = _G.url_proxy + _G.url_apis.ids + "?id_type=mrna";
+        console.log("Downloading genes: ", _url);
+
+        $.ajax({
+            url: _url,
+            method: "GET"
+        })
+                .done(function(data, textStatus, jqXHR) {
+                    console.log("genes download success", data);
+                    callback(null, data);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("genes download failure");
+            console.log('jqXHR=', jqXHR);
+            console.log('textStatus=', textStatus);
+            console.log('errorThrown=', errorThrown);
+            displayError("API Server Error", "Error downloading gene information");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadProteins(callback) {
+        var _url = _G.url_proxy + _G.url_apis.ids + "?id_type=protein";
+        console.log("Downloading proteins: ", _url);
+
+        $.ajax({
+            url: _url,
+            method: "GET"
+        })
+                .done(function(data, textStatus, jqXHR) {
+                    console.log("proteins download success");
+                    callback(null, data);
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("proteins download failure");
+            console.log('jqXHR=', jqXHR);
+            console.log('textStatus=', textStatus);
+            console.log('errorThrown=', errorThrown);
+            displayError("API Server Error", "Error downloading protein information");
+            callback(errorThrown, null);
+        });
+    }
+
+    function findBootstrapEnvironment() {
+        var envs = ["xs", "sm", "md", "lg"];
+        var doc = window.document;
+        var temp = doc.createElement("div");
+
+        doc.body.appendChild(temp);
+
+        for (var i = envs.length - 1; i >= 0; i--) {
+            var env = envs[i];
+
+            temp.className = "hidden-" + env;
+
+            if (temp.offsetParent === null) {
+                doc.body.removeChild(temp);
+                return env;
+            }
+        }
+        return "";
+    }
+
+    // Returns a function, that, as long as it continues to be invoked, will not
+    // be triggered. The function will be called after it stops being called for
+    // N milliseconds. If `immediate` is passed, trigger the function on the
+    // leading edge, instead of the trailing.
+    function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            var later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    };
+    /*
+     var debounceLayoutCheck = debounce(function() {
+     var bse = findBootstrapEnvironment();
+     console.log('bse=',bse);
+
+     if (_G.bootstrapEnv != bse) {
+     console.log(_G.bootstrapEnv + ' != ' + bse + ' so redrawing')
+
+     // resize all the graphs
+     $.each($(".js-plotly-plot"), function(index, element) {
+     Plotly.Plots.resize($("#" + $(element).attr("id"))[0]);
+     });
+     _G.fact.jsobject.renderPlot(_G.fact.plotParams);
+
+     _G.bootstrapEnv = bse;
+     }
+     }, 250);
+     */
+    var debounceLayoutCheck = debounce(function() {
+        console.log('redrawing');
+        Plotly.Plots.resize($("#plot_lod")[0]);
+    }, 250);
+
+    function getFactorOrder() {
+        var selected = [];
+        $('#factor-view-select option:selected').each(function() {
+            selected.push([$(this).val(), $(this).attr('order')]);
+        });
+
+        selected.sort(function(a, b) {
+            return a[1] - b[1];
+        });
+
+        var ordered = [];
+        for (var i = 0; i < selected.length; i++) {
+            ordered.push(selected[i][0]);
+        }
+
+        console.log('ordered=',ordered);
+
+        return ordered;
+
+    }
+
+
+
+    function displayError(_title, _message) {
+        $.notify({
+            title:"<h5>" + _title + "</h5>",
+            message:_message
+        }, {
+            type: 'danger'
+        });
+
+        // make sure all waiting images are no longer
+        $.each($("div[id$='wait']"), function(index, element) {
+            $(element).html("");
+        });
+    }
+
+    function displayGeneData(geneData) {
+        console.log(geneData);
+        var startFormat = formatMbp(geneData.start/1000000);
+        var endFormat = formatMbp(geneData.end/1000000);
+        var mbpDesc = 'Mbp';
+
+        if ( startFormat < 1) {
+            startFormat = geneData.start;
+            endFormat = geneData.end;
+            mbpDesc = 'bp';
+        }
+
+        var synonyms = "";
+
+        if (geneData.synonyms) {
+            synonyms = geneData.synonyms.join("<br>");
+        }
+
+        var strand = "forward";
+
+        if (geneData.strand === "-") {
+            strand = "negative";
+        }
+
+        var htmlBody = `                    <div class="row">
+                        <div class="col-md-12">
+<dl class="dl-horizontal">
+                            <dt>ID</dt><dd>${geneData.id||''}
+                [
+                <a target="_newwin" href="http://www.ensembl.org/id/${geneData.id}">Ensembl <small><i class="fa fa-external-link fa-1" aria-hidden="true"></i></small></a>
+
+                <a target="_newwin" href="http://www.informatics.jax.org/marker/${geneData.id}">MGI <small><i class="fa fa-external-link fa-1" aria-hidden="true"></i></small></a>
+                ]
+                            </dd>
+                            <dt>Symbol</dt><dd>${geneData.symbol||''}</dd>
+                            <dt>Chromosome</dt><dd>${geneData.chromosome||''}</dd>
+                            <dt>Start Position</dt><dd>${geneData.start||''}</dd>
+                            <dt>End Position</dt><dd>${geneData.end||''}</dd>
+                            <dt>Strand</dt><dd>${geneData.strand||''}</dd>
+                            <dt>Description</dt><dd>${geneData.description||''}</dd>
+                            <dt>Synonyms</dt><dd>${synonyms||''}</dd>
+                </dl></div></div>`;
+
+
+
+
+        var htmlHeader = `<h3 class="box-title">${geneData.id} <em>${geneData.symbol}</em></h3>
+                Chromosome ${geneData.chromosome} (${startFormat} - ${endFormat} ${mbpDesc}, ${strand} strand)
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+`;
+
+        $("#div_current_gene_information_body").html(htmlBody);
+        $("#div_current_gene_information_header").html(htmlHeader);
+        console.log('Done displaying gene information:', geneData.id);
+    }
+
+    function cookiesEnabled() {
+        var isValid = Cookies.set('checkme', 'valid', {expires: 1}) && Cookies.get('checkme') === 'valid';
+        Cookies.remove('checkme');
+        return isValid;
+    }
+
+    function buildHistory() {
+        // cookies, everywhere cookie
+        var history_data = Cookies.getJSON("history_data");
+
+        var historyTableData = [];
+        var historyDict = {};
+
+        for (var _h in history_data) {
+            var h = history_data[_h];
+            var d = {
+                'gene_id': h['g'],
+                'symbol': h['s'],
+                'protein_id': h['p'],
+                'level': h['l']
+            };
+
+            historyDict[h['id']] = {'symbol': h['s'], 'level': h['l']};
+
+            historyTableData.push(d);
+        }
+
+        console.log('historyTableData=', historyTableData);
+
+
+        console.log('checking history');
+        if (!cookiesEnabled()) {
+            $('#search_history_div').html("<br><span class='text-danger'>History requires that cookies are enabled in your browser.</span>");
+            return;
+        }
+
+        if (history_data) {
+            if (history_data.length == 1) {
+                $('#searchHistoryStatus').html("<p class='text-right text-muted'><em><small>Showing last gene viewed</small></em></p>");
+            } else {
+                $('#searchHistoryStatus').html("<p class='text-right text-muted'><em><small>Showing last " + history_data.length.toLocaleString() + " genes viewed</small></em></p>");
+            }
+
+            var tbl = '<table id="search_history_table" class="table table-bordered table-hover table-condensed"></table>';
+            $('#search_history_div').html(tbl);
+
+            var historyTableColumns = [];
+
+            historyTableColumns.push({
+                title:'ID',
+                data:"gene_id",
+                render: function(data, type, row, meta) {
+                    if (row['level'] === 'mrna') {
+                        if (type === 'display') {
+                            if (_G.genes.gene_ids[data]) {
+                                return '<div style="white-space: nowrap"><a href="#" gene_id="' + data + '">' + data + '</a></div>';
+                            }
+
+                            return '<div style="white-space: nowrap">' + data + '</div>';
+                        }
+
+                        return data;
+                    } else {
+                        if (type === 'display') {
+                            console.log('data=', data);
+                            var ps = [];
+                            if (_G.proteins.gene_ids[data]) {
+                                var ret = '<div style="white-space: nowrap">' + data;
+                                ret += '</div><div style="padding-left: 20px;">';
+                                ret += '<em>';
+
+                                for (p in _G.proteins.gene_ids[data].protein_ids) {
+                                    ps.push('<a href="#" gene_id="' + data + '" protein_id="' + _G.proteins.gene_ids[data].protein_ids[p] + '">' + _G.proteins.gene_ids[data].protein_ids[p] + '</a>');
+                                }
+
+                                return ret + ps.join('<br>') + "</em></div></small>";
+
+                            }
+
+                            return '<div style="white-space: nowrap">' + data + '</div>';
+                        }
+
+                        return data;
+                    }
+                }
+            });
+
+            historyTableColumns.push({
+                        title:'Symbol',
+                        data:"symbol"
+                    }
+            );
+
+
+            _G.historyTable = $("#search_history_table").DataTable({
+                data: historyTableData,
+                paging: false,
+                order: [],   // prevent automatic ordering
+                scrollY: 200,
+                searching: false,
+                //lengthChange: false,
+                //scrollCollapse: true,
+                columns: historyTableColumns,
+                autoWidth:true,
+                responsive:true,
+            });
+
+            console.log('done');
+
+            $("#search_history_table a").click(function (e) {
+                e.preventDefault();
+
+                var _this = $(this);
+                console.log(_this);
+
+                _G.current_gene_id = _this.attr('gene_id');
+                _G.current_protein_id = _this.attr('protein_id');
+
+                var unique_id = _G.current_gene_id;
+
+                if (_G.current_protein_id) {
+                    unique_id += "," + _G.current_protein_id;
+                }
+
+
+                resetUI();
+
+                addHistory(_G.current_gene_id, _G.current_protein_id, historyDict[unique_id]['symbol'], historyDict[unique_id]['level']);
+                buildHistory();
+
+                // make sure the profile plot is now visible
+                $("#profilePlot").removeClass("hidden");
+
+                generateLODPlot(_G.current_gene_id, _G.current_protein_id, historyDict[unique_id]['level']);
+
+                return false;
+            });
+
+        } else {
+            $('#search_history_div').html("<br><span class='text-danger'>No results found.</span>");
+        }
+
+    }
+
+
+    function init() {
+        console.log('initializing...');
+
+
+
+
+
+        _G.bootstrapEnv = findBootstrapEnvironment();
+        window.addEventListener('resize', debounceLayoutCheck);
+
+        $('#searchTerm').keypress(function(e) {
+            var code = e.which ? e.which : e.keyCode;
+            if (code === 13) {
+                $(this).blur();
+                $('#btnGo').focus().click();
+            }
+        });
+
+        $('#btnGo').button().click(function() {
+            findGene();
+            return false;
+        });
+
+
+        $('#lbl_level_mrna').on("click", function() {
+
+            _G.current_level = "mrna";
+            findGene();
+
+            // TODO: clear lod if PROTEIN and lod mrna
+            // what if multiple proteins?
+            //return false;
+        });
+
+        $('#lbl_level_protein').on("click", function() {
+            _G.current_level = "protein";
+            findGene();
+
+            // TODO: clear lod if MRNA and lod protein
+            // what if multiple proteins?
+            //return false;
+        });
+
+        $('#lbl_default').on("click", function() {
+            _G.cond = "default";
+            if (_G.current_gene_id != null) {
+                generateLODPlot(_G.current_gene_id, _G.current_protein_id, _G.current_level);
+            }
+
+        });
+
+        $('#lbl_local').on("click", function() {
+            _G.cond = "local";
+            if (_G.current_gene_id != null) {
+                generateLODPlot(_G.current_gene_id, _G.current_protein_id, _G.current_level);
+            }
+        });
+
+
+        _G.orderCount = getFactorOrder().length;
+
+
+
+
+        $('#factor-view-select').multiselect({
+            onChange: function(option, checked) {
+                if (checked) {
+                    _G.orderCount++;
+                    $(option).attr('order', _G.orderCount);
+                }
+                else {
+                    $(option).attr('order', '');
+                }
+            },
+            maxHeight: 400,
+            dropUp: false,
+            buttonWidth: '100%',
+            buttonText: function(options) {
+                if (options.length === 0) {
+                    return 'None selected';
+                }
+                else {
+                    var selected = [];
+                    options.each(function() {
+                        selected.push([$(this).text(), $(this).attr('order')]);
+                    });
+
+                    selected.sort(function(a, b) {
+                        return a[1] - b[1];
+                    });
+
+                    var text = '';
+                    for (var i = 0; i < selected.length; i++) {
+                        text += ((i+1) + ": " + selected[i][0] + ', ');
+                    }
+
+                    return text.substr(0, text.length -2);
+                }
+            },
+        });
+
+
+        $("#btnFactPlot").on('click', function() {
+            console.log("getFactorOrder=", getFactorOrder());
+            generateProfilePlot(_G.current_gene_id, _G.current_protein_id, getFactorOrder());
+        });
+
+        // make sure search tables draw correctly
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            if (_G.searchTable) {
+                _G.searchTable.draw();
+            }
+            if (_G.historyTable) {
+                _G.historyTable.draw();
+            }
+        });
+
+        console.log('DONE initializing!')
+    }
+
+    $().ready(function () {
+        init();
+
+        WHOZ = new whoz({
+            search_limit: 100,
+        });
+
+        console.log('Starting Queue...');
+        var q = d3.queue()
+                .defer(loadOptions)
+                .defer(loadChromsomes)
+                .defer(loadGenes)
+                .defer(loadProteins)
+                .await(function(error, options, chromosomes, genes, proteins) {
+                    console.log('Queue done');
+
+                    // TODO: handle errors, if error comes back we won't have data
+                    if (error) {
+                        console.log('ERROR: ', error);
+                        //displayError(error);
+                        //throw error;
+                        return;
+                    }
+
+                    console.log(options);
+
+                    _G.chromosomes = {'idx': chromosomes.chromosomes, 'nameToIdx': {}};
+
+                    $.each(chromosomes.chromosomes, function(index, element) {
+                        _G.chromosomes['nameToIdx'][element.name] = index;
+                    });
+
+                    _G.chromosomes['totalLength'] = _G.chromosomes.idx[_G.chromosomes.idx.length-1].end;
+
+
+                    console.log(genes);
+                    var _gene_ids = {};
+
+                    $.each(genes.ids, function(index, element) {
+                        //console.log(index, element);
+                        if (!(element.gene_id in _gene_ids)) {
+                            _gene_ids[element.gene_id] = {'id': element.gene_id}
+                        }
+                    });
+
+                    _G.genes = {gene_ids:_gene_ids};
+                    console.log('genes=', _G.genes);
+
+                    console.log(proteins);
+                    _gene_ids = {};
+                    var _protein_ids = [];
+
+                    $.each(proteins.ids, function(index, element) {
+                        //console.log(index, element);
+                        if (!(element.gene_id in _gene_ids)) {
+                            _gene_ids[element.gene_id] = {'id': element.gene_id, 'protein_ids':[]}
+                        }
+                        _protein_ids.push(element.protein_id)
+                        _gene_ids[element.gene_id]['protein_ids'].push(element.protein_id);
+                    });
+
+                    _G.proteins = {gene_ids:_gene_ids, proteins_ids: _protein_ids};
+                    console.log('proteins=', _G.proteins);
+
+
+                    buildHistory();
+
+                    {% if search_term %}
+                        console.log('Finding gene now...');
+                        findGene();
+                    {% else %}
+                        resetUI();
+                    {% endif %}
+
+                    console.log('done');
+
+                    $("#lod_options_btn").click(function() {
+$('#lod_options_btn').popover({ 
+    html : true,
+    content: function() {
+      return $("#lod_options_div").html();
+    },
+    placement: 'left'
+});
+                    });
+
+    $("#range_1").ionRangeSlider({
+      min: 0,
+      max: 64000,
+      from: 1000,
+      type: 'single',
+      step: 100,
+      prettify: function (num) {
+        return num + "";
+      },
+      onChange: function(data) {
+          console.log(data.from);
+
+          _G.ch.series[0].options.downsample.threshold = data.from;//(_G.newD.length * (data.from / 100.0));
+          _G.ch.series[0].setData(_G.newD);
+          
+      }
+    });
+
+    _G.slider = $("#range_1").data("ionRangeSlider");
+   $("#rangeSNPWindow").ionRangeSlider({
+      type: 'single',
+      values: [1000000, 2000000, 3000000, 4000000, 5000000],
+      prettify: function (num) {
+        return num.toLocaleString() + "";
+      },
+    });
+
+        $("#btnSNPAssocRefresh").on('click', function() {
+            generateSNPAssocPlot(_G.snpAssocVars.ensembl_id, _G.snpAssocVars.chrom, _G.snpAssocVars.position);
+        });
+
+
+    _G.sliderSNP = $("#rangeSNPWindow").data("ionRangeSlider");
+
+    });
+    });
+    //-->
+</script>
+
+
+
+</body>
+</html>

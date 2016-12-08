@@ -1611,7 +1611,7 @@ along with this software. If not, see <http://www.gnu.org/licenses/>.
     }
 
     function downloadEffectData(ensembl_id, chromosome, callback) {
-        var _url = _G.url_apis.effect + "?id=" + ensembl_id + "&" + "chr=" + chromosome;
+        var _url = _G.url_apis.effect + "?id=" + ensembl_id + "&" + "chrom=" + chromosome;
 
         if ($("#mediate_blup").is(':checked')) {
             _url += '&blup=TRUE';
