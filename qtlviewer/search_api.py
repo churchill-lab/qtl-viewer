@@ -13,6 +13,45 @@ import requests_cache
 
 from flask_basicauth import BasicAuth
 
+
+from flask import after_this_request, request
+from io import BytesIO
+from gzip import GzipFile
+import functools 
+
+def gzipped(f):
+    @functools.wraps(f)
+    def view_func(*args, **kwargs):
+        @after_this_request
+        def zipper(response):
+            accept_encoding = request.headers.get('Accept-Encoding', '')
+
+            if 'gzip' not in accept_encoding.lower():
+                return response
+
+            if (response.status_code < 200 or
+                response.status_code >= 300 or
+                'Content-Encoding' in response.headers):
+                return response
+
+            response.direct_passthrough = False
+
+            gzip_buffer = BytesIO()
+            gzip_file = GzipFile(mode='wb', fileobj=gzip_buffer)
+            gzip_file.write(response.data)
+            gzip_file.close()
+
+            response.data = gzip_buffer.getvalue()
+            response.headers['Content-Encoding'] = 'gzip'
+            response.headers['Vary'] = 'Accept-Encoding'
+            response.headers['Content-Length'] = len(response.data)
+
+            return response
+
+        return f(*args, **kwargs)
+
+    return view_func
+
 app = Flask(__name__)
 CORS(app)
 app.config['BUNDLE_ERRORS'] = True
@@ -105,6 +144,7 @@ def parse_url(url):
 
 
 @app.route('/proxy/<path:url>', methods=['GET'])
+@gzipped
 def proxy_get(url):
     #print ('request.url={}'.format(request.url))
     rd = parse_url(request.url)
