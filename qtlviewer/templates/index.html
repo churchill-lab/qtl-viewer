@@ -3474,13 +3474,15 @@ plotOptions: {
                                 checked = 'checked';
                                 _G.current_level = element;
                             } 
-                            $('#div_btn_levels').append('<label id="lbl_level_' + element + '" class="btn btn-sm btn-flat btn-primary active">');
-                            $('#div_btn_levels').append('<input type="radio" name="radio_level" id="radio_level" autocomplete="off" ' + checked + '> ' + simple_dict[element]);
-                            $('#div_btn_levels').append('</label>');
+                            $('#div_btn_levels').append('<label id="lbl_level_' + element + '" class="btn btn-sm btn-flat btn-primary active"><input type="radio" name="radio_level" id="radio_level" autocomplete="off" ' + checked + '> ' + simple_dict[element] + '</label>');
                         });
+
+                        $("#lbl_level_" + _G.current_level).click();
+
+
+
                     } else {
-                        _G.current_level = _G.data_levels[0];
-                        
+                        _G.current_level = _G.data_levels[0];                        
                     }
 
 

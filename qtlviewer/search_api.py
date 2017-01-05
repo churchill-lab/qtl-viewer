@@ -12,6 +12,7 @@ import requests
 import requests_cache
 
 from flask_basicauth import BasicAuth
+import socket
 
 
 from flask import after_this_request, request
@@ -178,6 +179,11 @@ def proxy_get(url):
     return Response(r.content, headers=dict(r.headers)), r.status_code
 
 
+@app.route('/_info', methods=['GET'])
+def info():
+    return '{}'.format(socket.gethostname())
+
+
 @app.route('/_cache/clear', methods=['GET'])
 def cache_clear():
     requests_cache.clear()
@@ -185,7 +191,7 @@ def cache_clear():
     return 'OK'
 
 
-@app.route('/_cache/view', methods=['GET'])
+@app.route('/_cache', methods=['GET'])
 @basic_auth.required
 def cache_view():
     return render_template('_cache.html', CACHE=CACHE, CONF=CONF)
