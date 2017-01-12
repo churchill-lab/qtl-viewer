@@ -620,42 +620,14 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
             $("#secondary_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
         }
         
-        /*
-        if (state == BLOCK_STATE_GENE_CLICK) {
-            $("#portletLODPlotBody").block({message:SPIN_INFINITY, overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
-            $("#portletSearchBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
-            $("#btnFactPlot").disable(true);
-            $(".modebar").addClass("hidden")
-        } else if (state === BLOCK_STATE_LOD_CLICK) {
-            $("#plot_lod_event_panel").block({message:SPIN_INFINITY, overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
-            $("#portletLODPlotBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
-            $("#portletSearchBody").block({message:'', overlayCSS: {opacity: 0}, css:{backgroundColor:'', border:'none'}});
-            $("#btnFactPlot").disable(true);
-            $(".modebar").addClass("hidden")
-        }
-        */
     }
 
     function unblockUser(state) {
-            $("#search_box_div").unblock();
-            $("#gene_information_div").unblock();
-            $("#profile_plot_container_div").unblock();
-            $("#lod_plot_container_div").unblock();
-            $("#secondary_plot_container_div").unblock();
-/*
-        if (state == BLOCK_STATE_GENE_CLICK) {
-            $("#search_box_div").unblock();
-            $("#profile_plot_container_div").unblock();
-            $("#lod_plot_container_div").unblock();
-            $("secondary_plot_container_div").unblock();
-        } else if (state === BLOCK_STATE_LOD_CLICK) {
-            $("#plot_lod_event_panel").unblock();
-            $("#portletLODPlotBody").unblock();
-            $("#portletSearchBody").unblock();
-            $("#btnFactPlot").disable(false);
-            $(".modebar").removeClass("hidden")
-        }
-        */
+        $("#search_box_div").unblock();
+        $("#gene_information_div").unblock();
+        $("#profile_plot_container_div").unblock();
+        $("#lod_plot_container_div").unblock();
+        $("#secondary_plot_container_div").unblock();
     }
 
 
@@ -746,7 +718,6 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
     function resetSecondaryPlots() {
         $("#plot_mediation").html('');
         $("#plot_effect").html('');
-        //$("#plot_snpassoc").html('');
     }
 
     function findGene() {
@@ -1152,17 +1123,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 
         newD.sort(compareMe);
         newD2.sort(compareMe2);
-/*
-
-        var sampler = modeMax()
-            .bucketSize(100)
-            .value(function(d) { return d['y']; });
-                
-        _G.aaaaaa = sampler(newD);
-  */      
 
         _G.lod_traces = {};
-
         _G.lodDataByChromosome = dataByChrom; 
 
 
@@ -1440,52 +1402,6 @@ _G.lodHover = null;
 
     _G.ch.series[0].setData(newD);
 
-/*
-        var myPlot = document.getElementById(_G.plots.lod.el);
-
-        myPlot.on('plotly_click', function(data){
-            console.log('plotly_click=', data);
-            var marker = '';
-            var pts = '';
-            var chromosome = '';
-            for(var i=0; i < data.points.length; i++){
-                pts = 'x = '+data.points[i].x +'\ny = '+ data.points[i].y.toPrecision(4) + '\n\n';
-                console.log(data.points[i].pointNumber);
-                console.log(data.points[i].data.text[data.points[i].pointNumber]);
-
-                marker = data.points[i].data.text[data.points[i].pointNumber];
-                chromosome = data.points[i].data.name;
-
-            }
-
-            console.log('Closest point clicked:\n\n'+pts);
-            var plot=$("#secondaryPlotTabs").find('.active').attr("name");
-
-            console.log('plot=',plot);
-
-            if (plot === "plot_mediation") {
-                generateMediationPlot(_G.current_gene_id, marker);
-            } else if (plot === "plot_effect") {
-                generateEffectPlot(_G.current_gene_id, chromosome);
-            } else {
-                alert('oops');
-            }
-        });
-
-
-        myPlot.on('plotly_hover', function(data){
-            console.log('plotly_hover=', data);
-
-            var infotext = data.points.map(function(d){
-                return (d.data.name+': x= '+d.x+', y= '+d.y.toPrecision(3));
-            });
-
-        }).on('plotly_unhover', function(data){
-            //hoverInfo.innerHTML = '';
-        });
-
-        $("#plot_lod_event_panel").removeClass('hidden'); // to show
-        */
     }
 /**************************************************************************
 
@@ -2408,25 +2324,6 @@ plotOptions: {
         }
     });
 
-
-
-
-
-        /*
-
-        _G.plots.mediation.plotly = Plotly.newPlot(_G.plots.mediation.el,
-                traces,
-                layout,
-                {
-                    scrollZoom: false,
-                    displaylogo: false,
-                    showLink: false,
-                    modeBarButtonsToRemove: ['sendDataToCloud', 'autoScale2d', 'hoverCompareCartesian', 'hoverClosestCartesian'],
-                    logging: 5,
-                }
-        );
-        */
-
         $("#" + _G.plots.mediation.el_wait).html("");
     }
 
@@ -2497,17 +2394,12 @@ plotOptions: {
             yname = ensembl_protein_id;
         }
 
-
-
         var yvar = [];
         yvar.push({
             kind: "number",
             name: yname,
             values: expression,
         });
-
-
-
 
         var plotParams = {
             //title: ensembl_id,
@@ -3054,67 +2946,6 @@ plotOptions: {
         });
     }
 
-    function findBootstrapEnvironment() {
-        var envs = ["xs", "sm", "md", "lg"];
-        var doc = window.document;
-        var temp = doc.createElement("div");
-
-        doc.body.appendChild(temp);
-
-        for (var i = envs.length - 1; i >= 0; i--) {
-            var env = envs[i];
-
-            temp.className = "hidden-" + env;
-
-            if (temp.offsetParent === null) {
-                doc.body.removeChild(temp);
-                return env;
-            }
-        }
-        return "";
-    }
-
-    // Returns a function, that, as long as it continues to be invoked, will not
-    // be triggered. The function will be called after it stops being called for
-    // N milliseconds. If `immediate` is passed, trigger the function on the
-    // leading edge, instead of the trailing.
-    function debounce(func, wait, immediate) {
-        var timeout;
-        return function() {
-            var context = this, args = arguments;
-            var later = function() {
-                timeout = null;
-                if (!immediate) func.apply(context, args);
-            };
-            var callNow = immediate && !timeout;
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-            if (callNow) func.apply(context, args);
-        };
-    };
-    /*
-     var debounceLayoutCheck = debounce(function() {
-     var bse = findBootstrapEnvironment();
-     console.log('bse=',bse);
-
-     if (_G.bootstrapEnv != bse) {
-     console.log(_G.bootstrapEnv + ' != ' + bse + ' so redrawing')
-
-     // resize all the graphs
-     $.each($(".js-plotly-plot"), function(index, element) {
-     Plotly.Plots.resize($("#" + $(element).attr("id"))[0]);
-     });
-     _G.fact.jsobject.renderPlot(_G.fact.plotParams);
-
-     _G.bootstrapEnv = bse;
-     }
-     }, 250);
-     */
-    var debounceLayoutCheck = debounce(function() {
-        console.log('redrawing');
-        //Plotly.Plots.resize($("#plot_lod")[0]);
-    }, 250);
-
     function getFactorOrder() {
         var selected = [];
         $('#factor-view-select option:selected').each(function() {
@@ -3238,10 +3069,6 @@ plotOptions: {
             historyTableData.push(d);
         }
 
-        console.log('historyTableData=', historyTableData);
-
-
-        console.log('checking history');
         if (!cookiesEnabled()) {
             $('#search_history_div').html("<br><span class='text-danger'>History requires that cookies are enabled in your browser.</span>");
             return;
@@ -3298,12 +3125,7 @@ plotOptions: {
                 }
             });
 
-            historyTableColumns.push({
-                        title:'Symbol',
-                        data:"symbol"
-                    }
-            );
-
+            historyTableColumns.push({title:'Symbol', data:"symbol"});
 
             _G.historyTable = $("#search_history_table").DataTable({
                 data: historyTableData,
@@ -3317,8 +3139,6 @@ plotOptions: {
                 autoWidth:true,
                 responsive:true,
             });
-
-            console.log('done');
 
             $("#search_history_table a").click(function (e) {
                 e.preventDefault();
@@ -3334,7 +3154,6 @@ plotOptions: {
                 if (_G.current_protein_id) {
                     unique_id += "," + _G.current_protein_id;
                 }
-
 
                 resetUI();
 
@@ -3359,13 +3178,6 @@ plotOptions: {
     function init() {
         console.log('initializing...');
 
-
-
-
-
-        _G.bootstrapEnv = findBootstrapEnvironment();
-        window.addEventListener('resize', debounceLayoutCheck);
-
         $('#searchTerm').keypress(function(e) {
             var code = e.which ? e.which : e.keyCode;
             if (code === 13) {
@@ -3380,24 +3192,6 @@ plotOptions: {
         });
 
 
-        $('#lbl_level_mrna').on("click", function() {
-
-            _G.current_level = "mrna";
-            findGene();
-
-            // TODO: clear lod if PROTEIN and lod mrna
-            // what if multiple proteins?
-            //return false;
-        });
-
-        $('#lbl_level_protein').on("click", function() {
-            _G.current_level = "protein";
-            findGene();
-
-            // TODO: clear lod if MRNA and lod protein
-            // what if multiple proteins?
-            //return false;
-        });
 
         $('#lbl_default').on("click", function() {
             _G.cond = "default";
@@ -3479,6 +3273,15 @@ plotOptions: {
 
                         $("#lbl_level_" + _G.current_level).click();
 
+                        $('#lbl_level_mrna').on("click", function() {
+                            _G.current_level = "mrna";
+                            findGene();
+                        });
+
+                        $('#lbl_level_protein').on("click", function() {
+                            _G.current_level = "protein";
+                            findGene();
+                        });
 
 
                     } else {
@@ -3629,7 +3432,7 @@ $('#lod_options_btn').popover({
     });
 
     _G.slider = $("#range_1").data("ionRangeSlider");
-   $("#rangeSNPWindow").ionRangeSlider({
+    $("#rangeSNPWindow").ionRangeSlider({
       type: 'single',
       values: [1000000, 2000000, 3000000, 4000000, 5000000],
       prettify: function (num) {
