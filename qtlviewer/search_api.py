@@ -164,15 +164,16 @@ def proxy_get(url):
 
 
     #_params = {} if params is None else params
+    request_start_time = time.time()
     r = requests.get(_url)  # , params=_params)
-    #print("\nFrom cache: {}".format(r.from_cache))
-
-    #print(str(CACHE.urls))
+    request_end_time = time.time()
 
     if _url in CACHE.urls:
         CACHE.urls[_url]['hits'] += 1
+        LOG.error("Request: '{}' [{}] [CACHE]".format(request.url, format_time(request_start_time, request_end_time)))
     else:
         CACHE.urls[_url] = {'hits': 1}
+        LOG.error("Request: '{}' [{}] [REQUEST]".format(request.url, format_time(request_start_time, request_end_time)))
 
     CACHE.urls[_url]['last'] = datetime.now()
 
