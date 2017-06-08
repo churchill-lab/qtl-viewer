@@ -236,6 +236,7 @@ def run(host, port, debug):
     CONF.PLOT_LOD_XAXIS_TEXT = app.config.get('PLOT_LOD_XAXIS_TEXT', None)
     CONF.PLOT_EFFECT_STRAINS = app.config.get('PLOT_EFFECT_STRAINS', None)
     CONF.API_R_BASE = app.config.get('API_R_BASE', None)
+    CONF.API_CORES = app.config.get('API_CORES', 0)
     CONF.MAIN_TITLE = app.config.get('MAIN_TITLE', None)
 
     app.config['BASIC_AUTH_USERNAME'] = 'admin'

@@ -287,12 +287,14 @@ desired effect
                                                 <strong>Settings</strong>
                                             </div>
                                         </div>
+                                        <!--
                                         <div class="row">
                                             <div class="col-sm-offset-1 col-sm-11">
                                                  Best Linear Unbiased Predictors (BLUPs)
                                                 <input id="mediate_blup" name="mediate_blup" type="checkbox" data-size="mini">
                                             </div>
                                         </div>
+                                        //-->
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <div id="plot_effect">
@@ -527,6 +529,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 
     // APIS
     _G.api_root = "{{ CONF.API_R_BASE }}";
+    _G.api_cores = "{{ CONF.API_CORES }}";
     _G.url_proxy = "{{ g.URL_BASE }}/proxy/";
     _G.url_chromosomes = "{{ g.URL_BASE }}/static/chromosomes.mm.38.NO_Y.json";
 
@@ -2535,6 +2538,8 @@ plotOptions: {
             _url += "&regress_local=TRUE";
         }
 
+        _url += "&ncores=" + _G.api_cores;
+
         var cache_url = _G.url_proxy + _url;
         console.log("AJAX request to: ", cache_url);
 
@@ -2556,6 +2561,7 @@ plotOptions: {
         _url += "&chrom=" + chrom;
         _url += "&location=" + location;
         _url += "&window_size=" + windowSize;
+        _url += "&ncores=" + _G.api_cores;
 
         var cache_url = _G.url_proxy + _url;
         console.log("AJAX request to: ", cache_url);
@@ -2594,13 +2600,15 @@ plotOptions: {
     function downloadEffectData(ensembl_id, chromosome, callback) {
         var _url = _G.url_apis.effect + "?id=" + ensembl_id + "&" + "chrom=" + chromosome;
 
-        if ($("#mediate_blup").is(':checked')) {
-            _url += '&blup=TRUE';
-        }
+        //if ($("#mediate_blup").is(':checked')) {
+        //    _url += '&blup=TRUE';
+        //}
 
         if (_G.cond === "local") {
             _url += "&regress_local=TRUE";
         }
+
+        _url += "&ncores=" + _G.api_cores;
 
         var cache_url = _G.url_proxy + _url;
         console.log("AJAX request to: ", cache_url);
