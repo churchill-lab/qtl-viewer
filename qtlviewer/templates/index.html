@@ -1545,7 +1545,7 @@ function layoutFeatures(features) {
 
         // sort the SNP data
         snpData.sort(function(a, b) {
-            return a.pos_Mbp - b.pos_Mbp;
+            return a.pos - b.pos;
         });
 
         var snps = [];
@@ -1571,14 +1571,16 @@ function layoutFeatures(features) {
 
             }
 
+
             snps.push({
-                id: element.snp_id,
+                id: element.snp,
                 alleles: element.alleles,
                 lod: element.lod,
-                x: element.pos_Mbp * 1000000,
+                x: element.pos * 1000000,
                 y: element.lod,
                 csq: element.csq
             })
+
         });
 
 
