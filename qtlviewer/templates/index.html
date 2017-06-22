@@ -257,14 +257,12 @@ desired effect
                                             //-->
                                         </div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col-sm-offset-8 col-sm-4">
                                             <input id="range_1" type="text" name="range_1" value="">
                                             Number of Data Points
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -466,10 +464,15 @@ desired effect
 //-->
 <script src="//code.highcharts.com/stock/highstock.js"></script>
 <script src="//code.highcharts.com/highcharts-more.js"></script>
-<script src="//code.highcharts.com/modules/boost.js"></script>
+<script src="//code.highcharts.com/modules/boost.src.js"></script>
+
 <script src="{{g.URL_BASE}}/static/js/highcharts-downsample.max.js"></script>
 <script src="//code.highcharts.com/modules/exporting.js"></script>
-<script src="//code.highcharts.com/modules/offline-exporting.js"></script>
+<script src="//code.highcharts.com/modules/canvas-tools.js"></script>
+
+<script src="{{g.URL_BASE}}/static/highcharts-export/export-csv.js"></script>
+<script src="{{g.URL_BASE}}/static/highcharts-export/jspdf.min.js"></script>
+<script src="{{g.URL_BASE}}/static/highcharts-export/highcharts-export-clientside.js"></script>
 
 <!--
 If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
@@ -581,6 +584,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
     _G.current_level = null;
     _G.cond = "default";
 
+    var WHOZ = null;
+
     var SPIN_GEARS = '<svg width="128px" height="128px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-gears"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><g transform="translate(-20,-20)"><path d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z" fill="#000000"><animateTransform attributeName="transform" type="rotate" from="90 50 50" to="0 50 50" dur="1s" repeatCount="indefinite"></animateTransform></path></g><g transform="translate(20,20) rotate(15 50 50)"><path d="M79.9,52.6C80,51.8,80,50.9,80,50s0-1.8-0.1-2.6l-5.1-0.4c-0.3-2.4-0.9-4.6-1.8-6.7l4.2-2.9c-0.7-1.6-1.6-3.1-2.6-4.5 L70,35c-1.4-1.9-3.1-3.5-4.9-4.9l2.2-4.6c-1.4-1-2.9-1.9-4.5-2.6L59.8,27c-2.1-0.9-4.4-1.5-6.7-1.8l-0.4-5.1C51.8,20,50.9,20,50,20 s-1.8,0-2.6,0.1l-0.4,5.1c-2.4,0.3-4.6,0.9-6.7,1.8l-2.9-4.1c-1.6,0.7-3.1,1.6-4.5,2.6l2.1,4.6c-1.9,1.4-3.5,3.1-5,4.9l-4.5-2.1 c-1,1.4-1.9,2.9-2.6,4.5l4.1,2.9c-0.9,2.1-1.5,4.4-1.8,6.8l-5,0.4C20,48.2,20,49.1,20,50s0,1.8,0.1,2.6l5,0.4 c0.3,2.4,0.9,4.7,1.8,6.8l-4.1,2.9c0.7,1.6,1.6,3.1,2.6,4.5l4.5-2.1c1.4,1.9,3.1,3.5,5,4.9l-2.1,4.6c1.4,1,2.9,1.9,4.5,2.6l2.9-4.1 c2.1,0.9,4.4,1.5,6.7,1.8l0.4,5.1C48.2,80,49.1,80,50,80s1.8,0,2.6-0.1l0.4-5.1c2.3-0.3,4.6-0.9,6.7-1.8l2.9,4.2 c1.6-0.7,3.1-1.6,4.5-2.6L65,69.9c1.9-1.4,3.5-3,4.9-4.9l4.6,2.2c1-1.4,1.9-2.9,2.6-4.5L73,59.8c0.9-2.1,1.5-4.4,1.8-6.7L79.9,52.6 z M50,65c-8.3,0-15-6.7-15-15c0-8.3,6.7-15,15-15s15,6.7,15,15C65,58.3,58.3,65,50,65z" fill="#ffffff"><animateTransform attributeName="transform" type="rotate" from="0 50 50" to="90 50 50" dur="1s" repeatCount="indefinite"></animateTransform></path></g></svg>';
     var SPIN_INFINITY = '<svg width="128px" height="128px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" xmlns:xlink="http://www.w3.org/1999/xlink" class="uil-inf"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><path id="uil-inf-path" d="M24.3,30C11.4,30,5,43.3,5,50s6.4,20,19.3,20c19.3,0,32.1-40,51.4-40 C88.6,30,95,43.3,95,50s-6.4,20-19.3,20C56.4,70,43.6,30,24.3,30z" fill="none" stroke="#c0bb9c" stroke-width="1px" stroke-dasharray="5px"></path><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.08s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.16s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.25s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle><circle cx="0" cy="0" r="5" fill="#ff0000"><animateMotion begin="0.33s" dur="1s" repeatCount="indefinite"><mpath xlink:href="#uil-inf-path"></mpath></animateMotion></circle></svg>';
     var SPIN_MAGNIFY = '<svg width="128px" height="128px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" class="uil-magnify"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><g><circle fill="#8b8bfc" cx="47" cy="47" r="20" opacity="0.5"></circle><path d="M77.5,69.3l-6.2-6.2c-0.7-0.7-1.3-1.2-1.9-1.6c2.6-4,4.1-8.8,4.1-14c0-14.4-11.7-26.1-26.1-26.1S21.3,33.2,21.3,47.5 S33,73.6,47.4,73.6c5.4,0,10.4-1.6,14.5-4.4c0.5,0.7,1.1,1.4,1.9,2.2l5.8,5.8c2.9,2.9,7.1,3.5,9.2,1.3C81,76.4,80.4,72.2,77.5,69.3z M47.4,66.2c-10.3,0-18.7-8.4-18.7-18.6s8.4-18.6,18.7-18.6s18.7,8.4,18.7,18.6S57.7,66.2,47.4,66.2z" fill="#424242"></path><animateTransform attributeName="transform" type="translate" from="15 15" to="15 15" dur="1s" repeatCount="indefinite" values="15 15;-15 15;0 -10.98;15 15" keyTimes="0;0.33;0.66;1"></animateTransform></g></svg>';
@@ -590,6 +595,9 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
     var BLOCK_STATE_LOD_SELECTION = 4;
     var BLOCK_STATE_LOD_SCAN = 5;
 
+    /**
+     * Block user input.
+     */
     function blockUser(state) {
         if (state == BLOCK_STATE_SEARCHING) {
             $("#search_box_div").block({message:SPIN_MAGNIFY, overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
@@ -625,6 +633,9 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         
     }
 
+    /**
+     * Unblock user input.
+     */
     function unblockUser(state) {
         $("#search_box_div").unblock();
         $("#gene_information_div").unblock();
@@ -635,7 +646,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 
 
     /**
-     * Create a global getSVG method that takes an array of charts as an argument. The SVG is returned as an argument in the callback.
+     * Create a global getSVG method that takes an array of charts as an argument.
+     * The SVG is returned as an argument in the callback.
      */
     Highcharts.getSVG = function (charts, options, callback) {
         var svgArr = [],
@@ -690,12 +702,16 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
     });
 
 
-    var WHOZ = null;
-
+    /**
+     * Format Mbp
+     */
     function formatMbp(Mbp) {
         return Number(Mbp).toFixed(2);
     }
 
+    /**
+     * Move array element from fromIndex to toIndex
+     */
     function arraymove(arr, fromIndex, toIndex) {
         var element = arr[fromIndex];
         arr.splice(fromIndex, 1);
@@ -715,14 +731,15 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         }
     });
 
-    function resetUI() {
-    }
 
     function resetSecondaryPlots() {
         $("#plot_mediation").html('');
         $("#plot_effect").html('');
     }
 
+    /**
+     * Perform gene search.
+     */
     function findGene() {
         $("#btnGo").button('loading');
         $("#searchTerm").disable(true);
@@ -738,6 +755,9 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         WHOZ.search(searchTerm, {species: 'Mm'}, searchCallback);
     }
 
+    /**
+     * Keep track of gene/protein click history.
+     */
     function addHistory(gene_id, protein_id, symbol, level) {
         var unique_id = gene_id;
 
@@ -780,7 +800,9 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 
     }
 
-
+    /**
+     * Populate the search results
+     */
     function searchCallback() {
         if (WHOZ.response == null) {
             $('#search_results_div').html("");
@@ -1041,24 +1063,38 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 */
     }
 
+    function compareX(a,b) {
+        if (a.x  < b.x)
+            return -1;
+        if (a.x > b.x)
+            return 1;
+        return 0;
+    }
+
 
     /**
-    * Plot LOD data.
-    *
-    * Note: This function can be called without data and wull generate a base graph.
-    */
-    function plotLOD(data, gene_id, protein_id, level) {
+     * Plot LOD data.
+     *
+     * Data returned from API is:
+     *
+     *     {"data":[{"1_40055","1",40055,2.4787},
+     *              {"1_87283","1",87283,2.4787},
+     *              ...
+     *              {"1_134512","1",134512,:2.4787}
+     *             ]}
+     *
+     * Note: This function can be called without data and will generate a base graph.
+     */
+    function plotLOD(lodData, gene_id, protein_id, level) {
         var dataByChrom = {};
         var maxLOD = -Infinity;
         var minLOD = Infinity;
         var xAxisTitle = '';
 
+        var newLodData = [];
 
-        var newD = [];
-        var newD2 = [];
-
-        if (data != null) {
-            maxLOD = data[0].pheno1;
+        if (lodData != null) {
+            maxLOD = lodData[0][3];
             minLOD = -2;
 
             if (level === 'mrna') {
@@ -1069,13 +1105,13 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 xAxisTitle = '';
             }
 
-            $.each(data, function(index, element) {
+            $.each(lodData, function(index, element) {
                 //
-                // element = {"id":"1_12097218","chr":"1","pos":12097218,"pheno1":1.9185}
+                // element = {"[id]","[chr]",[position],[data]}
                 //
-                var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element.chr]];
-                var x = chr.start + (element.pos);
-                var y = element.pheno1;
+                var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element[1]]];
+                var x = chr.start + (element[2]);
+                var y = element[3];
 
                 //
                 // chr = {chromosome: "Y", end:2725521390, length: 91744698,
@@ -1088,53 +1124,31 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 var d = {
                     x: x, 
                     y: y, 
-                    id: element.id, 
-                    text: element.pheno1,
+                    id: element[0],
+                    text: element[3],
                     chr: chr.chromosome,
-                    chrPos: element.pos,
+                    chrPos: element[2],
                 };
 
-                newD.push(d);
+                newLodData.push(d);
                 dataByChrom[chr.chromosome].push(d);
 
-                if (element.pheno1 > maxLOD) {
-                    maxLOD = element.pheno1;
+                if (element[3] > maxLOD) {
+                    maxLOD = element[3];
                 }
             });
 
             maxLOD += 5;
         }
 
-
-
-
-        function compareMe(a,b) {
-        if (a.x  < b.x)
-            return -1;
-        if (a.x > b.x)
-            return 1;
-        return 0;
-        }
-
-        function compareMe2(a,b) {
-        if (a[0]  < b[0])
-            return -1;
-        if (a[0] > b[0])
-            return 1;
-        return 0;
-        }
-
-        newD.sort(compareMe);
-        newD2.sort(compareMe2);
+        newLodData.sort(compareX);
 
         _G.lod_traces = {};
         _G.lodDataByChromosome = dataByChrom; 
 
-
         // create traces for each chromosome
         var series = [];
         $.each(dataByChrom, function(key, value) {
-            //console.log(value);
             var s = {
                 type: 'scatter',
                 x: value['x'],
@@ -1147,9 +1161,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 line: {
                     color: 'rgb(0,0,0)',
                     width: 1
-                },
-           //     xAxis:0
-
+                }
             };
 
             _G.lod_traces[key] = s;
@@ -1169,7 +1181,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 {'val':{{l.val}}, 'color':'{{l.color}}', 'text':'{{l.text }}' },
             {% endfor %}
         ];
-var _plotLines = [
+        var _plotLines = [
             {% for l in CONF.PLOT_LOD_LINES %}
                 {value:{{l.val}}, color:'{{l.color}}', zIndex:5, width:2, label:{
                     text:'{{l.text }}', align:'right'
@@ -1251,11 +1263,11 @@ var _plotLines = [
 
             plotShapes.push(s);
         });
-_G.newD = newD;
-_G.lodHover = null;
-//_G.newD = newD2;
 
-        _G.ch = Highcharts.chart({
+        _G.newLodData = newLodData;
+        _G.lodHover = null;
+
+        _G.lodChart = Highcharts.chart({
             title: {
                 text: xAxisTitle
             },
@@ -1275,7 +1287,7 @@ _G.lodHover = null;
                         }
 
                         console.log('plot=', plot);
-                        
+
                         if (plot === "plot_mediation") {
                             generateMediationPlot(_G.current_gene_id, _G.lodHover.id);
                         } else if (plot === "plot_effect") {
@@ -1360,9 +1372,9 @@ _G.lodHover = null;
                 turboThreshold: 0,
                 showInLegend: false,
                 downsample: {
-                    threshold: 1000 // 0 disables downsampling
+                    threshold: 2500 // 0 disables downsampling
                 },
-                data: newD,
+                data: newLodData,
                 lineWidth: 1,
                 color: 'black', // Color value
                 xAxis:1,
@@ -1372,7 +1384,7 @@ _G.lodHover = null;
                 showInLegend: false,
                 className:'hidden',
                 marker: {
-                        enabled: false
+                        enabled: true
                     },
                 data: [
                     {
@@ -1395,15 +1407,51 @@ _G.lodHover = null;
                 lineWidth: 0,
                 color: 'black', // Color value
                 xAxis:0,
-            }],
+            }
+
+            ],
 
             credits: {
                 enabled: false // A plugin for highcharts is of course using highcharts
+            },
+
+            exporting: {
+                buttons: {
+                    contextButton: {
+                        menuItems: [{
+                            text: 'Download JPEG image',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: gene_id + "_LOD",
+                                    type: Highcharts.exporting.MIME_TYPES.JPEG
+                                });
+                            }
+                        }, {
+                            text: 'Download PNG image',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: gene_id + "_LOD",
+                                    type: Highcharts.exporting.MIME_TYPES.PNG
+                                });
+                            },
+                            separator: false
+                        }, {
+                            text: 'Download PDF document',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: gene_id + "_LOD",
+                                    type: Highcharts.exporting.MIME_TYPES.PDF
+                                });
+                            },
+                            separator: false
+                        }]
+                    }
+                }
             }
         });
 
 
-    _G.ch.series[0].setData(newD);
+    //_G.lodChart.series[0].setData(newLodData);
 
     }
 /**************************************************************************
@@ -1598,7 +1646,7 @@ function layoutFeatures(features) {
             animation: false,
             events: {
                 redraw: function(e) {
-                    console.log('plotSNPs redraw, e=', e.trigger);
+                    //console.log('plotSNPs redraw, e=', e.trigger);
                 }
             }
         },
@@ -1689,28 +1737,39 @@ function layoutFeatures(features) {
         credits: {
             enabled: false // A plugin for highcharts is of course using highcharts
         },
-        /*
         exporting: {
             buttons: {
                 contextButton: {
                     menuItems: [{
-                        text: 'Download PNG',
+                        text: 'Download JPEG image',
                         onclick: function () {
-                                Highcharts.exportCharts([window.chartSNPs, window.chartGenes]);
+                            this.exportChartLocal({
+                                filename: _title + "_SNP",
+                                type: Highcharts.exporting.MIME_TYPES.JPEG
+                            });
                         }
                     }, {
-                        text: 'Download PDF',
+                        text: 'Download PNG image',
                         onclick: function () {
-                                Highcharts.exportCharts([window.chartSNPs, window.chartGenes], {
-                                    type: 'application/pdf'
-                                });
+                            this.exportChartLocal({
+                                filename: _title + "_SNP",
+                                type: Highcharts.exporting.MIME_TYPES.PNG
+                            });
+                        },
+                        separator: false
+                    }, {
+                        text: 'Download PDF document',
+                        onclick: function () {
+                            this.exportChartLocal({
+                                filename: _title + "_SNP",
+                                type: Highcharts.exporting.MIME_TYPES.PDF
+                            });
                         },
                         separator: false
                     }]
                 }
             }
         }
-        */
 
     }, function(chart) { //add this function to the chart definition to get synchronized crosshairs
                     //this function needs to be added to each syncronized chart 
@@ -1845,8 +1904,6 @@ function layoutFeatures(features) {
                         var xMax = event.max;
                     
                     
-                    console.log(xMin, xMax, event);
-                        
                     var ex = window.chartSNPs.xAxis[0].getExtremes();
 
                         if (ex.min != xMin || ex.max != xMax) {
@@ -1917,13 +1974,39 @@ function layoutFeatures(features) {
         credits: {
             enabled: false // A plugin for highcharts is of course using highcharts
         },
-        /*
-        navigation: {
-            buttonOptions: {
-                enabled: false
+        exporting: {
+            buttons: {
+                contextButton: {
+                    menuItems: [{
+                        text: 'Download JPEG image',
+                        onclick: function () {
+                            this.exportChartLocal({
+                                filename: _title + "_genes",
+                                type: Highcharts.exporting.MIME_TYPES.JPEG
+                            });
+                        }
+                    }, {
+                        text: 'Download PNG image',
+                        onclick: function () {
+                            this.exportChartLocal({
+                                filename: _title + "_genes",
+                                type: Highcharts.exporting.MIME_TYPES.PNG
+                            });
+                        },
+                        separator: false
+                    }, {
+                        text: 'Download PDF document',
+                        onclick: function () {
+                            this.exportChartLocal({
+                                filename: _title + "_genes",
+                                type: Highcharts.exporting.MIME_TYPES.PDF
+                            });
+                        },
+                        separator: false
+                    }]
+                }
             }
-        },
-        */
+        }
     }, function(chart) { //add this function to the chart definition to get synchronized crosshairs
                     //this function needs to be added to each syncronized chart 
                     syncronizeCrossHairsSNPAssoc(chart);
@@ -1931,13 +2014,16 @@ function layoutFeatures(features) {
                 }
 );
 
-//    window.chartGenes.yAxis[0].setExtremes(null, null);
+    // synchronize the crosshairs
+
+
 
 
     }
     
     function plotEffect(effect) {
-        console.log('EFFECT=', effect);
+        console.log('Plotting effect data');
+
         var strainInfo = {};
         {% for s in CONF.PLOT_EFFECT_STRAINS %}
             strainInfo["{{ s['key'] }}"] = {
@@ -2148,7 +2234,41 @@ function layoutFeatures(features) {
 
             credits: {
                 enabled: false // A plugin for highcharts is of course using highcharts
+            },
+            exporting: {
+                buttons: {
+                    contextButton: {
+                        menuItems: [{
+                            text: 'Download JPEG image',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_effect",
+                                    type: Highcharts.exporting.MIME_TYPES.JPEG
+                                });
+                            }
+                        }, {
+                            text: 'Download PNG image',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_effect",
+                                    type: Highcharts.exporting.MIME_TYPES.PNG
+                                });
+                            },
+                            separator: false
+                        }, {
+                            text: 'Download PDF document',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_effect",
+                                    type: Highcharts.exporting.MIME_TYPES.PDF
+                                });
+                            },
+                            separator: false
+                        }]
+                    }
+                }
             }
+
         });
 
     }
@@ -2248,7 +2368,7 @@ function layoutFeatures(features) {
         }
 
 
- _G.ch = Highcharts.chart({
+ _G.mediationPlot = Highcharts.chart({
 
 
         chart: {
@@ -2262,7 +2382,7 @@ function layoutFeatures(features) {
 
                 tooltip: {
                     formatter: function () {
-                        console.log(this);
+                        //console.log(this);
                         return '<b>' + this.point.id + '</b><br/>Symbol: ' +
                         this.point.symbol + '<br/>Chromosome: ' + this.point.chr +
                         '<br/>Location: ' + this.point.pos + '<br/>LOD: ' +
@@ -2326,7 +2446,41 @@ plotOptions: {
 
          credits: {
             enabled: false // A plugin for highcharts is of course using highcharts
-        }
+        },
+            exporting: {
+                buttons: {
+                    contextButton: {
+                        menuItems: [{
+                            text: 'Download JPEG image',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_mediation",
+                                    type: Highcharts.exporting.MIME_TYPES.JPEG
+                                });
+                            }
+                        }, {
+                            text: 'Download PNG image',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_mediation",
+                                    type: Highcharts.exporting.MIME_TYPES.PNG
+                                });
+                            },
+                            separator: false
+                        }, {
+                            text: 'Download PDF document',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_mediation",
+                                    type: Highcharts.exporting.MIME_TYPES.PDF
+                                });
+                            },
+                            separator: false
+                        }]
+                    }
+                }
+            }
+
     });
 
         $("#" + _G.plots.mediation.el_wait).html("");
@@ -2548,11 +2702,11 @@ plotOptions: {
         $.ajax({
             url: cache_url,
             method: "GET"
-        }).done(function(data, textStatus, jqXHR) {
-            console.log("lod download success", data);
-            callback(null, data);
+        }).done(function(lod_data, textStatus, jqXHR) {
+            console.log("lod download success");
+            callback(null, lod_data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("lod download failure");
+            console.error("lod download failure");
             callback(errorThrown, null);
         });
     }
@@ -2572,10 +2726,10 @@ plotOptions: {
             url: cache_url,
             method: "GET"
         }).done(function(data, textStatus, jqXHR) {
-            console.log("snpassoc download success", data);
+            console.log("snpassoc download success");
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("snpassoc download failure");
+            console.error("snpassoc download failure");
             callback(errorThrown, null);
         });
 
@@ -2590,10 +2744,10 @@ plotOptions: {
             url: cache_url,
             method: "GET"
         }).done(function(data, textStatus, jqXHR) {
-            console.log("mediate download success", data);
+            console.log("mediate download success");
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("mediate download failure");
+            console.error("mediate download failure");
             callback(errorThrown, null);
         });
 
@@ -2619,10 +2773,10 @@ plotOptions: {
             url: cache_url,
             method: "GET"
         }).done(function(data, textStatus, jqXHR) {
-            console.log("foundercoefs download success", data);
+            console.log("foundercoefs download success");
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("foundercoefs download failure");
+            console.error("foundercoefs download failure");
             callback(errorThrown, null);
         });
 
@@ -2644,10 +2798,10 @@ plotOptions: {
             url: cache_url,
             method: "GET"
         }).done(function(data, textStatus, jqXHR) {
-            console.log("expression download success", data);
+            console.log("expression download success");
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("expression download failure");
+            console.error("expression download failure");
             callback(errorThrown, null);
         });
     }
@@ -2662,10 +2816,10 @@ plotOptions: {
             url: cacheURL,
             method: "GET"
         }).done(function(data, textStatus, jqXHR) {
-            console.log("gene download success", data);
+            console.log("gene download success");
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("gene download failure");
+            console.error("gene download failure");
             callback(errorThrown, null);
         });
     }
@@ -2681,10 +2835,10 @@ plotOptions: {
             url: cacheURL,
             method: "GET"
         }).done(function(data, textStatus, jqXHR) {
-            console.log("genesByLocation download success", data);
+            console.log("genesByLocation download success");
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("genesByLocation download failure");
+            console.error("genesByLocation download failure");
             callback(errorThrown, null);
         });
     }
@@ -2701,8 +2855,8 @@ plotOptions: {
                 .defer(downloadLODData, geneID, proteinID, level)
                 .await(function(error, lod_data) {
                     console.log('Queue done');
-                    console.log('lod_data=', lod_data);
-                    console.log('error=', error);
+                    //console.log('lod_data=', lod_data);
+                    console.error('error=', error);
 
                     // TODO: handle errors, if error comes back we won't have data
 
@@ -2813,7 +2967,6 @@ plotOptions: {
                 .defer(downloadEffectData, ensembl_id, chromosome)
                 .await(function(error, data) {
                     console.log('Queue done');
-                    console.log('data=', data);
 
                     // TODO: handle errors, if error comes back we won't have data
                     if (error) {
@@ -2832,8 +2985,6 @@ plotOptions: {
                     console.log("PLOT EFFECT")
                     plotEffect(data);
                     unblockUser();
-
-
                 });
     }
 
@@ -2845,7 +2996,6 @@ plotOptions: {
                 .defer(downloadProfileData, ensembl_gene_id, ensembl_protein_id, profiles)
                 .await(function(error, data) {
                     console.log('Queue done');
-                    console.log('data=', data);
 
                     // TODO: handle errors, if error comes back we won't have data
                     if (error) {
@@ -2887,7 +3037,7 @@ plotOptions: {
             console.log("options=", data);
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("options download failure");
+            console.error("options download failure");
             callback(errorThrown, null);
         });
     }
@@ -2904,11 +3054,11 @@ plotOptions: {
             console.log('chromosome data=',data);
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("chromosome download failure");
-            console.log("genes download failure");
-            console.log('jqXHR=', jqXHR);
-            console.log('textStatus=', textStatus);
-            console.log('errorThrown=', errorThrown);
+            console.error("chromosome download failure");
+            console.error("genes download failure");
+            console.error('jqXHR=', jqXHR);
+            console.error('textStatus=', textStatus);
+            console.error('errorThrown=', errorThrown);
             displayError("Server Error", "Unable to download chromosome information");
             callback(errorThrown, null);
         });
@@ -2921,15 +3071,14 @@ plotOptions: {
         $.ajax({
             url: _url,
             method: "GET"
-        })
-                .done(function(data, textStatus, jqXHR) {
-                    console.log("genes download success", data);
-                    callback(null, data);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("genes download failure");
-            console.log('jqXHR=', jqXHR);
-            console.log('textStatus=', textStatus);
-            console.log('errorThrown=', errorThrown);
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("genes download success");
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("genes download failure");
+            console.error('jqXHR=', jqXHR);
+            console.error('textStatus=', textStatus);
+            console.error('errorThrown=', errorThrown);
             displayError("API Server Error", "Error downloading gene information");
             callback(errorThrown, null);
         });
@@ -2942,15 +3091,14 @@ plotOptions: {
         $.ajax({
             url: _url,
             method: "GET"
-        })
-                .done(function(data, textStatus, jqXHR) {
-                    console.log("proteins download success");
-                    callback(null, data);
-                }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log("proteins download failure");
-            console.log('jqXHR=', jqXHR);
-            console.log('textStatus=', textStatus);
-            console.log('errorThrown=', errorThrown);
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("proteins download success");
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("proteins download failure");
+            console.error('jqXHR=', jqXHR);
+            console.error('textStatus=', textStatus);
+            console.error('errorThrown=', errorThrown);
             displayError("API Server Error", "Error downloading protein information");
             callback(errorThrown, null);
         });
@@ -2978,14 +3126,19 @@ plotOptions: {
     }
 
 
-
+    /**
+     * Display an error to the user.
+     *
+     * @param _title
+     * @param _message
+     */
     function displayError(_title, _message) {
         $.notify({
-            title:"<h5>" + _title + "</h5>",
-            message:_message
-        }, {
-            type: 'danger'
-        });
+                title:"<h5>" + _title + "</h5>",
+                message:_message
+            }, {
+                type: 'danger'
+            });
 
         // make sure all waiting images are no longer
         $.each($("div[id$='wait']"), function(index, element) {
@@ -2994,7 +3147,6 @@ plotOptions: {
     }
 
     function displayGeneData(geneData) {
-        console.log(geneData);
         var startFormat = formatMbp(geneData.start/1000000);
         var endFormat = formatMbp(geneData.end/1000000);
         var mbpDesc = 'Mbp';
@@ -3165,7 +3317,6 @@ plotOptions: {
                     unique_id += "," + _G.current_protein_id;
                 }
 
-                resetUI();
 
                 addHistory(_G.current_gene_id, _G.current_protein_id, historyDict[unique_id]['symbol'], historyDict[unique_id]['level']);
                 buildHistory();
@@ -3202,7 +3353,6 @@ plotOptions: {
         });
 
 
-
         $('#lbl_default').on("click", function() {
             _G.cond = "default";
             if (_G.current_gene_id != null) {
@@ -3217,8 +3367,6 @@ plotOptions: {
                 generateLODPlot(_G.current_gene_id, _G.current_protein_id, _G.current_level);
             }
         });
-
-
 
 
         $("#btnFactPlot").on('click', function() {
@@ -3308,7 +3456,7 @@ plotOptions: {
                     _G.chromosomes['totalLength'] = _G.chromosomes.idx[_G.chromosomes.idx.length-1].end;
 
 
-                    console.log(genes);
+                    //console.log(genes);
                     var _gene_ids = {};
 
                     $.each(genes.ids, function(index, element) {
@@ -3344,120 +3492,102 @@ plotOptions: {
                         console.log('Finding gene now...');
                         findGene();
                     {% else %}
-                        resetUI();
+                        //
                     {% endif %}
 
                     console.log('done');
 
-                    $("#lod_options_btn").click(function() {
-$('#lod_options_btn').popover({ 
-    html : true,
-    content: function() {
-      return $("#lod_options_div").html();
-    },
-    placement: 'left'
-});
-                    });
+            _G.orderCount = _G.covar_factors.length;
 
-
-
-
-
-
-        _G.orderCount = _G.covar_factors.length;
-
-        $('#factor-view-select').multiselect({
-            onChange: function(option, checked) {
-                if (checked) {
-                    _G.orderCount++;
-                    $(option).attr('order', _G.orderCount);
-                }
-                else {
-                    $(option).attr('order', '');
-                }
-            },
-            maxHeight: 400,
-            dropUp: false,
-            buttonWidth: '100%',
-            buttonText: function(options) {
-                if (options.length === 0) {
-                    return 'None selected';
-                }
-                else {
-                    var selected = [];
-                    options.each(function() {
-                        selected.push([$(this).text(), $(this).attr('order')]);
-                    });
-
-                    selected.sort(function(a, b) {
-                        return a[1] - b[1];
-                    });
-
-                    var text = '';
-                    for (var i = 0; i < selected.length; i++) {
-                        text += ((i+1) + ": " + selected[i][0] + ', ');
+            $('#factor-view-select').multiselect({
+                onChange: function(option, checked) {
+                    if (checked) {
+                        _G.orderCount++;
+                        $(option).attr('order', _G.orderCount);
                     }
+                    else {
+                        $(option).attr('order', '');
+                    }
+                },
+                maxHeight: 400,
+                dropUp: false,
+                buttonWidth: '100%',
+                buttonText: function(options) {
+                    if (options.length === 0) {
+                        return 'None selected';
+                    }
+                    else {
+                        var selected = [];
+                        options.each(function() {
+                            selected.push([$(this).text(), $(this).attr('order')]);
+                        });
 
-                    return text.substr(0, text.length -2);
-                }
-            },
-        });
+                        selected.sort(function(a, b) {
+                            return a[1] - b[1];
+                        });
 
-        var selectOptions = [];
+                        var text = '';
+                        for (var i = 0; i < selected.length; i++) {
+                            text += ((i+1) + ": " + selected[i][0] + ', ');
+                        }
 
-        $.each(_G.covar_factors, function(index, element) {
-            var s = true;
-            if (index != 0) {
-                s = false;
-            }
-            selectOptions.push({
-                label: element.display_name,
-                title: element.display_name,
-                value: element.column_name,
-                order: index,
-                selected: s,
+                        return text.substr(0, text.length -2);
+                    }
+                },
             });
 
+            var selectOptions = [];
+
+            $.each(_G.covar_factors, function(index, element) {
+                var s = true;
+                if (index != 0) {
+                    s = false;
+                }
+                selectOptions.push({
+                    label: element.display_name,
+                    title: element.display_name,
+                    value: element.column_name,
+                    order: index,
+                    selected: s,
+                });
+
+            });
+
+            $('#factor-view-select').multiselect('dataprovider', selectOptions);
+
+
+            $("#range_1").ionRangeSlider({
+                  min: 1000,
+                  max: 64000,
+                  from: 2500,
+                  type: 'single',
+                  step: 100,
+                  prettify: function (num) {
+                      return num + "";
+                  },
+                  onChange: function(data) {
+                      _G.lodChart.series[0].options.downsample.threshold = data.from;
+                      _G.lodChart.series[0].setData(_G.newLodData);
+                  }
+            });
+
+            _G.slider = $("#range_1").data("ionRangeSlider");
+
+            $("#rangeSNPWindow").ionRangeSlider({
+                type: 'single',
+                values: [1000000, 2000000, 3000000, 4000000, 5000000],
+                prettify: function (num) {
+                    return num.toLocaleString() + "";
+                },
+            });
+
+            $("#btnSNPAssocRefresh").on('click', function() {
+                generateSNPAssocPlot(_G.snpAssocVars.ensembl_id, _G.snpAssocVars.chrom, _G.snpAssocVars.position);
+            });
+
+            _G.sliderSNP = $("#rangeSNPWindow").data("ionRangeSlider");
+
         });
-
-        $('#factor-view-select').multiselect('dataprovider', selectOptions);
-                    
-
-    $("#range_1").ionRangeSlider({
-      min: 0,
-      max: 64000,
-      from: 1000,
-      type: 'single',
-      step: 100,
-      prettify: function (num) {
-        return num + "";
-      },
-      onChange: function(data) {
-          console.log(data.from);
-
-          _G.ch.series[0].options.downsample.threshold = data.from;//(_G.newD.length * (data.from / 100.0));
-          _G.ch.series[0].setData(_G.newD);
-          
-      }
-    });
-
-    _G.slider = $("#range_1").data("ionRangeSlider");
-    $("#rangeSNPWindow").ionRangeSlider({
-      type: 'single',
-      values: [1000000, 2000000, 3000000, 4000000, 5000000],
-      prettify: function (num) {
-        return num.toLocaleString() + "";
-      },
-    });
-
-        $("#btnSNPAssocRefresh").on('click', function() {
-            generateSNPAssocPlot(_G.snpAssocVars.ensembl_id, _G.snpAssocVars.chrom, _G.snpAssocVars.position);
-        });
-
-
-    _G.sliderSNP = $("#rangeSNPWindow").data("ionRangeSlider");
-
-    });
     });
     //-->
 </script>

@@ -302,7 +302,7 @@ function modeMax () {
                 var bs = (arguments[1].length - 2) / (opt.downsample.threshold - 2);
 
 
-                console.log('arguments[1]=', arguments[1]);
+                //console.log('arguments[1]=', arguments[1]);
                 var sampler = modeMax()
                     .bucketSize(bs)
                     .value(function(d) { return d['y']; });
@@ -311,7 +311,7 @@ function modeMax () {
                     
                 arguments[1] = sampler(arguments[1]);
 
-                console.log('arguments[1].length=', arguments[1].length);
+                //console.log('arguments[1].length=', arguments[1].length);
             }
 
             /*

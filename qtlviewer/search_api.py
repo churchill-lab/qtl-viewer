@@ -162,18 +162,23 @@ def proxy_get(url):
     '''
     _url = rd['url']
 
-
-    #_params = {} if params is None else params
     request_start_time = time.time()
     r = requests.get(_url)  # , params=_params)
     request_end_time = time.time()
+    roundtrip = r.elapsed.total_seconds()
+    request_time = format_time(0, roundtrip)
+    transfer_time = format_time(request_start_time + roundtrip, request_end_time)
+    total_time = format_time(request_start_time, request_end_time)
+
+    # i think there is a bug in the timing code...
+    # click on a new gene and watch how expression/mrna request_time takes longer than it actually does
 
     if _url in CACHE.urls:
         CACHE.urls[_url]['hits'] += 1
-        LOG.error("Request: '{}' [{}] [CACHE]".format(request.url, format_time(request_start_time, request_end_time)))
+        LOG.error("[CACHE] ['{}'] [{}] [{}] [{}]".format(request.url, request_time, transfer_time, total_time))
     else:
         CACHE.urls[_url] = {'hits': 1}
-        LOG.error("Request: '{}' [{}] [REQUEST]".format(request.url, format_time(request_start_time, request_end_time)))
+        LOG.error("[REQUEST] ['{}'] [{}] [{}] [{}]".format(request.url, request_time, transfer_time, total_time))
 
     CACHE.urls[_url]['last'] = datetime.now()
 
