@@ -1,61 +1,23 @@
 from __future__ import print_function
 
-import json
 import logging
+import socket
 import sys
 import time
 from datetime import datetime
 
-from flask import Flask, render_template, request, Response, make_response, g
-from flask_cors import CORS
 import requests
 import requests_cache
 
+from flask import Flask, render_template, Response, g, request
 from flask_basicauth import BasicAuth
-import socket
+from flask_compress import Compress
+from flask_cors import CORS
 
-
-from flask import after_this_request, request
-from io import BytesIO
-from gzip import GzipFile
-import functools 
-
-def gzipped(f):
-    @functools.wraps(f)
-    def view_func(*args, **kwargs):
-        @after_this_request
-        def zipper(response):
-            accept_encoding = request.headers.get('Accept-Encoding', '')
-
-            if 'gzip' not in accept_encoding.lower():
-                return response
-
-            if (response.status_code < 200 or
-                response.status_code >= 300 or
-                'Content-Encoding' in response.headers):
-                return response
-
-            response.direct_passthrough = False
-
-            gzip_buffer = BytesIO()
-            gzip_file = GzipFile(mode='wb', fileobj=gzip_buffer)
-            gzip_file.write(response.data)
-            gzip_file.close()
-
-            response.data = gzip_buffer.getvalue()
-            response.headers['Content-Encoding'] = 'gzip'
-            response.headers['Vary'] = 'Accept-Encoding'
-            response.headers['Content-Length'] = len(response.data)
-
-            return response
-
-        return f(*args, **kwargs)
-
-    return view_func
 
 app = Flask(__name__)
+Compress(app)
 CORS(app)
-app.config['BUNDLE_ERRORS'] = True
 basic_auth = BasicAuth(app)
 
 LOG = logging.getLogger('qtl_viewer')
@@ -75,6 +37,8 @@ class Cache:
 
 CONF = Config()
 CACHE = Cache()
+
+app.config['BUNDLE_ERRORS'] = True
 
 
 def str2bool(val):
@@ -145,7 +109,6 @@ def parse_url(url):
 
 
 @app.route('/proxy/<path:url>', methods=['GET'])
-@gzipped
 def proxy_get(url):
     #print ('request.url={}'.format(request.url))
     rd = parse_url(request.url)
@@ -233,6 +196,22 @@ def blank():
 
     return render_template('blank.html', search_term=search_term, CONF=CONF)
 
+
+@app.route("/test")
+def test():
+    # POST search_term = request.form.get("search_term")
+    # GET  search_term = request.args.get("search_term")
+    # BOTH search_term = request.values.get("search_term")
+    #print request.path
+    #print request.full_path
+    #print request.script_root
+    #print request.url
+    #print request.base_url
+    #print request.url_root
+
+    search_term = request.values.get('search_term', '')
+
+    return render_template('test.html', search_term=search_term, CONF=CONF)
 
 def run(host, port, debug):
     print("running...")

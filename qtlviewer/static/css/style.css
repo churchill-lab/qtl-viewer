@@ -107,3 +107,11 @@
         #fact-svg-chart	   .whiskers  {
             stroke-width: 3;
         }
+
+/*
+        .highcharts-tooltip-box {
+	fill: white;
+	fill-opacity: 0.4;
+	stroke-width: 0;
+}
+*/
