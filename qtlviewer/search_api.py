@@ -213,8 +213,13 @@ def test():
 
     return render_template('test.html', search_term=search_term, CONF=CONF)
 
-def run(host, port, debug):
-    print("running...")
+
+def run(host, port, debug, threaded):
+    if debug:
+        print("Running in DEBUG mode...")
+    else:
+        print("Running in PRODUCTION mode...")
+
     CONF.URL_BASE = app.config['URL_BASE']
     CONF.PLOT_LOD_LINES = app.config.get('PLOT_LOD_LINES', None)
     CONF.PLOT_LOD_XAXIS_TEXT = app.config.get('PLOT_LOD_XAXIS_TEXT', None)
@@ -226,5 +231,5 @@ def run(host, port, debug):
     app.config['BASIC_AUTH_USERNAME'] = 'admin'
     app.config['BASIC_AUTH_PASSWORD'] = 'admin'
 
-    app.run(host=host, port=port, debug=debug, threaded=True)
+    app.run(host=host, port=port, debug=debug, threaded=threaded)
 

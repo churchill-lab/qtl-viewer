@@ -28,9 +28,10 @@ def main():
 
     host = app.config.get('HOST', '0.0.0.0')
     port = app.config.get('PORT', 80)
+    debug = app.config.get('DEBUG', True)
     threaded = app.config.get('THREADED', True)
 
-    search_api.run(host, port, threaded)
+    search_api.run(host, port, debug, threaded)
 
 if __name__ == '__main__':
     main()
