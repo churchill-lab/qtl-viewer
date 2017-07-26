@@ -1066,7 +1066,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         _G.lod_traces = {};
         _G.lodDataByChromosome = dataByChrom; 
 
-        // create traces for each chromosome
+        // create scatter for each chromosome
         var series = [];
         $.each(dataByChrom, function(key, value) {
             var s = {
@@ -1311,9 +1311,9 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                     threshold: 2500 // 0 disables downsampling
                 },
                 data: newLodData,
-                lineWidth: 1,
+                lineWidth: 0.5,
                 color: 'black', // Color value
-                xAxis:1,
+                xAxis: 1,
             }, {
                 type: 'line',
                 turboThreshold: 0,
