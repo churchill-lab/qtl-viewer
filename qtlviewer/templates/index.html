@@ -3323,8 +3323,8 @@ plotOptions: {
                       return num + "";
                   },
                   onChange: function(data) {
-                      _G.lodChart.series[0].options.downsample.threshold = data.from;
-                      _G.lodChart.series[0].setData(_G.newLodData);
+                      _G.plots.lod.obj.series[0].options.downsample.threshold = data.from;
+                      _G.plots.lod.obj.series[0].setData(_G.newLodData);
                   }
             });
 
