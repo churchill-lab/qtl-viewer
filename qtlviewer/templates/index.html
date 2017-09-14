@@ -22,7 +22,7 @@ along with this software. If not, see <http://www.gnu.org/licenses/>.
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>QTL Viewer</title>
+    <title>Phenotype Viewer</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.6 -->
@@ -46,6 +46,8 @@ along with this software. If not, see <http://www.gnu.org/licenses/>.
     <!-- ion slider Nice -->
     <link rel="stylesheet" href="{{g.URL_BASE}}/static/AdminLTE-2.3.7/plugins/ionslider/ion.rangeSlider.skinNice.css">
     <link rel="stylesheet" href="//code.highcharts.com/css/highcharts.css">
+    <link rel="stylesheet" href="{{g.URL_BASE}}/static/jquery-typeahead-2.9.0/dist/jquery.typeahead.min.css">
+
     <!-- local css -->
     <link rel="stylesheet" href="{{g.URL_BASE}}/static/css/style.css">
 
@@ -122,14 +124,7 @@ desired effect
                                     <h3 class="box-title"><i class="fa fa-search"></i> Search</h3>
                                     <div class="box-tools pull-right">
                                         <div id="div_btn_levels" class="btn-group" data-toggle="buttons">
-<!--                                            
-                                            <label id="lbl_level_mrna" class="btn btn-sm btn-flat btn-primary active">
-                                                <input type="radio" name="radio_level" id="radio_level" autocomplete="off" checked> mRNA
-                                            </label>
-                                            <label id="lbl_level_protein" class="btn btn-primary btn-sm btn-flat">
-                                                <input type="radio" name="radio_level" id="radio_level" autocomplete="off"> Protein
-                                            </label>
-//-->                                        
+                                            <!-- will be filled in via code //-->
                                         </div>
                                     </div>
                                 </div>
@@ -142,13 +137,37 @@ desired effect
                                     </div>
                                     <div class="tab-content">
                                         <div class="tab-pane active" id="tab_1-1">
-                                            <div class="input-group">
-                                                <input type="text" id="searchTerm" name="searchTerm" class="form-control" placeholder="">
-                                                <span class="input-group-btn">
-                                                    <button type="submit" name="search" id="btnGo" class="btn btn-flat btn-default"><i class="fa fa-search"></i></button>
-                                                </span>
+
+                                            <div id="search_pheno" class="hidden">
+                                                <form id="form-pheno" name="form-pheno">
+                                                    <div class="typeahead__container">
+                                                        <div class="typeahead__field">
+
+                                                            <span class="typeahead__query">
+                                                                <input class="js-typeahead-pheno" name="pheno[query]" type="search" placeholder="Search" autocomplete="off">
+                                                            </span>
+                                                            <span class="typeahead__button">
+                                                                <button type="submit">
+                                                                    <i class="typeahead__search-icon"></i>
+                                                                </button>
+                                                            </span>
+
+                                                        </div>
+                                                    </div>
+                                                </form>
                                             </div>
-                                            <div id="search_results_div"></div>
+                                            <div id="apple">
+                                            </div>
+
+                                            <div id="search_gene" class="hidden">
+                                                <div class="input-group">
+                                                    <input type="text" id="searchTerm" name="searchTerm" class="form-control" placeholder="">
+                                                    <span class="input-group-btn">
+                                                        <button type="submit" name="search" id="btnGo" class="btn btn-flat btn-default"><i class="fa fa-search"></i></button>
+                                                    </span>
+                                                </div>
+                                                <div id="search_results_div"></div>
+                                            </div>
                                         </div>
                                         <!-- /.tab-pane -->
                                         <div class="tab-pane" id="tab_2-2">
@@ -217,7 +236,7 @@ desired effect
                             <div id="gene_information_div" class="box box-default collapsed-box">
                                 <div class="box-header with-border">
                                     <div id="div_current_gene_information_header">
-                                        Please search for a gene of interest. 
+                                        Please search for a term of interest.
                                     </div>
                                 </div>
                                 <div class="box-body">
@@ -257,6 +276,7 @@ desired effect
                                             //-->
                                         </div>
                                     </div>
+
                                     <div class="row">
                                         <div class="col-sm-offset-8 col-sm-4">
                                             <input id="range_1" type="text" name="range_1" value="">
@@ -273,14 +293,13 @@ desired effect
                             <div id="secondary_plot_container_div" class="nav-tabs-custom hidden">
                                 <ul id="secondaryPlotTabs" class="nav nav-tabs">
                                     <li name="plot_effect" class="active"><a href="#tab_effect" data-toggle="tab">Effect Plot</a></li>
-                                    <li name="plot_mediation"><a href="#tab_mediation" data-toggle="tab">Mediation Plot</a></li>
+                                    <li name="plot_mediation" id="mediation_div"><a href="#tab_mediation" data-toggle="tab">Mediation Plot</a></li>
                                     <li name="plot_snpassoc"><a href="#tab_snpassoc" data-toggle="tab">SNP Association Plot</a></li>
                                     <li class="pull-right"><a href="#" class="text-muted">Click on the LOD plot to generate the selected graph</a></li>
                                 </ul>
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="tab_effect">
                                         <div class="row row-spacer"></div>
-                                        <!--
                                         <div class="row">
                                             <div class="col-sm-offset-1 col-sm-11" id="plot_effect_settings">
                                                 <strong>Settings</strong>
@@ -292,7 +311,6 @@ desired effect
                                                 <input id="mediate_blup" name="mediate_blup" type="checkbox" data-size="mini">
                                             </div>
                                         </div>
-                                        //-->
                                         <div class="row">
                                             <div class="col-sm-12">
                                                 <div id="plot_effect">
@@ -413,6 +431,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 <script src="{{g.URL_BASE}}/static/js/seedrandom.js"></script>
 <script src="{{g.URL_BASE}}/static/js/factexpviewer.js"></script>
 <script src="{{g.URL_BASE}}/static/js/js.cookie.js"></script>
+<script src="{{g.URL_BASE}}/static/jquery-typeahead-2.9.0/dist/jquery.typeahead.min.js"></script>
 <script>
     <!--
     // GLOBALS AND VARIABLES
@@ -460,11 +479,14 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
     _G.api_root = "{{ CONF.API_R_BASE }}";
     _G.api_cores = "{{ CONF.API_CORES }}";
     _G.url_proxy = "{{ g.URL_BASE }}/proxy/";
+    _G.url_proxy = "";
     _G.url_chromosomes = "{{ g.URL_BASE }}/static/chromosomes.mm.38.NO_Y.json";
+    _G.max_lod_points = 0;
 
     _G.url_apis = {
         options: _G.api_root + '/options',
         ids: _G.api_root + '/ids',
+        phenotypes: _G.api_root + '/phenotypes',
         lod: _G.api_root + '/lodscan',
         mediate: _G.api_root + '/mediate',
         effect: _G.api_root + '/foundercoefs',
@@ -556,7 +578,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
             $("#lod_plot_container_div").block({message:SPIN_GEARS, overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
             $("#secondary_plot_container_div").block({message:'', overlayCSS: {opacity: 0.2}, css:{backgroundColor:'', border:'none'}});
         }
-        
+
     }
 
     /**
@@ -945,21 +967,72 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         $("#lod_plot_container_div").removeClass('hidden');
         $("#secondary_plot_container_div").removeClass('hidden');
 
-        var q = d3.queue()
-                .defer(downloadGeneData, geneID)
-                .defer(downloadLODData, geneID, proteinID, level)
-                .defer(downloadProfileData, geneID, proteinID, getFactorOrder())
-                .await(function(error, geneData, lodData, profileData) {
+        let id = geneID;
+        if (level === "protein") {
+            id = proteinID;
+        }
+
+        d3.queue()
+            .defer(downloadGeneData, geneID)
+            .defer(downloadLODData, id, level)
+            .defer(downloadProfileData, id, level)
+            .await(function(error, geneData, lodData, profileData) {
+                console.log('Queue done');
+                console.log('error=', error);
+
+                if (error) {
+                    let message = "Unable to download data for <strong><em>";
+                    message += id;
+                    message += "</em></strong>.";
+                    unblockUser();
+
+                    displayError("API Server Error", message);
+                    return;
+                }
+
+                _G.current_gene = geneData[0];
+                _G.current_gene_id = geneID;
+                _G.current_protein_id = proteinID;
+                displayGeneData(_G.current_gene);
+                resetSecondaryPlots();
+                _G.slider.reset();
+
+                plotLOD(lodData.data, id, level);
+                plotProfile_new(id, level, profileData, getFactorOrder());
+                addHistory(_G.current_gene_id, _G.current_protein_id, geneData[0]['symbol'], level);
+                buildHistory();
+                unblockUser();
+            });
+
+    }
+
+    /**
+     * Handle what should happen upon a new phenotype selection.
+     */
+    function selectPhenotype(phenotypeID, phenotypeLevel) {
+        blockUser(BLOCK_STATE_SEARCH_SELECTION);
+        _G.current_phenotype_id = phenotypeID;
+        _G.current_level = phenotypeLevel;
+
+        console.log('------------------------------------');
+        console.log('phenotypeID=', phenotypeID);
+        console.log('phenotypeLevel=', phenotypeLevel);
+
+        $("#profile_plot_container_div").removeClass('hidden');
+        $("#lod_plot_container_div").removeClass('hidden');
+        $("#secondary_plot_container_div").removeClass('hidden');
+
+        let q = d3.queue()
+                .defer(downloadPhenotypeData, phenotypeID)
+                .defer(downloadLODData, phenotypeID, phenotypeLevel)
+                .defer(downloadProfileData, phenotypeID, phenotypeLevel)
+                .await(function(error, phenotypeData, lodData, profileData) {
                     console.log('Queue done');
                     console.log('error=', error);
 
                     if (error) {
-                        var message = "Unable to download data for <strong><em>";
-                        if (level == "mrna") {
-                            message += geneID;
-                        } else {
-                            message += proteinID;
-                        }
+                        let message = "Unable to download data for <strong><em>";
+                        message += phenotypeID;
                         message += "</em></strong>.";
                         unblockUser();
 
@@ -967,17 +1040,15 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                         return;
                     }
 
-                    _G.current_gene = geneData[0];
-                    _G.current_gene_id = geneID;
-                    _G.current_protein_id = proteinID;
-                    displayGeneData(_G.current_gene);
+                    _G.current_phenotype = phenotypeData[0];
+                    //displayPhenotypeData(_G.current_phenotype);
                     resetSecondaryPlots();
                     _G.slider.reset();
 
-                    plotLOD(lodData.data, geneID, proteinID, level);
-                    plotProfile_new(geneID, proteinID, profileData, getFactorOrder());
-                    addHistory(_G.current_gene_id, _G.current_protein_id, geneData[0]['symbol'], level);
-                    buildHistory();
+                    plotLOD(lodData.data, phenotypeID, phenotypeLevel);
+                    plotProfile_new(phenotypeID, phenotypeLevel, profileData, getFactorOrder());
+                    //addPhenotypeHistory(_G.current_gene_id, _G.current_protein_id, geneData[0]['symbol'], level);
+                    //buildPhenotypeHistory();
                     unblockUser();
                 });
 
@@ -1005,7 +1076,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      *
      * Note: This function can be called without data and will generate a base graph.
      */
-    function plotLOD(lodData, gene_id, protein_id, level) {
+    function plotLOD(lodData, id, level) {
         var dataByChrom = {};
         var maxLOD = -Infinity;
         var minLOD = Infinity;
@@ -1017,44 +1088,49 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
             maxLOD = lodData[0][3];
             minLOD = -2;
 
-            if (level === 'mrna') {
-                xAxisTitle = gene_id + " (" + _G.current_gene.symbol + ")";
-            } else if (level === 'protein') {
-                xAxisTitle = protein_id + " (" + _G.current_gene.symbol + ")";
+            if ((level === 'mrna') || (level === 'protein')) {
+                xAxisTitle = id + " (" + _G.current_gene.symbol + ")";
             } else {
-                xAxisTitle = '';
+                // pheno
+                xAxisTitle = id;
+                console.log(_G.phenotypes[id]);
+                if (id !== _G.phenotypes[id].short_name) {
+                    xAxisTitle += (" (" + _G.phenotypes[id].short_name + ")");
+                }
             }
 
             $.each(lodData, function(index, element) {
                 //
                 // element = {"[id]","[chr]",[position],[data]}
                 //
-                var chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element[1]]];
-                var x = chr.start + (element[2]);
-                var y = element[3];
+                if (element[1] in _G.chromosomes.nameToIdx) {
+                    let chr = _G.chromosomes.idx[_G.chromosomes.nameToIdx[element[1]]];
+                    let x = chr.start + (element[2]);
+                    let y = element[3];
 
-                //
-                // chr = {chromosome: "Y", end:2725521390, length: 91744698,
-                //        mid: 2679649040, name: "Y", order: 21, start: 2633776692 }
-                //
-                if (!(chr.chromosome in dataByChrom)) {
-                    dataByChrom[chr.chromosome] = [];
-                }
+                    //
+                    // chr = {chromosome: "Y", end:2725521390, length: 91744698,
+                    //        mid: 2679649040, name: "Y", order: 21, start: 2633776692 }
+                    //
+                    if (!(chr.chromosome in dataByChrom)) {
+                        dataByChrom[chr.chromosome] = [];
+                    }
 
-                var d = {
-                    x: x, 
-                    y: y, 
-                    id: element[0],
-                    text: element[3],
-                    chr: chr.chromosome,
-                    chrPos: element[2],
-                };
+                    let d = {
+                        x: x,
+                        y: y,
+                        id: element[0],
+                        text: element[3],
+                        chr: chr.chromosome,
+                        chrPos: element[2],
+                    };
 
-                newLodData.push(d);
-                dataByChrom[chr.chromosome].push(d);
+                    newLodData.push(d);
+                    dataByChrom[chr.chromosome].push(d);
 
-                if (element[3] > maxLOD) {
-                    maxLOD = element[3];
+                    if (element[3] > maxLOD) {
+                        maxLOD = element[3];
+                    }
                 }
             });
 
@@ -1064,7 +1140,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         newLodData.sort(compareX);
 
         _G.lod_traces = {};
-        _G.lodDataByChromosome = dataByChrom; 
+        _G.lodDataByChromosome = dataByChrom;
 
         // create scatter for each chromosome
         var series = [];
@@ -1155,13 +1231,13 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
             chromosomeAxisText2[element.mid] = element.name;
 
             // TODO: style this
-            var fillColor = '#ffffff';
+            let fillColor = '#ffffff';
             if ((index % 2) == 1) {
-            chromosomeBands.push({
-                color: fillColor,
-                from: element.start,
-                to: element.end
-            });
+                chromosomeBands.push({
+                    color: fillColor,
+                    from: element.start,
+                    to: element.end
+                });
             }
             var s =  {
                 type: 'rect',
@@ -1212,9 +1288,17 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                         if (plot === "plot_mediation") {
                             generateMediationPlot(_G.current_gene_id, _G.lodHover.id);
                         } else if (plot === "plot_effect") {
-                            generateEffectPlot(_G.current_gene_id, _G.lodHover.chr);
+                            if (_G.pheno_exp) {
+                                generateEffectPlot(_G.current_phenotype_id, _G.lodHover.chr);
+                            } else {
+                                generateEffectPlot(_G.current_gene_id, _G.lodHover.chr);
+                            }
                         } else if (plot === "plot_snpassoc") {
-                            generateSNPAssocPlot(_G.current_gene_id, _G.lodHover.chr, _G.lodHover.chrPos);
+                            if (_G.pheno_exp) {
+                                generateSNPAssocPlot(_G.current_phenotype_id, _G.lodHover.chr, _G.lodHover.chrPos);
+                            } else {
+                                generateSNPAssocPlot(_G.current_gene_id, _G.lodHover.chr, _G.lodHover.chrPos);
+                            }
                         } else {
                             alert('oops2');
                         }
@@ -1244,8 +1328,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 min:0,
                 tickPositions: chromosomeAxisVals,
                 alternateGridColor: '#dddddd',
-            }],            
-         
+            }],
+
             yAxis: {
                 title: {
                     text: 'LOD'
@@ -1288,13 +1372,22 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 
                             var plot=$("#secondaryPlotTabs").find('.active').attr("name");
                             console.log('plot=', plot);
-                            
+
                             if (plot === "plot_mediation") {
                                 generateMediationPlot(_G.current_gene_id, event.point.id);
                             } else if (plot === "plot_effect") {
-                                generateEffectPlot(_G.current_gene_id,  event.point.chr);
+
+                                if (_G.pheno_exp) {
+                                    generateEffectPlot(_G.current_phenotype_id, event.point.chr);
+                                } else {
+                                    generateEffectPlot(_G.current_gene_id, event.point.chr);
+                                }
                             } else if (plot === "plot_snpassoc") {
-                                generateSNPAssocPlot(_G.current_gene_id,  event.point.chr, event.point.chrPos);
+                                if (_G.pheno_exp) {
+                                    generateSNPAssocPlot(_G.current_phenotype_id, event.point.chr, event.point.chrPos);
+                                } else {
+                                    generateSNPAssocPlot(_G.current_gene_id, event.point.chr, event.point.chrPos);
+                                }
                             } else {
                                 alert('oops1');
                             }
@@ -1305,11 +1398,16 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 
             series: [{
                 type: 'line',
+                //turboThreshold: 77725, // was working
                 turboThreshold: 0,
+
                 showInLegend: false,
+
                 downsample: {
-                    threshold: 2500 // 0 disables downsampling
+                    threshold: 10000 // 0 disables downsampling
                 },
+
+
                 data: newLodData,
                 lineWidth: 0.5,
                 color: 'black', // Color value
@@ -1324,17 +1422,17 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                     },
                 data: [
                     {
-                        x: 0, 
-                        y: 0, 
-                        id: '', 
+                        x: 0,
+                        y: 0,
+                        id: '',
                         text: '',
                         chr: '',
                         chrPos: 0,
                     },
                     {
-                        x: _G.chromosomes.totalLength, 
-                        y: 0, 
-                        id: '', 
+                        x: _G.chromosomes.totalLength,
+                        y: 0,
+                        id: '',
                         text: '',
                         chr: '',
                         chrPos: 0,
@@ -1386,6 +1484,9 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
             }
         });
     }
+
+
+
 
 /**************************************************************************
 
@@ -1483,7 +1584,7 @@ function layoutFeatures(features) {
         if (snpData) {
             maxLODScore = snpData[0].lod;
         }
-        
+
         $.each(snpData, function(index, element) {
             if (element.lod > maxLODScore) {
                 maxLODScore = element.lod;
@@ -1760,7 +1861,7 @@ function layoutFeatures(features) {
 
 
     }
-    
+
     function plotEffect(effect) {
         console.log('Plotting effect data');
 
@@ -1822,17 +1923,19 @@ function layoutFeatures(features) {
         console.log('effectMinValue=', effectMinValue);
 
         $.each(strainInfo, function(key, value) {
-            var s = {
+            let s = {
                 type: 'line',
                 turboThreshold: 0,
                 showInLegend: true,
+                /*
                 downsample: {
-                    threshold: 0 // 0 disables downsampling
+                    threshold: 1000000 // 0 disables downsampling
                 },
+                */
                 data: value['data'],
                 name: value['name'],
                 color: value['color'],
-                lineWidth: 1,
+                lineWidth: 0.5,
                 yAxis:'axisEffect',
                 stack: 0,
                 marker: {
@@ -1842,14 +1945,16 @@ function layoutFeatures(features) {
                     shared: false,
                     headerFormat:'<b>{series.name}</b>',
                     pointFormatter: function() {
-                        return '<br>Effect: ' + this.y + '<br>Position: ' +  (this.x/1000000);          
+                        return '<br>Effect: ' + this.y + '<br>Position: ' +  (this.x/1000000);
                     }
                 }
 
-                            
+
             };
             series.push(s);
         });
+
+        console.log('series=', series);
 
         var _title = '';
 
@@ -1858,7 +1963,7 @@ function layoutFeatures(features) {
         } else if (_G.current_level === 'protein') {
             _title = _G.current_protein_id + " (" + _G.current_gene.symbol + ")";
         } else {
-            _title = '';
+            _title = _G.current_phenotype_id;
         }
 
 
@@ -1878,7 +1983,7 @@ function layoutFeatures(features) {
 
         series.push({
             data: lodData,
-            turboThreshold: 0,
+                            turboThreshold: 1000000,
             yAxis:'axisLOD',
             stack: 0,
             name: 'LOD',
@@ -1889,12 +1994,12 @@ function layoutFeatures(features) {
                 shared: false,
                 headerFormat:'',
                 pointFormatter: function() {
-                    return '<br>LOD: ' + this.y + '<br>Position: ' +  (this.x/1000000);          
+                    return '<br>LOD: ' + this.y + '<br>Position: ' +  (this.x/1000000);
                 }
             }
-            
+
         });
-        
+
 
         // determine ticks
         var effectTickVals = [];
@@ -1908,12 +2013,17 @@ function layoutFeatures(features) {
             lodTickVals.push(i);
         }
 
+        console.log('effectTickVals=', effectTickVals);
+        console.log('lodTickVals=', lodTickVals);
+
 
         _G.plots.effect.obj = Highcharts.chart({
             title: {
                 text: _title,
             },
-
+boost: {
+        useGPUTranslations: true
+    },
             subtitle: {
                 text: 'Chromosome ' + _G.current_chromosome,
                 verticalAlign: 'bottom',
@@ -1921,10 +2031,11 @@ function layoutFeatures(features) {
 
             chart: {
                 renderTo: _G.plots.effect.el,
+        zoomType: 'x'
             },
 
             xAxis: {
-                lineWidth: 1,
+                lineWidth: 0.5,
                 gridLineWidth: 1,
                 crosshair: true,
             },
@@ -1935,7 +2046,7 @@ function layoutFeatures(features) {
                 verticalAlign: 'top',
                 floating: false,
                 backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
-            },         
+            },
 
             yAxis: [{
                 id: 'axisEffect',
@@ -2024,7 +2135,271 @@ function layoutFeatures(features) {
     }
 
 
+    function plotPhenotypeEffect(effect) {
+        console.log('Plotting effect data');
 
+        var strainInfo = {};
+        {% for s in CONF.PLOT_EFFECT_STRAINS %}
+            strainInfo["{{ s['key'] }}"] = {
+                'color':"{{ s['color'] }}",
+                'name':"{{ s['name'] }}",
+                'data':[]
+            };
+        {% endfor %}
+
+        var x = [];
+        var ids = [];
+
+        var chr = null;
+
+        var min_pos = Infinity;
+        var max_pos = -Infinity;
+
+        var _currentChromInfo = _G.chromosomes.idx[_G.chromosomes.nameToIdx[_G.current_chromosome]];
+        var xAxisTickNum = Math.floor(_currentChromInfo.length / 20000000);
+        var xAxisTickVals = [];
+        var xAxisTickText = [];
+
+        for (var i = 1; i <= xAxisTickNum; i++) {
+            xAxisTickVals.push(20000000 * i);
+            xAxisTickVals.push((20 * i) + "Mb")
+        }
+
+        var series = [];
+
+        var effectMinValue = Infinity;
+        var effectMaxValue = -Infinity;
+
+        $.each(effect.data, function(index, element) {
+            //{"A":-0.1224,..."H":1.45,"chr":"4","id":"4_156339889","pos":156.3399}
+            var _pos = element.pos * 1000000;
+            var m = [];
+
+        {% for s in CONF.PLOT_EFFECT_STRAINS %}
+            strainInfo["{{ s['key'] }}"]['data'].push([_pos, element.{{ s['key'] }}]);
+            m.push(element.{{ s['key'] }});
+        {% endfor %}
+
+            effectMinValue = Math.min(Math.min.apply(null, m), effectMinValue);
+            effectMaxValue = Math.max(Math.max.apply(null, m), effectMaxValue);
+
+            x.push(_pos);
+            ids.push(element.id);
+            chr = element.chr;
+        });
+
+
+        effectMaxValue = Math.ceil(effectMaxValue);
+        effectMinValue = Math.floor(effectMinValue);
+
+        console.log('effectMaxValue=', effectMaxValue);
+        console.log('effectMinValue=', effectMinValue);
+
+        $.each(strainInfo, function(key, value) {
+            var s = {
+                type: 'line',
+                turboThreshold: 0,
+                showInLegend: true,
+                /*
+                downsample: {
+                    threshold: 0 // 0 disables downsampling
+                },
+                */
+                data: value['data'],
+                name: value['name'],
+                color: value['color'],
+                lineWidth: 1,
+                yAxis:'axisEffect',
+                stack: 0,
+                marker: {
+                    symbol: 'circle',
+                },
+                tooltip: {
+                    shared: false,
+                    headerFormat:'<b>{series.name}</b>',
+                    pointFormatter: function() {
+                        return '<br>Effect: ' + this.y + '<br>Position: ' +  (this.x/1000000);
+                    }
+                }
+
+
+            };
+            series.push(s);
+        });
+
+        var _title = '';
+
+        /*
+        if (_G.current_level === 'mrna') {
+            _title = _G.current_gene_id + " (" + _G.current_gene.symbol + ")";
+        } else if (_G.current_level === 'protein') {
+            _title = _G.current_protein_id + " (" + _G.current_gene.symbol + ")";
+        } else {
+            _title = '';
+        }
+        */
+
+
+        var lodDataForChromosome = _G.lodDataByChromosome[_currentChromInfo.chromosome];
+        var lodData = [];
+
+        var lodMinValue = Infinity;
+        var lodMaxValue = -Infinity;
+
+        $.each(lodDataForChromosome, function(index, element) {
+            element.x = element.chrPos;
+            lodData.push(element);
+
+            lodMinValue = Math.min(element.y, lodMinValue);
+            lodMaxValue = Math.max(element.y, lodMaxValue);
+        });
+
+        series.push({
+            data: lodData,
+            turboThreshold: 0,
+            yAxis:'axisLOD',
+            stack: 0,
+            name: 'LOD',
+            animation: false,
+            showInLegend: false,
+
+            tooltip: {
+                shared: false,
+                headerFormat:'',
+                pointFormatter: function() {
+                    return '<br>LOD: ' + this.y + '<br>Position: ' +  (this.x/1000000);
+                }
+            }
+
+        });
+
+
+        // determine ticks
+        var effectTickVals = [];
+        for (var i = effectMinValue; i <= effectMaxValue; i += 0.5) {
+            effectTickVals.push(i);
+        }
+
+        var lodTickVals = [];
+        var lodMaxTick = Math.ceil(lodMaxValue / 10) * 10;
+        for (var i = 0; i <= lodMaxTick; i += 10) {
+            lodTickVals.push(i);
+        }
+
+
+        _G.plots.effect.obj = Highcharts.chart({
+            title: {
+                text: _title,
+            },
+
+            subtitle: {
+                text: 'Chromosome ' + _G.current_chromosome,
+                verticalAlign: 'bottom',
+            },
+
+            chart: {
+                renderTo: _G.plots.effect.el,
+            },
+
+            xAxis: {
+                lineWidth: 1,
+                gridLineWidth: 1,
+                crosshair: true,
+            },
+
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'top',
+                floating: false,
+                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+            },
+
+            yAxis: [{
+                id: 'axisEffect',
+                title: {
+                    text: 'EFFECT'
+                },
+                offset: 0,
+                height: '70%',
+                tickPositions: effectTickVals,
+                maxPadding: 0,
+                labels: {
+                    formatter: function() {
+                        if (this.isFirst) {
+                            return '';
+                        }
+                        return this.value;
+                    }
+                },
+            }, {
+                id: 'axisLOD',
+                title: {
+                    text: 'LOD'
+                },
+                offset: 0,
+                height: '30%',
+                top: '70%',
+                maxPadding: 0,
+                tickPositions: lodTickVals,
+                labels: {
+                    formatter: function() {
+                        if (this.isLast) {
+                            return '';
+                        }
+                        return this.value;
+                    }
+                },
+                plotLines: [{
+                    value: lodMaxTick,
+                    color: 'black',
+                    zIndex: 5,
+                    width: 2
+                }]
+            }],
+
+            series:series,
+
+            credits: {
+                enabled: false // A plugin for highcharts is of course using highcharts
+            },
+            exporting: {
+                buttons: {
+                    contextButton: {
+                        menuItems: [{
+                            text: 'Download JPEG image',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_effect",
+                                    type: Highcharts.exporting.MIME_TYPES.JPEG
+                                });
+                            }
+                        }, {
+                            text: 'Download PNG image',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_effect",
+                                    type: Highcharts.exporting.MIME_TYPES.PNG
+                                });
+                            },
+                            separator: false
+                        }, {
+                            text: 'Download PDF document',
+                            onclick: function () {
+                                this.exportChartLocal({
+                                    filename: _title + "_effect",
+                                    type: Highcharts.exporting.MIME_TYPES.PDF
+                                });
+                            },
+                            separator: false
+                        }]
+                    }
+                }
+            }
+
+        });
+
+    }
     function plotMediation(data) {
         // probably easier d3 function but just looping for now
         //'LOD': 3.4188, 'chr' : "11", id: "ENSMUSG00000099291", pos:87448734, symbol: "ACEA_U3"
@@ -2157,7 +2532,7 @@ function layoutFeatures(features) {
                         this.point.LOD;
                     }
                 },
-        
+
 
         xAxis: {
             opposite: true,
@@ -2169,7 +2544,7 @@ function layoutFeatures(features) {
             },
             tickPositions: chromosomeAxisVals,
             plotBands: chromosomeBands,
-         },    
+         },
 
          yAxis: {
              title: {
@@ -2254,7 +2629,7 @@ plotOptions: {
         $("#" + _G.plots.mediation.el_wait).html("");
     }
 
-    function plotProfile_new(ensembl_gene_id, ensembl_protein_id, profile_data, profiles) {
+    function plotProfile_new(id, level, profile_data, profiles) {
         // profiles are covar_factors
 
         var profile_info = {};
@@ -2314,12 +2689,7 @@ plotOptions: {
         });
 
 
-        var yname = ensembl_gene_id;
-        if (_G.current_level == "mrna") {
-            yname = ensembl_gene_id;
-        } else {
-            yname = ensembl_protein_id;
-        }
+        var yname = id;
 
         var yvar = [];
         yvar.push({
@@ -2437,34 +2807,23 @@ plotOptions: {
                 }
             });
         });
-
-
-
-
     }
-
-
 
 
     /**
      * Download LOD scan data from the server
      */
-    function downloadLODData(gene_id, protein_id, level, callback) {
-        var _url = _G.url_apis.lod + "/" + level;
-
-        if (level == "mrna") {
-            _url += "?id=" + gene_id;
-        } else {
-            _url += "?id=" + protein_id;
-        }
+    function downloadLODData(id, level, callback) {
+        let _url = _G.url_apis.lod;
+        _url += "?id=" + id;
+        _url += "&level=" + level;
+        _url += "&ncores=" + _G.api_cores;
 
         if (_G.cond === "local") {
             _url += "&regress_local=TRUE";
         }
 
-        _url += "&ncores=" + _G.api_cores;
-
-        var cache_url = _G.url_proxy + _url;
+        let cache_url = _G.url_proxy + _url;
         console.log("AJAX request to: ", cache_url);
 
         $.ajax({
@@ -2479,15 +2838,16 @@ plotOptions: {
         });
     }
 
-    function downloadSNPAssocData(ensembl_id, chrom, location, windowSize, level, callback) {
-        var _url = _G.url_apis.snpassoc + "/" + level;
-        _url += "?id=" + ensembl_id;
+    function downloadSNPAssocData(id, chrom, location, windowSize, level, callback) {
+        let _url = _G.url_apis.snpassoc;
+        _url += "?id=" + id;
         _url += "&chrom=" + chrom;
         _url += "&location=" + location;
         _url += "&window_size=" + windowSize;
         _url += "&ncores=" + _G.api_cores;
+        _url += "&level=" + level;
 
-        var cache_url = _G.url_proxy + _url;
+        let cache_url = _G.url_proxy + _url;
         console.log("AJAX request to: ", cache_url);
 
         $.ajax({
@@ -2503,9 +2863,12 @@ plotOptions: {
 
     }
 
-    function downloadMediationData(ensembl_id, marker_id, callback) {
-        var _url = _G.url_apis.mediate + "?id=" + ensembl_id + "&" + "mid=" + marker_id;
-        var cache_url = _G.url_proxy + _url;
+    function downloadMediationData(id, marker_id, callback) {
+        let _url = _G.url_apis.mediate;
+        _url += "?id=" + id;
+        _url += "&mid=" + marker_id;
+
+        let cache_url = _G.url_proxy + _url;
         console.log("AJAX request to: ", cache_url);
 
         $.ajax({
@@ -2521,20 +2884,19 @@ plotOptions: {
 
     }
 
-    function downloadEffectData(ensembl_id, chromosome, callback) {
-        var _url = _G.url_apis.effect + "?id=" + ensembl_id + "&" + "chrom=" + chromosome;
-
-        //if ($("#mediate_blup").is(':checked')) {
-        //    _url += '&blup=TRUE';
-        //}
+    function downloadEffectData(id, chromosome, level, blup, callback) {
+        let _url = _G.url_apis.effect;
+        _url += "?id=" + id;
+        _url += "&chrom=" + chromosome;
+        _url += "&level=" + level;
+        _url += "&blup=" + blup;
+        _url += "&ncores=" + _G.api_cores;
 
         if (_G.cond === "local") {
             _url += "&regress_local=TRUE";
         }
 
-        _url += "&ncores=" + _G.api_cores;
-
-        var cache_url = _G.url_proxy + _url;
+        let cache_url = _G.url_proxy + _url;
         console.log("AJAX request to: ", cache_url);
 
         $.ajax({
@@ -2550,16 +2912,13 @@ plotOptions: {
 
     }
 
-    function downloadProfileData(ensembl_gene_id, ensembl_protein_id, profiles, callback) {
-        var _url = _G.url_apis.expression + "/" + _G.current_level;
 
-        if (_G.current_level == "mrna") {
-            _url += "?id=" + ensembl_gene_id;
-        } else {
-            _url += "?id=" + ensembl_protein_id;
-        }
+    function downloadProfileData(id, level, callback) {
+        let _url = _G.url_apis.expression;
+        _url += "?id=" + id;
+        _url += "&level=" + level;
 
-        var cache_url = _G.url_proxy + _url;
+        let cache_url = _G.url_proxy + _url;
         console.log("AJAX request to: ", cache_url);
 
         $.ajax({
@@ -2574,14 +2933,14 @@ plotOptions: {
         });
     }
 
+
     function downloadGeneData(geneID, callback) {
-        var URL = _G.url_apis.genes + geneID;
-        var cacheURL = _G.url_proxy + URL;
-        //var cache_url = _url;
-        console.log("AJAX request to: ", cacheURL);
+        let _url = _G.url_apis.genes + geneID;
+        let cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
 
         $.ajax({
-            url: cacheURL,
+            url: cache_url,
             method: "GET"
         }).done(function(data, textStatus, jqXHR) {
             console.log("gene download success");
@@ -2592,15 +2951,13 @@ plotOptions: {
         });
     }
 
-
     function downloadGenesByLocationData(chrom, start, end, callback) {
-        var URL = _G.url_apis.genesByLocation + "?term=" + chrom + ":" + start + "-" + end;
-        var cacheURL = _G.url_proxy + URL;
-        //var cache_url = _url;
-        console.log("AJAX request to: ", cacheURL);
+        let _url = _G.url_apis.genesByLocation + "?term=" + chrom + ":" + start + "-" + end;
+        let cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
 
         $.ajax({
-            url: cacheURL,
+            url: cache_url,
             method: "GET"
         }).done(function(data, textStatus, jqXHR) {
             console.log("genesByLocation download success");
@@ -2611,69 +2968,81 @@ plotOptions: {
         });
     }
 
-    function generateLODPlot(geneID, proteinID, level) {
-        blockUser(BLOCK_STATE_LOD_SCAN);
-        _G.current_gene_id = geneID;
-        _G.current_protein_id = proteinID;
+    function downloadPhenotypeData(phenotypeID, callback) {
+        console.warn('downloadPhenotypeData NOT DONE');
+        callback(null, [{'phenotype_id':phenotypeID}])
+        /*
+        let _url = _G.url_apis.genes + geneID;
+        let cache_url = _G.url_proxy + _url;
+        console.log("AJAX request to: ", cache_url);
 
-        console.log('geneID=', geneID);
-        console.log('proteinID=', proteinID);
+        $.ajax({
+            url: cache_url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("gene download success");
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("gene download failure");
+            callback(errorThrown, null);
+        });
+        */
+    }
+
+
+    function generateLODPlot(id, level) {
+        blockUser(BLOCK_STATE_LOD_SCAN);
 
         resetSecondaryPlots();
 
-        var q = d3.queue()
-                //.defer(downloadGeneInformation, gene_id)
-                .defer(downloadLODData, geneID, proteinID, level)
-                .await(function(error, lod_data) {
-                    console.log('Queue done');
-                    //console.log('lod_data=', lod_data);
-                    console.error('error=', error);
+        d3.queue()
+            .defer(downloadLODData, id, level)
+            .await(function(error, lod_data) {
+                console.log('Queue done');
+                //console.log('lod_data=', lod_data);
+                console.error('error=', error);
 
-                    // TODO: handle errors, if error comes back we won't have data
+                // TODO: handle errors, if error comes back we won't have data
 
-                    if (error) {
-                        var _message = "Unable to download data for <strong><em>";
-                        if (level == "mrna") {
-                            _message += geneID;
-                        } else {
-                            _message += proteinID;
-                        }
-                        _message += "</em></strong>.";
+                if (error) {
+                    var _message = "Unable to download data for <strong><em>";
+                    _message += id;
+                    _message += "</em></strong>.";
 
-                        displayError("API Server Error", _message);
-                        unblockUser();
-
-                        return;
-                    }
-                    plotLOD(lod_data.data, geneID, proteinID, level);
+                    displayError("API Server Error", _message);
                     unblockUser();
-                });
+
+                    return;
+                }
+                plotLOD(lod_data.data, id, level);
+                unblockUser();
+            });
     }
 
-    function generateSNPAssocPlot(ensembl_id, chrom, position) {
+    function generateSNPAssocPlot(id, chrom, position) {
         blockUser(BLOCK_STATE_LOD_SELECTION);
 
         _G.snpAssocVars = {
-            ensembl_id: ensembl_id,
+            id: id,
             chrom: chrom,
             position: position,
         };
 
-        var snpWindowSize = _G.sliderSNP.result.from_value;
-        var snpWindow = snpWindowSize/2;
+        let snpWindowSize = _G.sliderSNP.result.from_value;
+        let snpWindow = snpWindowSize/2;
 
-        var minPos = Math.max(position - snpWindow, 0);
-        var maxPos = position + snpWindow;
+        let minPos = Math.max(position - snpWindow, 0);
+        let maxPos = position + snpWindow;
 
-        var eid = ensembl_id; 
+        let new_id = id;
         if (_G.current_level == "protein") {
-            eid = _G.current_protein_id;
+            new_id = _G.current_protein_id;
         }
 
-        
+
 
         var q = d3.queue()
-                .defer(downloadSNPAssocData, ensembl_id, chrom, position, snpWindow, _G.current_level)
+                .defer(downloadSNPAssocData, new_id, chrom, position, snpWindow, _G.current_level)
                 .defer(downloadGenesByLocationData, chrom, minPos, maxPos)
                 .await(function(error, snpData, geneData) {
                     console.log('Queue done');
@@ -2682,10 +3051,10 @@ plotOptions: {
                     // TODO: handle errors, if error comes back we won't have data
                     if (error) {
                         var _message = "Unable to download SNP data for <strong><em>";
-                        _message += ensembl_id;
+                        _message += id;
                         _message += "</em></strong> on chromosome ";
                         _message += "<strong><em>";
-                        _message += chromosome;
+                        _message += chrom;
                         _message += "</em></strong>";
 
                         displayError("API Server Error", _message);
@@ -2729,20 +3098,26 @@ plotOptions: {
                 });
     }
 
-    function generateEffectPlot(ensembl_id, chromosome) {
+    function generateEffectPlot(id, chromosome) {
         blockUser(BLOCK_STATE_LOD_SELECTION);
         _G.current_chromosome = chromosome;
-        console.log(ensembl_id, chromosome);
+        console.log(id, chromosome);
 
-        var q = d3.queue()
-                .defer(downloadEffectData, ensembl_id, chromosome)
+        let blup = false;
+        if ($("#mediate_blup").is(':checked')) {
+            blup = true;
+        }
+
+
+        let q = d3.queue()
+                .defer(downloadEffectData, id, chromosome, _G.current_level, blup)
                 .await(function(error, data) {
                     console.log('Queue done');
 
                     // TODO: handle errors, if error comes back we won't have data
                     if (error) {
                         var _message = "Unable to download effect data for <strong><em>";
-                        _message += ensembl_id;
+                        _message += id;
                         _message += "</em></strong> on chromosome ";
                         _message += "<strong><em>";
                         _message += chromosome;
@@ -2759,32 +3134,34 @@ plotOptions: {
                 });
     }
 
-    function generateProfilePlot(ensembl_gene_id, ensembl_protein_id, profiles) {
+
+    function generateProfilePlot(id, level, profiles) {
         blockUser(BLOCK_STATE_PROFILE_UPDATE);
-        console.log("Generating profile plot", ensembl_gene_id, ensembl_protein_id, profiles);
-        console.log('profiles=', profiles);
-        var q = d3.queue()
-                .defer(downloadProfileData, ensembl_gene_id, ensembl_protein_id, profiles)
-                .await(function(error, data) {
-                    console.log('Queue done');
+        console.log("Generating profile plot", id, profiles);
 
-                    // TODO: handle errors, if error comes back we won't have data
-                    if (error) {
-                        var _message = "Unable to download profile data for <strong><em>";
-                        _message += ensembl_id;
-                        _message += "</em></strong>.";
 
-                        displayError("API Server Error", _message);
-                        unblockUser();
-                        return;
-                    }
+        d3.queue()
+            .defer(downloadProfileData, id, level)
+            .await(function(error, data) {
+                console.log('Queue done');
 
-                    console.log("PLOT PROFILE")
-                    plotProfile_new(ensembl_gene_id, ensembl_protein_id, data, profiles);
+                // TODO: handle errors, if error comes back we won't have data
+                if (error) {
+                    var _message = "Unable to download profile data for <strong><em>";
+                    _message += id;
+                    _message += "</em></strong>.";
+
+                    displayError("API Server Error", _message);
                     unblockUser();
+                    return;
+                }
+
+                console.log("PLOT PROFILE")
+                plotProfile_new(id, level, data, profiles);
+                unblockUser();
 
 
-                });
+            });
     }
 
     function loadOptions(callback) {
@@ -2799,7 +3176,7 @@ plotOptions: {
          The optional second argument to the callback is the return value of the task.
          (To return multiple values from a single callback, wrap the results in an object or array.)
          */
-        var _url = _G.url_proxy + _G.url_apis.options;
+        let _url = _G.url_proxy + _G.url_apis.options;
         $.ajax({
             url: _url,
             method: "GET"
@@ -2813,8 +3190,8 @@ plotOptions: {
         });
     }
 
-    function loadChromsomes(callback) {
-        var _url = _G.url_chromosomes;
+    function loadChromosomes(callback) {
+        let _url = _G.url_chromosomes;
         console.log("Downloading chromosomes: ", _url);
 
         $.ajax({
@@ -2836,7 +3213,7 @@ plotOptions: {
     }
 
     function loadGenes(callback) {
-        var _url = _G.url_proxy + _G.url_apis.ids + "?id_type=mrna";
+        let _url = _G.url_proxy + _G.url_apis.ids + "?level=mrna";
         console.log("Downloading genes: ", _url);
 
         $.ajax({
@@ -2856,7 +3233,7 @@ plotOptions: {
     }
 
     function loadProteins(callback) {
-        var _url = _G.url_proxy + _G.url_apis.ids + "?id_type=protein";
+        let _url = _G.url_proxy + _G.url_apis.ids + "?level=protein";
         console.log("Downloading proteins: ", _url);
 
         $.ajax({
@@ -2871,6 +3248,26 @@ plotOptions: {
             console.error('textStatus=', textStatus);
             console.error('errorThrown=', errorThrown);
             displayError("API Server Error", "Error downloading protein information");
+            callback(errorThrown, null);
+        });
+    }
+
+    function loadPhenotypes(callback) {
+        let _url = _G.url_proxy + _G.url_apis.phenotypes;
+        console.log("Downloading phenotypes: ", _url);
+
+        $.ajax({
+            url: _url,
+            method: "GET"
+        }).done(function(data, textStatus, jqXHR) {
+            console.log("phenotypes download success");
+            callback(null, data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.error("phenotypes download failure");
+            console.error('jqXHR=', jqXHR);
+            console.error('textStatus=', textStatus);
+            console.error('errorThrown=', errorThrown);
+            displayError("API Server Error", "Error downloading phenotype information");
             callback(errorThrown, null);
         });
     }
@@ -3109,26 +3506,52 @@ plotOptions: {
             return false;
         });
 
-
         $('#lbl_default').on("click", function() {
             _G.cond = "default";
-            if (_G.current_gene_id != null) {
-                generateLODPlot(_G.current_gene_id, _G.current_protein_id, _G.current_level);
+            if (_G.current_level === 'mrna') {
+                if (_G.current_gene_id != null) {
+                    generateLODPlot(_G.current_gene_id,  _G.current_level);
+                }
+            } else if (_G.current_level === 'protein') {
+                if (_G.current_gene_id != null) {
+                    generateLODPlot(_G.current_protein_id, _G.current_level);
+                }
+            } else {
+                if (_G.current_phenotype_id != null) {
+                    generateLODPlot(_G.current_phenotype_id, _G.current_level);
+                }
             }
-
         });
 
         $('#lbl_local').on("click", function() {
             _G.cond = "local";
-            if (_G.current_gene_id != null) {
-                generateLODPlot(_G.current_gene_id, _G.current_protein_id, _G.current_level);
+            if (_G.current_level === 'mrna') {
+                if (_G.current_gene_id != null) {
+                    generateLODPlot(_G.current_gene_id,  _G.current_level);
+                }
+            } else if (_G.current_level === 'protein') {
+                if (_G.current_gene_id != null) {
+                    generateLODPlot(_G.current_protein_id, _G.current_level);
+                }
+            } else {
+                if (_G.current_phenotype_id != null) {
+                    generateLODPlot(_G.current_phenotype_id, _G.current_level);
+                }
             }
         });
 
 
         $("#btnFactPlot").on('click', function() {
             console.log("getFactorOrder=", getFactorOrder());
-            generateProfilePlot(_G.current_gene_id, _G.current_protein_id, getFactorOrder());
+            let id = _G.current_gene_id;
+            if (_G.current_level === "protein") {
+                id = _G.current_protein_id;
+            } else if (_G.pheno_exp) {
+                id = _G.current_phenotype_id;
+            }
+
+
+            generateProfilePlot(id, _G.current_level, getFactorOrder());
         });
 
         // make sure search tables draw correctly
@@ -3144,6 +3567,68 @@ plotOptions: {
         console.log('DONE initializing!')
     }
 
+
+    function initPhenotypes(phenotype_data) {
+        _G.phenotypes = {};
+        let pheno_data = {};
+        for (a in phenotype_data) {
+            let category = phenotype_data[a].category;
+            _G.phenotypes[phenotype_data[a].data_name] = phenotype_data[a];
+            if (category in pheno_data) {
+                pheno_data[category].push(phenotype_data[a]);
+            } else {
+                pheno_data[category] = [phenotype_data[a]];
+            }
+        }
+
+        console.log(pheno_data);
+
+        $.typeahead({
+            input: '.js-typeahead-pheno',
+            minLength: 1,
+            maxItem: 100,
+            maxLength: "Infinity",
+            maxItemPerGroup: 100,
+            display: ["data_name", "short_name"],
+
+            template: '{{'{{'}}short_name{{'}}'}}</span> <small>({{'{{'}}data_name{{'}}'}})</small>',
+            dynamic:false,
+            order: "asc",
+            hint: true,
+            correlativeTemplate: true,
+            emptyTemplate: 'No result for "{{'{{'}}query{{'}}'}}"',
+            group: {
+                key: "category",
+                template: "{{'{{'}}category{{'}}'}}"
+            },
+            source:
+                phenotype_data
+            ,
+            generateOnLoad: true,
+            dropdownFilter: {
+                key: 'category',
+                template: "{{'{{'}}category{{'}}'}}",
+                all: 'All'
+            },
+            callback: {
+                onClickAfter: function (node, a, item, event) {
+
+                    event.preventDefault();
+
+                    // href key gets added inside item from options.href configuration
+                    console.log(item);
+
+                    selectPhenotype(item.data_name, _G.current_level);
+
+                },
+                onSubmit: function(node, form, item, event) {
+                    event.preventDefault();
+                }
+            },
+            debug: true
+        });
+    }
+
     $().ready(function () {
         init();
 
@@ -3154,10 +3639,11 @@ plotOptions: {
         console.log('Starting Queue...');
         var q = d3.queue()
                 .defer(loadOptions)
-                .defer(loadChromsomes)
+                .defer(loadChromosomes)
                 .defer(loadGenes)
                 .defer(loadProteins)
-                .await(function(error, options, chromosomes, genes, proteins) {
+                .defer(loadPhenotypes)
+                .await(function(error, options, chromosomes, genes, proteins, phenotypes) {
                     console.log('Queue done');
 
                     // TODO: handle errors, if error comes back we won't have data
@@ -3168,53 +3654,64 @@ plotOptions: {
                         return;
                     }
 
+                    _G.pheno_exp = false;
+                    if (phenotypes) {
+                        _G.pheno_exp = true;
+                        $("#search_pheno").removeClass("hidden");
+                        $("#mediation_div").addClass("hidden");
+                    } else {
+                        $("#search_gene").removeClass("hidden");
+                    }
 
-                    console.log('OPTIONS=', options);
+                    initPhenotypes(phenotypes);
 
                     _G.covar_factors = options.covar_factors;
                     _G.data_levels = options.data_levels;
-
-                    var simple_dict = {'mrna': 'mRNA', 'protein': 'Protein', 'pheno': 'Phenotype'};
-
-                    if (_G.data_levels.length > 1) {
-                        $.each(_G.data_levels, function(index, element) {
-                            var checked = '';
-                            if (index == 0) {
-                                checked = 'checked';
-                                _G.current_level = element;
-                            } 
-                            $('#div_btn_levels').append('<label id="lbl_level_' + element + '" class="btn btn-sm btn-flat btn-primary active"><input type="radio" name="radio_level" id="radio_level" autocomplete="off" ' + checked + '> ' + simple_dict[element] + '</label>');
-                        });
-
-                        $("#lbl_level_" + _G.current_level).click();
-
-                        $('#lbl_level_mrna').on("click", function() {
-                            _G.current_level = "mrna";
-                            findGene();
-                        });
-
-                        $('#lbl_level_protein').on("click", function() {
-                            _G.current_level = "protein";
-                            findGene();
-                        });
-
-
-                    } else {
-                        _G.current_level = _G.data_levels[0];                        
-                    }
-
+                    _G.max_lod_points = options.num_snps;
 
                     _G.chromosomes = {'idx': chromosomes.chromosomes, 'nameToIdx': {}};
-
                     $.each(chromosomes.chromosomes, function(index, element) {
                         _G.chromosomes['nameToIdx'][element.name] = index;
                     });
-
                     _G.chromosomes['totalLength'] = _G.chromosomes.idx[_G.chromosomes.idx.length-1].end;
 
 
-                    //console.log(genes);
-                    var _gene_ids = {};
+                    let simple_dict = {'mrna': 'mRNA',
+                                       'protein': 'Protein'};
+
+                    if (_G.data_levels.length > 1) {
+                        $.each(_G.data_levels, function(index, element) {
+                            console.log(index, element);
+                            let checked = '';
+                            if (index === 0) {
+                                checked = 'checked';
+                                _G.current_level = element;
+                            }
+
+                            if (_G.pheno_exp) {
+                                $('#div_btn_levels').append('<label id="lbl_level_' + index + '" class="btn btn-sm btn-flat btn-primary active"><input type="radio" name="radio_level" id="radio_level" autocomplete="off" ' + checked + '> ' + element + '</label>');
+                                $('#lbl_level_' + index).on("click", function() {
+                                    _G.current_level = element;
+                                    if (window.Typeahead['.js-typeahead-pheno'].item.data_name !== undefined) {
+                                        selectPhenotype(window.Typeahead['.js-typeahead-pheno'].item.data_name, element);
+                                    }
+                                });
+                            } else {
+                                $('#div_btn_levels').append('<label id="lbl_level_' + index + '" class="btn btn-sm btn-flat btn-primary active"><input type="radio" name="radio_level" id="radio_level" autocomplete="off" ' + checked + '> ' + simple_dict[element] + '</label>');
+                                $('#lbl_level_' + index).on("click", function() {
+                                    _G.current_level = element;
+                                    findGene();
+                                });
+                            }
+
+                        });
+
+                        $("#lbl_level_0").click();
+                    } else {
+                        _G.current_level = _G.data_levels[0];
+                    }
+
+                    let _gene_ids = {};
 
                     $.each(genes.ids, function(index, element) {
                         //console.log(index, element);
@@ -3228,7 +3725,7 @@ plotOptions: {
 
                     console.log(proteins);
                     _gene_ids = {};
-                    var _protein_ids = [];
+                    let _protein_ids = [];
 
                     $.each(proteins.ids, function(index, element) {
                         //console.log(index, element);
@@ -3241,6 +3738,7 @@ plotOptions: {
 
                     _G.proteins = {gene_ids:_gene_ids, proteins_ids: _protein_ids};
                     console.log('proteins=', _G.proteins);
+
 
 
                     buildHistory();
@@ -3296,16 +3794,12 @@ plotOptions: {
             var selectOptions = [];
 
             $.each(_G.covar_factors, function(index, element) {
-                var s = true;
-                if (index != 0) {
-                    s = false;
-                }
                 selectOptions.push({
                     label: element.display_name,
                     title: element.display_name,
                     value: element.column_name,
                     order: index,
-                    selected: s,
+                    selected: true,
                 });
 
             });
@@ -3315,8 +3809,8 @@ plotOptions: {
 
             $("#range_1").ionRangeSlider({
                   min: 1000,
-                  max: 64000,
-                  from: 2500,
+                  max: _G.max_lod_points,
+                  from: 10000,
                   type: 'single',
                   step: 100,
                   prettify: function (num) {
@@ -3339,7 +3833,7 @@ plotOptions: {
             });
 
             $("#btnSNPAssocRefresh").on('click', function() {
-                generateSNPAssocPlot(_G.snpAssocVars.ensembl_id, _G.snpAssocVars.chrom, _G.snpAssocVars.position);
+                generateSNPAssocPlot(_G.snpAssocVars.id, _G.snpAssocVars.chrom, _G.snpAssocVars.position);
             });
 
             _G.sliderSNP = $("#rangeSNPWindow").data("ionRangeSlider");

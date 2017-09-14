@@ -197,6 +197,13 @@ def blank():
     return render_template('blank.html', search_term=search_term, CONF=CONF)
 
 
+@app.route("/pheno")
+def pheno():
+    search_term = request.values.get('search_term', '')
+
+    return render_template('pheno.html', search_term=search_term, CONF=CONF)
+
+
 @app.route("/test")
 def test():
     # POST search_term = request.form.get("search_term")

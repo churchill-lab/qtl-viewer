@@ -1,5 +1,10 @@
 
 
+#form-pheno .typeahead__list {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 
     .row .row-spacer {
         padding-top:10px;
