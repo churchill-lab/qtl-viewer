@@ -167,6 +167,7 @@ def cache_view():
 
 
 @app.route("/")
+@basic_auth.required
 def index():
     # POST search_term = request.form.get("search_term")
     # GET  search_term = request.args.get("search_term")
