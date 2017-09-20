@@ -1010,10 +1010,12 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      ******************************************************************************************************************/
 
     /**
-     * Download options for the viewer.
-     * @param {function} callback - the function to call upon completion
+     * Download data.
+     * @param {string} URL - the URL to download data
+     * @param {string} description - descriptive text
+     * @param {function} callback - the callback function
      */
-    function downloadOptions(callback) {
+    function downloadData(URL, description, callback) {
         /*
          From d3.js documentation:
 
@@ -1025,21 +1027,30 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
          The optional second argument to the callback is the return value of the task.
          (To return multiple values from a single callback, wrap the results in an object or array.)
          */
-        let URL = _G.url_apis.options;
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading options: ', cacheURL);
+        URL = _G.url_proxy + URL;
+
+        console.log('Downloading: ', URL);
 
         $.ajax({
-            url: cacheURL,
+            url: URL,
             method: 'GET'
         }).done(function(data, textStatus, jqXHR) {
-            console.log('options download ', textStatus);
+            console.log('Download of ' + description + ':', data);
             callback(null, data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            displayError('Server Error', 'Unable to download options');
-            console.error('options download failure');
-            callback(errorThrown, null);
+            displayError('Server Error', 'Unable to download ' + description);
+            console.error(description, textStatus);
+            callback(textStatus, null);
         });
+    }
+
+    /**
+     * Download options for the viewer.
+     * @param {function} callback - the function to call upon completion
+     */
+    function downloadOptions(callback) {
+        let URL = _G.url_apis.options;
+        downloadData(URL, 'OPTIONS', callback);
     }
 
     /**
@@ -1048,20 +1059,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      */
     function downloadChromosomes(callback) {
         let URL = _G.url_chromosomes;
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading chromosomes: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('chromosome download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            displayError('Server Error', 'Unable to download chromosome information');
-            console.error('chromosome download failure');
-            callback(errorThrown, null);
-        });
+        downloadData(URL, 'CHROMOSOMES', callback);
     }
 
     /**
@@ -1069,23 +1067,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      * @param {function} callback - the function to call upon completion
      */
     function downloadGenes(callback) {
-        let URL = _G.url_apis.ids;
-        URL += '/mrna';
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading genes: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('gene download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            displayError('API Server Error', 'Error downloading gene information');
-            console.error('genes download failure');
-            callback(errorThrown, null);
-        });
+        let URL = _G.url_apis.ids + '/mrna';
+        downloadData(URL, 'GENES', callback);
     }
 
     /**
@@ -1093,23 +1076,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      * @param {function} callback - the function to call upon completion
      */
     function downloadProteins(callback) {
-        let URL = _G.url_apis.ids;
-        URL += '/protein';
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading proteins: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('protein download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            displayError('API Server Error', 'Error downloading protein information');
-            console.error('proteins download failure');
-            callback(errorThrown, null);
-        });
+        let URL = _G.url_apis.ids + '/protein';
+        downloadData(URL, 'PROTEINS', callback);
     }
 
     /**
@@ -1117,23 +1085,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      * @param {function} callback - the function to call upon completion
      */
     function downloadPhenotypes(callback) {
-        let URL = _G.url_apis.ids;
-        URL += '/phenotype';
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading phenotypes: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('phenotypes download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            displayError('API Server Error', 'Error downloading phenotype information');
-            console.error('phenotypes download failure');
-            callback(errorThrown, null);
-        });
+        let URL = _G.url_apis.ids + '/phenotype';
+        downloadData(URL, 'PHENOTYPES', callback);
     }
 
     /**
@@ -1149,20 +1102,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         URL += '&level=' + level;
         URL += '&regress_local=' + regressLocal;
         URL += '&ncores=' + _G.api_cores;
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading LOD data: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(lod_data, textStatus, jqXHR) {
-            console.log('lod download ', textStatus);
-            callback(null, lod_data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('lod download failure');
-            callback(errorThrown, null);
-        });
+        downloadData(URL, 'LOD DATA', callback);
     }
 
     /**
@@ -1182,48 +1122,22 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         URL += '&location=' + location;
         URL += '&window_size=' + windowSize;
         URL += '&ncores=' + _G.api_cores;
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading SNP association data: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('snpassoc download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('snpassoc download failure');
-            callback(errorThrown, null);
-        });
-
+        downloadData(URL, 'SNP ASSOC DATA', callback);
     }
 
     /**
      * Download mediation data from the server.
      * @param {string} id - unique identifier
      * @param {string} marker_id - unique marker identifier
+     * @param {string} level - current level
      * @param {function} callback - callback function to execute
      */
-    function downloadMediationData(id, marker_id, callback) {
+    function downloadMediationData(id, marker_id, level, callback) {
         let URL = _G.url_apis.mediate;
         URL += '?id=' + id;
         URL += '&mid=' + marker_id;
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading mediation data: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('mediate download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('mediate download failure');
-            callback(errorThrown, null);
-        });
-
+        URL += '&level=' + level;
+        downloadData(URL, 'MEDIATION DATA', callback);
     }
 
     /**
@@ -1243,20 +1157,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         URL += '&blup=' + blup;
         URL += '&regress_local=' + regressLocal;
         URL += '&ncores=' + _G.api_cores;
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading effect data: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('effect data download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('effect data download failure');
-            callback(errorThrown, null);
-        });
+        downloadData(URL, 'EFFECT DATA', callback);
     }
 
     /**
@@ -1269,20 +1170,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         let URL = _G.url_apis.expression;
         URL += '?id=' + id;
         URL += '&level=' + level;
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading profile data: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('profile data download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('profile data download failure');
-            callback(errorThrown, null);
-        });
+        downloadData(URL, 'PROFILE DATA', callback);
     }
 
     /**
@@ -1292,19 +1180,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      */
     function downloadGeneData(id, callback) {
         let URL = _G.url_apis.genes + id;
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading gene data: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('gene download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('gene download failure');
-            callback(errorThrown, null);
-        });
+        downloadData(URL, 'GENE DATA', callback);
     }
 
     /**
@@ -1318,20 +1194,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         let location = chromosome + ':' + start + '-' + end;
         let URL = _G.url_apis.genesByLocation;
         URL += '?term=' + location;
-
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading genes by location: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('genesByLocation download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('genesByLocation download failure');
-            callback(errorThrown, null);
-        });
+        downloadData(URL, 'GENES BY LOCATION', callback);
     }
 
     /**
@@ -1342,19 +1205,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
     function downloadPhenotypeData(id, callback) {
         let URL = _G.url_apis.phenotype;
         URL += '?id='+ id;
-        let cacheURL = _G.url_proxy + URL;
-        console.log('Downloading phenotype data: ', cacheURL);
-
-        $.ajax({
-            url: cacheURL,
-            method: 'GET'
-        }).done(function(data, textStatus, jqXHR) {
-            console.log('phenotype download ', textStatus);
-            callback(null, data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.error('phenotype download failure');
-            callback(errorThrown, null);
-        });
+        downloadData(URL, 'PHENOTYPE DATA', callback);
     }
 
     /*******************************************************************************************************************
@@ -1465,6 +1316,29 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         });
 
 
+        //
+        // build the vertical chromosome bars
+        //
+        let chromosomeAxisVals = [];
+        let chromosomeAxisText = {};
+        let chromosomeBands = [];
+
+        $.each(_G.chromosomes.idx, function(index, element) {
+
+            chromosomeAxisVals.push(element.mid);
+            chromosomeAxisText[element.mid] = element.name;
+
+            // TODO: style this
+            let fillColor = '#ffffff';
+            if ((index % 2) === 1) {
+                chromosomeBands.push({
+                    color: fillColor,
+                    from: element.start,
+                    to: element.end
+                });
+            }
+        });
+
         let plotShapes = [];
         let plotAnnotations = [];
 
@@ -1512,60 +1386,10 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         }
         {% endif %}
 
-        //
-        // build the vertical chromosome bars
-        //
-        let chromosomeAxisVals = [];
-        let chromosomeAxisText = {};
-        let chromosomeAxisVals2 = [];
-        let chromosomeAxisText2 = {};
-
-        let chromosomeBands = [];
-
-        $.each(_G.chromosomes.idx, function(index, element) {
-
-            chromosomeAxisVals.push(element.start);
-            chromosomeAxisText[element.start] = element.name;
-
-            chromosomeAxisVals2.push(element.mid);
-            chromosomeAxisText2[element.mid] = element.name;
-
-            // TODO: style this
-            let fillColor = '#ffffff';
-            if ((index % 2) === 1) {
-                chromosomeBands.push({
-                    color: fillColor,
-                    from: element.start,
-                    to: element.end
-                });
-            }
-            let s =  {
-                type: 'rect',
-                // x-reference is assigned to the x-values
-                xref: 'x',
-                // y-reference is assigned to the paper space (0 to 1)
-                yref: 'paper',
-                x0: element.start,
-                y0: 0,
-                x1: element.end,
-                y1: 1,
-                fillcolor: fillColor,
-                opacity: 0.2,
-                line: {
-                    width: 0.0
-                }
-            };
-
-
-            plotShapes.push(s);
-        });
-
         /*
         TODO: make sure other chromosome data files are working
         console.log('chromosomeAxisVals=', chromosomeAxisVals);
         console.log('chromosomeAxisText=', chromosomeAxisText);
-        console.log('chromosomeAxisVals2=', chromosomeAxisVals2);
-        console.log('chromosomeAxisText2=', chromosomeAxisText2);
         */
 
         _G.newLodData = newLodData;
@@ -1594,9 +1418,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                         // TODO: is _G.lodHover a good idea or can we get it from event
 
                         if (plot === 'plot_mediation') {
-                            generateMediationPlot(_G.current_gene_id, _G.lodHover.id);
+                            generateMediationPlot(id, _G.lodHover.id, level);
                         } else if (plot === 'plot_effect') {
-
                             generateEffectPlot(id, level, _G.lodHover.chr, $("#mediate_blup").is(':checked'), $("#cond_local").is(":checked"));
                         } else if (plot === 'plot_snpassoc') {
                             generateSNPAssocPlot(id, level, _G.lodHover.chr, _G.lodHover.chrPos, _G.sliderSNP.result.from_value);
@@ -1607,29 +1430,17 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 }
             },
 
-            xAxis: [{
+            xAxis: {
                 opposite: true,
                 tickWidth: 0,
                 labels: {
                     formatter: function () {
-                        return chromosomeAxisText2[this.value];
+                        return chromosomeAxisText[this.value];
                     }
                 },
-                tickPositions: chromosomeAxisVals2,
-                min:0,
-                floor:0,
-            }, {
-                tickWidth: 0,
-                labels: {
-                    formatter: function () {
-                        ''
-                    }
-                },
-                floor:0,
-                min:0,
                 tickPositions: chromosomeAxisVals,
-                alternateGridColor: '#dddddd',
-            }],
+                plotBands: chromosomeBands,
+            },
 
             yAxis: {
                 title: {
@@ -1680,7 +1491,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                             let plot=$('#secondaryPlotTabs').find('.active').attr('name');
 
                             if (plot === 'plot_mediation') {
-                                generateMediationPlot(id, event.point.id);
+                                generateMediationPlot(id, event.point.id, level);
                             } else if (plot === 'plot_effect') {
                                 generateEffectPlot(id, level, event.point.chr, $("#mediate_blup").is(':checked'), $("#cond_local").is(":checked"));
                             } else if (plot === 'plot_snpassoc') {
@@ -1693,48 +1504,17 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 }
             },
 
-            series: [
-                {
-                    type: 'line',
-                    turboThreshold: 0,
-                    showInLegend: false,
-                    downsample: {
-                        threshold: 10000 // 0 disables downsampling
-                    },
-                    data: newLodData,
-                    lineWidth: 0.5,
-                    color: 'black', // Color value
-                    xAxis: 1,
+            series: [{
+                type: 'line',
+                turboThreshold: 0,
+                showInLegend: false,
+                downsample: {
+                    threshold: 10000 // 0 disables downsampling
                 },
-                {
-                    type: 'line',
-                    turboThreshold: 0,
-                    showInLegend: false,
-                    className:'hidden',
-                    marker: {
-                            enabled: true
-                    },
-                    data: [{
-                            x: 0,
-                            y: 0,
-                            id: '',
-                            text: '',
-                            chr: '',
-                            chrPos: 0,
-                        }, {
-                            x: _G.chromosomes.totalLength,
-                            y: 0,
-                            id: '',
-                            text: '',
-                            chr: '',
-                            chrPos: 0,
-                        }
-                    ],
-                    lineWidth: 0,
-                    color: 'black', // Color value
-                    xAxis:0,
-                }
-            ],
+                data: newLodData,
+                lineWidth: 0.5,
+                color: 'black', // Color value
+            }],
 
             credits: {
                 enabled: false // A plugin for highcharts is of course using highcharts
@@ -2682,7 +2462,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      * @param {Object} geneData - gene information
      */
     function displayGeneData(geneData) {
-        console.log('Done displaying gene information:', geneData.id);
+        console.log('Displaying gene information:', geneData.id);
         let startFormat = formatMbp(geneData.start/1000000);
         let endFormat = formatMbp(geneData.end/1000000);
         let mbpDesc = 'Mbp';
@@ -2781,6 +2561,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 
         let _columns = [];
         let currentLevel = getCurrentLevel();
+
 
         if (currentLevel === 'mrna') {
             _columns.push({
@@ -2903,7 +2684,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
         $('#searchTerm').disable(false);
 
         // simulate a click event if the search yields only 1 result
-        if (Object.keys(_G.searchResults).length === 1) {
+        if ($('#search_results_table a').length === 1) {
             $('#search_results_table a')[0].click();
         }
     }
@@ -3100,14 +2881,15 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
      * Generate the mediation plot by first downloading the data and than plotting it.
      * @param {string} id - unique identifier
      * @param {string} mid - marker id
+     * @param {string} level - current level
      */
-    function generateMediationPlot(id, mid) {
-        console.log('Generating mediation plot: id=', id, ' mid=', mid);
+    function generateMediationPlot(id, mid, level) {
+        console.log('Generating mediation plot: id=', id, ' mid=', mid, ' level=', level);
 
         blockUser(BLOCK_STATE_LOD_SELECTION);
 
         d3.queue()
-            .defer(downloadMediationData, id, mid)
+            .defer(downloadMediationData, id, mid, level)
             .await(function(error, data) {
                 if (error) {
                     let message = 'Unable to download mediation data for <strong><em>';
@@ -3350,7 +3132,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
             return _G.data_levels[0];
         }
 
-        return val;
+        return val.toLowerCase();
     }
 
     /**
@@ -3379,7 +3161,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
 
                 _G.isPhenoExperiment = false;
 
-                if (phenotypes) {
+                if (phenotypes.ids.length) {
                     _G.isPhenoExperiment = true;
                     $('#search_pheno').removeClass('hidden');
                     $('#mediation_div').addClass('hidden');
@@ -3390,8 +3172,13 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 initPhenotypes(phenotypes);
 
                 _G.covar_factors = options.covar_factors;
-                _G.data_levels = options.data_levels;
                 _G.max_lod_points = options.num_snps;
+                _G.data_levels = options.data_levels;
+                if (!(_G.data_levels instanceof Array)) {
+                    // will be a string
+                    _G.data_levels = [options.data_levels];
+                }
+
 
                 _G.chromosomes = {'idx': chromosomes.chromosomes, 'nameToIdx': {}};
                 $.each(chromosomes.chromosomes, function(index, element) {
@@ -3403,7 +3190,8 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 let simple_dict = {'mrna': 'mRNA',
                                    'protein': 'Protein'};
 
-                if (_G.data_levels.length > 1) {
+                // data levels could be an array of levels or a string of just 1
+                if ((_G.data_levels instanceof Array) && (_G.data_levels.length > 1)) {
                     $.each(_G.data_levels, function(index, element) {
                         let active = '';
                         let checked = '';
@@ -3422,7 +3210,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                                 }
                             });
                         } else {
-                            $('#div_btn_levels').append('<label id="lbl_level_' + index + '" class="btn btn-sm btn-flat btn-primary ' + active + '"><input type="radio" name="radio_level" id="radio_level" autocomplete="off" ' + checked + '> ' + simple_dict[element] + '</label>');
+                            $('#div_btn_levels').append('<label id="lbl_level_' + index + '" class="btn btn-sm btn-flat btn-primary ' + active + '"><input type="radio" name="radio_level" id="radio_level" value="' + simple_dict[element] + '" autocomplete="off" ' + checked + '> ' + simple_dict[element] + '</label>');
                             $('#lbl_level_' + index).on("click", function() {
                                 findGene();
                             });
@@ -3431,6 +3219,7 @@ If using d3.v4.js, queue is incluced, however d3.v4.js breaks factexpviewer.js
                 }
 
                 let _gene_ids = {};
+
 
                 $.each(genes.ids, function(index, element) {
                     if (!(element.gene_id in _gene_ids)) {
