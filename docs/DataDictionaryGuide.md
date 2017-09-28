@@ -14,7 +14,7 @@ This is a summary of the minimal sufficient data descriptions required to conver
 `Note. Blank fields are interpreted as FALSE for logical and NA for all other types.`
 
 ***data_name***: this is the name that the investigator of the data column. It must match the column header in the data file and is not case sensitive. 
-* Required; must be unique.
+> Required; must be unique.
 
 `Note. Each column in the data file should have a header corresponding to *data_name*.  However, if a column header in the data file does not match any data_name in the dictionary they will be ignored. Matching must be exact but is not case sensitive. Conversely, any *data_name* in the dictionary that does not correspond to a column header in the data file will not be used in the R environment. These conventions allow to us subset data either by deleting columns from the data file with changing the dictionary or by deleting row entries in the data dictionary without changing the data file. Although matching dictionary data_names to columns in the data file is case insensitive, the case of *data_name* value will be preserved.`
 
