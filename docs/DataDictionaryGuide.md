@@ -48,7 +48,7 @@ This is a summary of the minimal sufficient data descriptions required to conver
 > Optional.
 
 ***is_factor***: an indicator, TRUE if the data are discrete factor levels.
->* Required.  
+> Required.  
 
 `Note. If is_numeric, is_date, and is_factor are all FALSE, the data column will be treated as a text field. Is_factor and is_numeric can both be TRUE but the factor levels should be given as integers, e.g., for mice samples at 3 ages use 6:12:18. Data that are listed as both numeric and factor, will be treated as numeric if used as phenotpyes and will be treated as a factor if used as a covariate.`
 
