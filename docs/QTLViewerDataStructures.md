@@ -72,7 +72,7 @@ The following column names must be present:
 
 | column_name | column_type | description |
 | ----------- | ---------- | ---------- |    
-| `marker` | character | name of the marker
+| `marker` | character | unique name of the marker
 | `chrom` | character | the chromosome
 | `pos` | numeric | position in megabases, (*For example 0.0-200.0*)
 
@@ -107,7 +107,8 @@ The following elements should be in each **mRNA** and **protein** `dataset.*` [l
 * [`datatype`](#mrna_datatype) - type of data, either **mRNA** or **protein**
 * [`display_name`](#mrna_display_name) - simple display name for the viewer
 * [`ensembl_version`](#mrna_ensembl_version) - version of Ensembl used for annot locations
-* [`expr`](#mrna_expr) -  expression data, samples (rows) x mrna (columns)
+* [`expr`](#mrna_expr) - expression data, samples (rows) x mrna (columns)
+* [`lod_peaks`](#mrna_lodpeaks) - lod peaks over a certain threshold
 * [`raw`](#mrna_raw) - matrix of raw mrna data (counts out of [EMASE](http://churchill-lab.github.io/emase/))
 * [`samples`](#mrna_samples) - sample annotations
 
@@ -130,7 +131,7 @@ The following column names must be present:
 | `end` | numeric | end position in megabases, (*For example 0.0-200.0*)
 | `strand` | numeric | -1 for negative, 1 for positive
 | `middle_point` | numeric | middle point in megabases, (*For example 0.0-200.0*)
-| `nearest_marker` | numeric | nearets marker in megabases, (*For example 0.0-200.0*)
+| `nearest_marker_id` | character | id pointing to [`marker`](#markers)
 
 `rownames` must also match the names of the `id` column
 
@@ -193,7 +194,23 @@ Please see the documentation at [Ensembl](http://www.ensembl.org/info/website/ar
 
 ------------
 
-#### `raw`<a name="mrna_raw"></a> *REQUIRED*
+#### `lod_peaks`<a name="mrna_load_peaks"></a> *REQUIRED*
+
+- **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** peak lod scores over a certain threshold
+
+The following column names must be present:
+
+| column_name | column_type | description |
+| ----------- | ---------- | ---------- |    
+| `annot_id` | character | id pointing to [`annots`](#mrna_annots)
+| `marker_id` | character | id pointing to [`marker`](#markers)
+| `lod` | numeric | lod score
+
+------------
+
+#### `raw`<a name="mrna_raw"></a> *OPTIONAL*
 
 - **R data type:** [matrix](http://www.r-tutor.com/r-introduction/matrix)
 
@@ -234,6 +251,7 @@ The following elements should be in each **phenotype** `dataset.*` [list](http:/
 * [`covar_factors`](#pheno_covar_factors) - specific information about the covars
 * [`datatype`](#pheno_datatype) - type of data, must be **phenotype**
 * [`display_name`](#pheno_display_name) - simple display name for the viewer
+* [`lod_peaks`](#pheno_lodpeaks) - lod peaks over a certain threshold
 * [`pheno`](#pheno_pheno) -  data, samples (rows) x mrna (columns)
 * [`samples`](#pheno_samples) - sample annotations
 
@@ -285,6 +303,22 @@ The following column names must be present:
 - **R data type:** character
 
 - **Description:** simple display name for the viewer
+
+------------
+
+#### `lod_peaks`<a name="pheno_load_peaks"></a> *REQUIRED*
+
+- **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** peak lod scores over a certain threshold
+
+The following column names must be present:
+
+| column_name | column_type | description |
+| ----------- | ---------- | ---------- |    
+| `annot_id` | character | id pointing to [`annots`](#pheno_annots)
+| `marker_id` | character | id pointing to [`marker`](#markers)
+| `lod` | numeric | lod score
 
 ------------
 
