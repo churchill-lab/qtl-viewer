@@ -16,7 +16,7 @@ The following sections try to explain what each element is required and which is
 
 The following elements should be in the `RData` file.  
 
-* [`genome_build`](#genome_build) - string specifying the genome build
+* [`genome.build`](#genome_build) - string specifying the genome build
 * [`genoprobs`](#genoprobs) - the genotype probabilities 
 * [`K`](#kinship) - the kinship matrix
 * [`map`](#map) - list of one element per chromosome, with the genomic position of each marker
@@ -26,7 +26,7 @@ The following elements should be in the `RData` file.
 
 ------------
 
-#### `genome_build`<a name="genome_build"></a> *OPTIONAL*
+#### `genome.build`<a name="genome_build"></a> *OPTIONAL*
 
 - **R data type:** character
 
@@ -103,12 +103,12 @@ The following elements should be in each **mRNA** and **protein** `dataset.*` [l
 
 * [`annots`](#mrna_annots) - annotations of the mrna or protein data
 * [`covar`](#mrna_covar) - matrix of covariates data, samples (rows) x covariates (columns)
-* [`covar_factors`](#mrna_covar_factors) - specific information about the covars
+* [`covar.factors`](#mrna_covar_factors) - specific information about the covars
 * [`datatype`](#mrna_datatype) - type of data, either **mRNA** or **protein**
-* [`display_name`](#mrna_display_name) - simple display name for the viewer
-* [`ensembl_version`](#mrna_ensembl_version) - version of Ensembl used for annot locations
+* [`display.name`](#mrna_display_name) - simple display name for the viewer
+* [`ensembl.version`](#mrna_ensembl_version) - version of Ensembl used for annot locations
 * [`expr`](#mrna_expr) - expression data, samples (rows) x mrna (columns)
-* [`lod_peaks`](#mrna_lodpeaks) - lod peaks over a certain threshold
+* [`lod.peaks`](#mrna_lodpeaks) - lod peaks over a certain threshold
 * [`raw`](#mrna_raw) - matrix of raw mrna data (counts out of [EMASE](http://churchill-lab.github.io/emase/))
 * [`samples`](#mrna_samples) - sample annotations
 
@@ -130,8 +130,8 @@ The following column names must be present:
 | `start` | numeric | start position in megabases, (*For example 0.0-200.0*)
 | `end` | numeric | end position in megabases, (*For example 0.0-200.0*)
 | `strand` | numeric | -1 for negative, 1 for positive
-| `middle_point` | numeric | middle point in megabases, (*For example 0.0-200.0*)
-| `nearest_marker_id` | character | id pointing to [`marker`](#markers)
+| `middle` | numeric | middle point in megabases, (*For example 0.0-200.0*)
+| `nearest.marker.id` | character | id pointing to [`marker`](#markers)
 
 `rownames` must also match the names of the `id` column
 
@@ -145,7 +145,7 @@ The following column names must be present:
 
 ------------
 
-#### `covar_factors`<a name="mrna_covar_factors"></a> *REQUIRED*
+#### `covar.factors`<a name="mrna_covar_factors"></a> *REQUIRED*
 
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
@@ -155,8 +155,8 @@ The following column names must be present:
 
 | column_name | column_type | description |
 | ----------- | ---------- | ---------- |    
-| `column_name` | character | column name in [`covar`](#mrna_covar)
-| `display_name` | character | display name for the viewer
+| `column.name` | character | column name in [`covar`](#mrna_covar)
+| `display.name` | character | display name for the viewer
 
 ------------
 
@@ -168,7 +168,7 @@ The following column names must be present:
 
 ------------
 
-#### `display_name`<a name="mrna_display_name"></a> *OPTIONAL*
+#### `display.name`<a name="mrna_display_name"></a> *OPTIONAL*
 
 - **R data type:** character
 
@@ -176,7 +176,7 @@ The following column names must be present:
 
 ------------
 
-#### `ensembl_version`<a name="mrna_ensembl_version"></a> *OPTIONAL*
+#### `ensembl.version`<a name="mrna_ensembl_version"></a> *OPTIONAL*
 
 - **R data type:** numeric
 
@@ -194,7 +194,7 @@ Please see the documentation at [Ensembl](http://www.ensembl.org/info/website/ar
 
 ------------
 
-#### `lod_peaks`<a name="mrna_load_peaks"></a> *REQUIRED*
+#### `lod.peaks`<a name="mrna_load_peaks"></a> *REQUIRED*
 
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
@@ -248,10 +248,10 @@ The following elements should be in each **phenotype** `dataset.*` [list](http:/
 
 * [`annots`](#pheno_annots) - data dictionary 
 * [`covar`](#pheno_covar) - matrix of covariates data, samples (rows) x covariates (columns)
-* [`covar_factors`](#pheno_covar_factors) - specific information about the covars
+* [`covar.factors`](#pheno_covar_factors) - specific information about the covars
 * [`datatype`](#pheno_datatype) - type of data, must be **phenotype**
-* [`display_name`](#pheno_display_name) - simple display name for the viewer
-* [`lod_peaks`](#pheno_lodpeaks) - lod peaks over a certain threshold
+* [`display.name`](#pheno_display_name) - simple display name for the viewer
+* [`lod.peaks`](#pheno_lodpeaks) - lod peaks over a certain threshold
 * [`pheno`](#pheno_pheno) -  data, samples (rows) x mrna (columns)
 * [`samples`](#pheno_samples) - sample annotations
 
@@ -275,7 +275,7 @@ TODO: DEFINE DATA DICTIONARY
 
 ------------
 
-#### `covar_factors`<a name="pheno_covar_factors"></a> *REQUIRED*
+#### `covar.factors`<a name="pheno_covar_factors"></a> *REQUIRED*
 
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
@@ -298,7 +298,7 @@ The following column names must be present:
 
 ------------
 
-#### `display_name`<a name="pheno_display_name"></a> *OPTIONAL*
+#### `display.name`<a name="pheno_display_name"></a> *OPTIONAL*
 
 - **R data type:** character
 
@@ -306,7 +306,7 @@ The following column names must be present:
 
 ------------
 
-#### `lod_peaks`<a name="pheno_load_peaks"></a> *REQUIRED*
+#### `lod.peaks`<a name="pheno_load_peaks"></a> *REQUIRED*
 
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
@@ -316,8 +316,8 @@ The following column names must be present:
 
 | column_name | column_type | description |
 | ----------- | ---------- | ---------- |    
-| `annot_id` | character | id pointing to [`annots`](#pheno_annots)
-| `marker_id` | character | id pointing to [`marker`](#markers)
+| `annot.id` | character | id pointing to [`annots`](#pheno_annots)
+| `marker.id` | character | id pointing to [`marker`](#markers)
 | `lod` | numeric | lod score
 
 ------------
