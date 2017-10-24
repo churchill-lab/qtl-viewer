@@ -28,9 +28,9 @@ The following elements should be in the `RData` file.
 
 #### `genome_build`<a name="genome_build"></a> *OPTIONAL*
 
-- **Description:** This is the genome build. For example, "GRCm38"
-
 - **R data type:** character
+
+- **Description:** This is the genome build. For example, "GRCm38"
 
 Please see the documentation at [Ensembl](http://www.ensembl.org/info/website/archives/assembly.html) for build information.
 
@@ -38,9 +38,9 @@ Please see the documentation at [Ensembl](http://www.ensembl.org/info/website/ar
 
 #### `genoprobs`<a name="genoprobs"></a> *REQUIRED*
 
-- **Description:** This is the genotype probabilities.
-
 - **R data type:** [calc_genoprobs](https://github.com/rqtl/qtl2geno)
+
+- **Description:** This is the genotype probabilities.
 
 Please see the documentation at [R/qtl2geno](https://github.com/rqtl/qtl2geno).
 
@@ -48,25 +48,25 @@ Please see the documentation at [R/qtl2geno](https://github.com/rqtl/qtl2geno).
 
 #### `K`<a name="kinship"></a> *REQUIRED*
 
-- **Description:** The kinship matrix
-
 - **R data type:** [list](http://www.r-tutor.com/r-introduction/list)
+
+- **Description:** The kinship matrix
 
 ------------
 
 #### `map`<a name="map"></a> *REQUIRED*
 
-- **Description:** A list of one element per chromosome, with the genomic position of each.
-
 - **R data type:** [list](http://www.r-tutor.com/r-introduction/list)
+
+- **Description:** A list of one element per chromosome, with the genomic position of each.
 
 ------------
 
 #### `markers`<a name="markers"></a> *REQUIRED*
 
-- **Description:** marker information 
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** marker information 
 
 The following column names must be present:
 
@@ -90,15 +90,16 @@ The following element is a *special* element and there must be at least per `RDa
 
 ### `dataset.*`<a name="data_elements"></a>
 
-The `*` part should be alpha-numeric text (underscores are allowed) that describes succinctly your data element.  There must be at least 1 `dataset.*` elements per `RData` file.  These elements will allow you to store multiple **mRNA**, **protein**, and **phenotype** data sets.
+- **R data type:** [list](http://www.r-tutor.com/r-introduction/list)
 
-For example, there could be `dataset.mRNA` and `dataset.mRNA2` to store 2 mRNA datasets.  The text for the `*` part should be any text that make sense to you or your dataset.  What is defined in the `dataset.*` element is what is more important.
+- **Description:** annotations for **mRNA** or **protein**
+The `*` part should be alpha-numeric text (underscores are allowed) that describes succinctly your data element.  There must be at least 1 `dataset.*` elements per `RData` file.  These elements will allow you to store multiple **mRNA**, **protein**, and **phenotype** data sets. For example, there could be `dataset.mRNA` and `dataset.mRNA2` to store 2 mRNA datasets.  The text for the `*` part should be any text that make sense to you or your dataset.  What is defined in the `dataset.*` element is what is more important.
 
 ------------
 
 ### mRNA and protein <a name="mrna_dataset"></a>`dataset.*`
 
-The following elements should be in each **mRNA** and **protein** `dataset.*`
+The following elements should be in each **mRNA** and **protein** `dataset.*` [list](http://www.r-tutor.com/r-introduction/list)
 
 * [`annots`](#mrna_annots) - annotations of the mrna or protein data
 * [`covar`](#mrna_covar) - matrix of covariates data, samples (rows) x covariates (columns)
@@ -114,9 +115,9 @@ The following elements should be in each **mRNA** and **protein** `dataset.*`
 
 #### `annots`<a name="mrna_annots"></a> *REQUIRED*
 
-- **Description:** annotations for **mRNA** or **protein**
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** annotations for **mRNA** or **protein**
 
 The following column names must be present:
 
@@ -137,17 +138,17 @@ The following column names must be present:
 
 #### `covar`<a name="mrna_covar"></a> *REQUIRED*
 
-- **Description:** covariates data, samples (rows) x covariates (columns)
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** covariates data, samples (rows) x covariates (columns)
 
 ------------
 
 #### `covar_factors`<a name="mrna_covar_factors"></a> *REQUIRED*
 
-- **Description:** covar information
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** covar information
 
 The following column names must be present:
 
@@ -160,25 +161,25 @@ The following column names must be present:
 
 #### `datatype`<a name="mrna_datatype"></a> *REQUIRED*
 
-- **Description:** **mRNA** or **protein**
-
 - **R data type:** character
+
+- **Description:** **mRNA** or **protein**
 
 ------------
 
 #### `display_name`<a name="mrna_display_name"></a> *OPTIONAL*
 
-- **Description:** simple display name for the viewer
-
 - **R data type:** character
+
+- **Description:** simple display name for the viewer
 
 ------------
 
 #### `ensembl_version`<a name="mrna_ensembl_version"></a> *OPTIONAL*
 
-- **Description:** Ensembl version number used in annotations
-
 - **R data type:** numeric
+
+- **Description:** Ensembl version number used in annotations
 
 Please see the documentation at [Ensembl](http://www.ensembl.org/info/website/archives/assembly.html) for build information.
 
@@ -186,25 +187,25 @@ Please see the documentation at [Ensembl](http://www.ensembl.org/info/website/ar
 
 #### `expr`<a name="mrna_expr"></a> *REQUIRED*
 
-- **Description:** expression data, [`samples`](#mrna_samples) (rows) x [`annots`](#mrna_annots) (columns)
-
 - **R data type:** [matrix](http://www.r-tutor.com/r-introduction/matrix)
+
+- **Description:** expression data, [`samples`](#mrna_samples) (rows) x [`annots`](#mrna_annots) (columns)
 
 ------------
 
 #### `raw`<a name="mrna_raw"></a> *REQUIRED*
 
-- **Description:** raw expression data, [`samples`](#mrna_samples) (rows) x [`annots`](#mrna_annots) (columns)
-
 - **R data type:** [matrix](http://www.r-tutor.com/r-introduction/matrix)
+
+- **Description:** raw expression data, [`samples`](#mrna_samples) (rows) x [`annots`](#mrna_annots) (columns)
 
 ------------
 
 #### `samples`<a name="mrna_samples"></a> *REQUIRED*
 
-- **Description:** sample annotations
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** sample annotations
 
 The following column names must be present:
 
@@ -226,7 +227,7 @@ Extra columns can be included, and will be rendered in the viewer. For example,
 
 ### phenotype <a name="pheno_dataset"></a>`dataset.*`
 
-The following elements should be in each **phenotype** `dataset.*`
+The following elements should be in each **phenotype** `dataset.*` [list](http://www.r-tutor.com/r-introduction/list).
 
 * [`annots`](#pheno_annots) - data dictionary 
 * [`covar`](#pheno_covar) - matrix of covariates data, samples (rows) x covariates (columns)
@@ -240,26 +241,27 @@ The following elements should be in each **phenotype** `dataset.*`
 
 #### `annots`<a name="pheno_annots"></a> *REQUIRED*
 
-- **Description:** data dictionary for phenotypes
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
+- **Description:** data dictionary for phenotypes
+
 TODO: DEFINE DATA DICTIONARY
+
 ------------
 
 #### `covar`<a name="pheno_covar"></a> *REQUIRED*
 
-- **Description:** covariates data, samples (rows) x covariates (columns)
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** covariates data, samples (rows) x covariates (columns)
 
 ------------
 
 #### `covar_factors`<a name="pheno_covar_factors"></a> *REQUIRED*
 
-- **Description:** covar information
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** covar information
 
 The following column names must be present:
 
@@ -272,33 +274,33 @@ The following column names must be present:
 
 #### `datatype`<a name="pheno_datatype"></a> *REQUIRED*
 
-- **Description:** MUST BE **phenotype**
-
 - **R data type:** character
+
+- **Description:** MUST BE **phenotype**
 
 ------------
 
 #### `display_name`<a name="pheno_display_name"></a> *OPTIONAL*
 
-- **Description:** simple display name for the viewer
-
 - **R data type:** character
+
+- **Description:** simple display name for the viewer
 
 ------------
 
 #### `pheno`<a name="pheno_pheno"></a> *REQUIRED*
 
-- **Description:** pheno data, [`samples`](#pheno_samples) (rows) x [`annots`](#pheno_annots) (columns)
-
 - **R data type:** [matrix](http://www.r-tutor.com/r-introduction/matrix)
+
+- **Description:** pheno data, [`samples`](#pheno_samples) (rows) x [`annots`](#pheno_annots) (columns)
 
 ------------
 
 #### `samples`<a name="pheno_samples"></a> *REQUIRED*
 
-- **Description:** sample annotations
-
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+
+- **Description:** sample annotations
 
 The following column names must be present:
 
