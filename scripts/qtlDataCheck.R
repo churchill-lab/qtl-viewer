@@ -50,13 +50,13 @@ CheckDatasets <- function(all_vars) {
     datasets <- grep('^dataset*', apropos('dataset\\.'), value=TRUE)
 
     # expected elements
-    phenoNames <- c('annots', 'covar', 'covar.factors', 'datatype', 'display.name', 'lod.peaks', 'pheno', 'samples')
-    phenoClasses <- c('data.frame', 'data.frame', 'data.frame', 'character', 'character', 'data.frame', 'matrix', 'data.frame')
-    phenoRequired <- c(TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE)
+    phenoNames   <- c('annots',     'covar',  'covar.factors', 'datatype',  'display.name', 'lod.peaks',  'pheno',  'samples')
+    phenoClasses <- c('data.frame', 'matrix', 'data.frame',    'character', 'character',    'data.frame', 'matrix', 'data.frame')
+    phenoRequired <- c(TRUE,         TRUE,     TRUE,            TRUE,        FALSE,          TRUE,         TRUE,     TRUE)
     
-    mrnaNames <- c('annots', 'covar', 'covar.factors', 'datatype', 'display.name', 'ensembl.version', 'expr', 'lod.peaks', 'raw', 'samples')
-    mrnaClasses <- c('data.frame', 'data.frame', 'data.frame', 'character', 'character', 'numeric', 'matrix', 'data.frame', 'matrix', 'data.frame')
-    mrnaRequired <- c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE)
+    mrnaNames   <- c('annots',     'covar',      'covar.factors', 'datatype',  'display.name', 'ensembl.version', 'expr',   'lod.peaks',  'raw',    'samples')
+    mrnaClasses <- c('data.frame', 'data.frame', 'data.frame',    'character', 'character',    'numeric',         'matrix', 'data.frame', 'matrix', 'data.frame')
+    mrnaRequired <- c(TRUE,         TRUE,         TRUE,            TRUE,        FALSE,          FALSE,             TRUE,     TRUE,         FALSE,    TRUE)
     
     # construct the data.frame
     dataCheck <- data.frame(name=mrnaNames, class=mrnaClasses, required=mrnaRequired, stringsAsFactors=FALSE)
@@ -109,9 +109,51 @@ CheckDatasets <- function(all_vars) {
 }
 
 
+# Verify that the sample IDs and marker IDs match between all of the objects in a dataset.
+# This assumes that the dataset has already been checked to contain 'datatype'.
+# Argument: ds: list that is a dataset.
+CheckDataNames <- function(ds) {
+
+    if(ds$datatype == "phenotype") {
+
+        # Phenotype names in phenotype annotation.
+        pheno.union = union(ds$annots$R_name, colnames(ds$pheno))
+        pheno.inter = intersect(ds$annots$R_name, colnames(ds$pheno))
+        if(length(pheno.union) 1= length(pheno.intersect))) {
+            wh <- setdiff(pheno.union, pheno.intersect)
+            print("ERROR: The following phenotypes do not match between pheno and annots...")
+            print(paste(pheno.union[wh], collapse = ", "))
+        }
+
+        # Sample IDs match everywhere.
+        if(!all(rownames(ds$pheno) != rownames(ds$covar))) {
+            print("ERROR: Samples IDs do not match between pheno and covar.")
+        }
+
+        gp <- get(grep('^genoprobs', apropos('genoprobs'), value=TRUE))
+
+        if(!all(rownames(ds$pheno) != rownames(ds$covar))) {
+            print("ERROR: Samples IDs do not match between pheno and covar.")
+        }
+
+        if(rownames(pheno) != rownames(samples)) {
+            print("ERROR: Sample IDs in pheno do not match those in samples.")
+        }
+
+    } else if(ds$datatype == "mRNA" | ds$datatype == "protein"){
+
+        # TODO: Fill this in.
+
+    } else {
+        stop("ERROR: Bad datatype for dataset.")
+    }
+}
+
+
 CheckExtraVars <- function(allNames) {
+
     # Check for extra variables
-    expectedNames <- c('genome_build', 'genoprobs', 'K', 'map', 'markers',
+    expectedNames <- c('genome.build', 'genoprobs', 'K', 'map', 'markers',
                        grep('^dataset*', apropos('dataset\\.'), value=TRUE))
     
     extraNames <- setdiff(allNames, expectedNames)
@@ -119,9 +161,50 @@ CheckExtraVars <- function(allNames) {
         print('Warning: the following extra variables were found...')
         print(extraNames)
     }
+
+    if(any(!expectedNames[1:5] %in% allNames)) {
+        wh <- which(!(expectedNames[1:5] %in% allNames))
+        print(paste0("ERROR: The followign required variables not found..."))
+        print(paste(expectedNames[wh], collapse = ", "))
+    }
+
+    # At this point, genoprobs, K, map and markers are in the environment.
+
+    # Check Sample IDs for genoprobs and K.
+    if(length(genoprobs) != length(K)) {
+        print(paste0("ERROR: genoprobs (", length(genoprobs), ") and K (", length(K), ") do not have the same length."))
+    } else {
+        if(any(names(genoprobs) != names(K))) {
+            print("ERROR: names of genoprobs and K do not match.")
+            print(paste("names(genoprobs) =", paste(names(genoprobs), collpase = ", "))
+            print(paste("names(K) =", paste(names(K), collpase = ", "))
+        }
+
+        rownames.eq <- mapply(function(x, y) { all(rownames(x) == rownames(y)) }, genoprobs, K)
+        if(any(rownames.eq == FALSE)) {
+            print("ERROR: sample IDs do not match between genoprobs and K.")
+        }
+    }
+
+    # Check Marker IDs for genoprobs and map.
+    if(length(genoprobs) != length(map)) {
+        print(paste0("ERROR: genoprobs (", length(genoprobs), ") and map (", length(map), ") do not have the same length."))
+    } else {
+        rownames.eq <- mapply(function(x, y) { all(dimnames(x)[[3]] == names(y)) }, genoprobs, map)
+        if(any(rownames.eq == FALSE)) {
+            print("ERROR: marker names do not match between genoprobs and map.")
+        }
+    }
+
+    # Check dimensions of markers and map.
+    map.length = sum(sapply(map, length))
+    if(map.length != nrow(markers)) {
+        print(paste("ERROR: Number of rows in markers (", nrow(markers), ") does not equal the number of markers in map (", map.length, ")",))
+    }
 }
 
 
 CheckVariables()
 CheckDatasets()
-#CheckExtraVars(ls())
+CheckExtraVars(ls())
+CheckDataNames()
