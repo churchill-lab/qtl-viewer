@@ -119,7 +119,7 @@ CheckDataNames <- function(ds) {
         # Phenotype names in phenotype annotation.
         pheno.union = union(ds$annots$R_name, colnames(ds$pheno))
         pheno.inter = intersect(ds$annots$R_name, colnames(ds$pheno))
-        if(length(pheno.union) 1= length(pheno.intersect))) {
+        if(length(pheno.union) != length(pheno.intersect)) {
             wh <- setdiff(pheno.union, pheno.intersect)
             print("ERROR: The following phenotypes do not match between pheno and annots...")
             print(paste(pheno.union[wh], collapse = ", "))
@@ -176,8 +176,8 @@ CheckExtraVars <- function(allNames) {
     } else {
         if(any(names(genoprobs) != names(K))) {
             print("ERROR: names of genoprobs and K do not match.")
-            print(paste("names(genoprobs) =", paste(names(genoprobs), collpase = ", "))
-            print(paste("names(K) =", paste(names(K), collpase = ", "))
+            print(paste("names(genoprobs) =", paste(names(genoprobs), collpase = ", ")))
+            print(paste("names(K) =", paste(names(K), collpase = ", ")))
         }
 
         rownames.eq <- mapply(function(x, y) { all(rownames(x) == rownames(y)) }, genoprobs, K)
@@ -203,7 +203,8 @@ CheckExtraVars <- function(allNames) {
     }
 }
 
-
+# Test code...
+load("/hpcdata/gac/derived/Attie_DO_Metabolomics/qtl2_input/attie_all_mass_spec_qtl2_input_v3.Rdata")
 CheckVariables()
 CheckDatasets()
 CheckExtraVars(ls())
