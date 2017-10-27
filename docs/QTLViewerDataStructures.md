@@ -263,7 +263,7 @@ The following elements should be in each **phenotype** `dataset.*` [list](http:/
 
 - **Description:** data dictionary for phenotypes
 
-TODO: DEFINE DATA DICTIONARY
+Formatted as in the [DataDictionaryGuide](https://github.com/churchill-lab/qtl-viewer/blob/master/docs/DataDictionaryGuide.md).
 
 ------------
 
