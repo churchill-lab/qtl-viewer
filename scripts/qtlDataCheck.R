@@ -73,7 +73,7 @@ CheckDatasets <- function(all_vars) {
         
         dataType = dataset[['datatype']]
         
-        if (!(dataType %in% c('protein', 'mRNA', 'pheno'))) {
+        if (!(dataType %in% c('protein', 'mRNA', 'phenotype'))) {
             print(paste0('ERROR: data_type of ', dataType, ' is invalid in dataset: ', d))
             print('ERROR: data_type should be mRNA, protein, or pheno')
             print(paste0('ERROR: Skipping rest of check for dataset: ', d))
@@ -105,6 +105,8 @@ CheckDatasets <- function(all_vars) {
                 }
             }
         }
+
+        CheckDataNames(ds = dataset)
     }
 }
 
@@ -122,7 +124,7 @@ CheckDataNames <- function(ds) {
         if(length(pheno.union) != length(pheno.inter)) {
             wh <- setdiff(pheno.union, pheno.inter)
             print("ERROR: The following phenotypes do not match between pheno and annots...")
-            print(paste(pheno.union[wh], collapse = ", "))
+            print(paste(wh, collapse = ", "))
         }
 
         # Sample IDs match everywhere.
@@ -134,7 +136,7 @@ CheckDataNames <- function(ds) {
             print("ERROR: Samples IDs do not match between pheno and genoprobs.")
         }
 
-    } else if(ds$datatype == "mRNA" | ds$datatype == "protein"){
+    } else if(ds[["datatype"]] == "mRNA" | ds[["datatype"]] == "protein"){
 
         # TODO: Fill this in.
 
