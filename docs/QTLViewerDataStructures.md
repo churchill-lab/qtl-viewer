@@ -306,7 +306,7 @@ The following column names must be present:
 
 ------------
 
-#### `lod.peaks`<a name="pheno_load_peaks"></a> *REQUIRED*
+#### `lod.peaks`<a name="pheno_lodpeaks"></a> *REQUIRED*
 
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
