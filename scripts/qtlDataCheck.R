@@ -119,25 +119,19 @@ CheckDataNames <- function(ds) {
         # Phenotype names in phenotype annotation.
         pheno.union = union(ds$annots$R_name, colnames(ds$pheno))
         pheno.inter = intersect(ds$annots$R_name, colnames(ds$pheno))
-        if(length(pheno.union) != length(pheno.intersect)) {
-            wh <- setdiff(pheno.union, pheno.intersect)
+        if(length(pheno.union) != length(pheno.inter)) {
+            wh <- setdiff(pheno.union, pheno.inter)
             print("ERROR: The following phenotypes do not match between pheno and annots...")
             print(paste(pheno.union[wh], collapse = ", "))
         }
 
         # Sample IDs match everywhere.
-        if(!all(rownames(ds$pheno) != rownames(ds$covar))) {
+        if(!all(rownames(ds$pheno) == rownames(ds$covar))) {
             print("ERROR: Samples IDs do not match between pheno and covar.")
         }
 
-        gp <- get(grep('^genoprobs', apropos('genoprobs'), value=TRUE))
-
-        if(!all(rownames(ds$pheno) != rownames(ds$covar))) {
-            print("ERROR: Samples IDs do not match between pheno and covar.")
-        }
-
-        if(rownames(pheno) != rownames(samples)) {
-            print("ERROR: Sample IDs in pheno do not match those in samples.")
+        if(!all(rownames(ds$pheno) %in% rownames(genoprobs[[1]]))) {
+            print("ERROR: Samples IDs do not match between pheno and genoprobs.")
         }
 
     } else if(ds$datatype == "mRNA" | ds$datatype == "protein"){
@@ -208,4 +202,5 @@ load("/hpcdata/gac/derived/Attie_DO_Metabolomics/qtl2_input/attie_all_mass_spec_
 CheckVariables()
 CheckDatasets()
 CheckExtraVars(ls())
-CheckDataNames()
+CheckDataNames(ds = get(apropos("^dataset")[1]))
+
