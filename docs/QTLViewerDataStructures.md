@@ -139,9 +139,9 @@ The following column names must be present:
 
 #### `covar`<a name="mrna_covar"></a> *REQUIRED*
 
-- **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+- **R data type:** [matrix](http://www.r-tutor.com/r-introduction/matrix)
 
-- **Description:** covariates data, samples (rows) x covariates (columns)
+- **Description:** covariates data, samples (rows) x covariates (columns) as produced by [model.matrix](https://www.rdocumentation.org/packages/stats/versions/3.4.1/topics/model.matrix).
 
 ------------
 
@@ -269,9 +269,9 @@ Formatted as in the [DataDictionaryGuide](https://github.com/churchill-lab/qtl-v
 
 #### `covar`<a name="pheno_covar"></a> *REQUIRED*
 
-- **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
+- **R data type:** [matrix](http://www.r-tutor.com/r-introduction/matrix)
 
-- **Description:** covariates data, samples (rows) x covariates (columns)
+- **Description:** covariates data, samples (rows) x covariates (columns) as produced by [model.matrix](https://www.rdocumentation.org/packages/stats/versions/3.4.1/topics/model.matrix).
 
 ------------
 
