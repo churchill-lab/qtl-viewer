@@ -204,8 +204,8 @@ The following column names must be present:
 
 | column_name | column_type | description |
 | ----------- | ---------- | ---------- |    
-| `annot_id` | character | id pointing to [`annots`](#mrna_annots)
-| `marker_id` | character | id pointing to [`marker`](#markers)
+| `annot.id` | character | id pointing to [`annots`](#mrna_annots)
+| `marker.id` | character | id pointing to [`marker`](#markers)
 | `lod` | numeric | lod score
 
 ------------
