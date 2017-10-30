@@ -194,7 +194,7 @@ Please see the documentation at [Ensembl](http://www.ensembl.org/info/website/ar
 
 ------------
 
-#### `lod.peaks`<a name="mrna_load_peaks"></a> *REQUIRED*
+#### `lod.peaks`<a name="mrna_lodpeaks"></a> *REQUIRED*
 
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
