@@ -117,7 +117,7 @@ For example, once each element has been formatted accordingly, the elements shou
 ```CompileDataset
 dataset.mrna <- c(“annots” = annots.mrna,
                   “covar” = covar,
-                  "covar.factor" = covar.factors,
+                  "covar.factors" = covar.factors,
                   ...)
 ```
 
