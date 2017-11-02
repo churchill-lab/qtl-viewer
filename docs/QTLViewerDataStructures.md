@@ -112,7 +112,7 @@ The following elements should be in each **mRNA** and **protein** `dataset.*` [l
 * [`raw`](#mrna_raw) - matrix of raw mrna data (counts out of [EMASE](http://churchill-lab.github.io/emase/))
 * [`samples`](#mrna_samples) - sample annotations
 
-For example, once each element has been formatted accordingly, the elements should be consolidated in to the `dataset.*` via the following code:
+For example, once each element has been formatted accordingly, the elements can be compiled in to the `dataset.*` via the following code:
 
 ```CompileDataset
 dataset.mrna <- c(“annots” = annots.mrna,
@@ -120,7 +120,6 @@ dataset.mrna <- c(“annots” = annots.mrna,
                   "covar.factors" = covar.factors,
                   ...)
 ```
-
 
 ------------
 
