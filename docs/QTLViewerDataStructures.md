@@ -115,7 +115,7 @@ The following elements should be in each **mRNA** and **protein** `dataset.*` [l
 For example, once each element has been formatted accordingly, the elements can be compiled in to the `dataset.*` via the following code:
 
 ```CompileDataset
-dataset.mrna <- c(“annots” = annots.mrna,
+dataset.mrna <- list(“annots” = annots.mrna,
                   “covar” = covar,
                   "covar.factors" = covar.factors,
                   ...)
