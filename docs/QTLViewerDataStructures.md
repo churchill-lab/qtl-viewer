@@ -324,7 +324,7 @@ The following column names must be present:
 
 #### `pheno`<a name="pheno_pheno"></a> *REQUIRED*
 
-- **R data type:** [matrix](http://www.r-tutor.com/r-introduction/matrix)
+- **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
 - **Description:** pheno data, [`samples`](#pheno_samples) (rows) x [`annots`](#pheno_annots) (columns)
 
