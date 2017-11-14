@@ -1,7 +1,3 @@
-#
-# VERY rough
-#
-
 IsVariableOK <- function(varName, varClass, varRequired) {
     # Check if varable is good 
     # 
@@ -51,11 +47,11 @@ CheckDatasets <- function(all_vars) {
 
     # expected elements
     phenoNames   <- c('annots',     'covar',  'covar.factors', 'datatype',  'display.name', 'lod.peaks',  'pheno',  'samples')
-    phenoClasses <- c('data.frame', 'matrix', 'data.frame',    'character', 'character',    'data.frame', 'matrix', 'data.frame')
+    phenoClasses <- c('data.frame', 'matrix', 'data.frame',    'character', 'character',    'data.frame', 'data.frame', 'data.frame')
     phenoRequired <- c(TRUE,         TRUE,     TRUE,            TRUE,        FALSE,          TRUE,         TRUE,     TRUE)
     
     mrnaNames   <- c('annots',     'covar',      'covar.factors', 'datatype',  'display.name', 'ensembl.version', 'expr',   'lod.peaks',  'raw',    'samples')
-    mrnaClasses <- c('data.frame', 'data.frame', 'data.frame',    'character', 'character',    'numeric',         'matrix', 'data.frame', 'matrix', 'data.frame')
+    mrnaClasses <- c('data.frame', 'matrix', 'data.frame',    'character', 'character',    'numeric',         'matrix', 'data.frame', 'matrix', 'data.frame')
     mrnaRequired <- c(TRUE,         TRUE,         TRUE,            TRUE,        FALSE,          FALSE,             TRUE,     TRUE,         FALSE,    TRUE)
     
     # construct the data.frame
@@ -63,6 +59,7 @@ CheckDatasets <- function(all_vars) {
     
     # be explicit to the end user, we could have used mapply and some trickery, but this is simple
     for (d in datasets) {
+
         dataset <- get(d)
         
         if (!('datatype' %in% names(dataset))) {
@@ -106,34 +103,47 @@ CheckDatasets <- function(all_vars) {
             }
         }
 
-        CheckDataNames(ds = dataset)
+        CheckDataNames(name = d, ds = dataset)
     }
 }
 
 
 # Verify that the sample IDs and marker IDs match between all of the objects in a dataset.
 # This assumes that the dataset has already been checked to contain 'datatype'.
-# Argument: ds: list that is a dataset.
-CheckDataNames <- function(ds) {
+# Arguments: name: character string contianing the dataset name.
+#            ds: list containing the dataset object.
+CheckDataNames <- function(name, ds) {
 
     if(ds$datatype == "phenotype") {
 
+        # Get the column names for the phenotypes and non-phenotypes by looking at the "is_pheno"
+        # column in annots.
+        names.pheno     = ds$annots$R_name[ds$annots$is_pheno == TRUE]
+        names.not.pheno = ds$annots$R_name[ds$annots$is_pheno == FALSE]
+
         # Phenotype names in phenotype annotation.
-        pheno.union = union(ds$annots$R_name, colnames(ds$pheno))
-        pheno.inter = intersect(ds$annots$R_name, colnames(ds$pheno))
-        if(length(pheno.union) != length(pheno.inter)) {
-            wh <- setdiff(pheno.union, pheno.inter)
-            print("ERROR: The following phenotypes do not match between pheno and annots...")
+        if(!all(names.pheno %in% colnames(ds$pheno))) {
+            wh = setdiff(names.pheno, colnames(ds$pheno))
+            print(paste0("ERROR: ", name, " : the following column names in \'annots\' ",
+                  "were not found in \'pheno\'."))
             print(paste(wh, collapse = ", "))
         }
 
+        # Samples column names in phenotype annotation.
+        if(!all(names.not.pheno %in% colnames(ds$samples))) {
+            wh = setdiff(names.not.pheno, colnames(ds$samples))
+            print(paste0("ERROR: ", name, " : the following column names in \'annots\' ",
+                  "were not found in \'samples\'."))
+            print(paste(wh, collapse = ", "))
+        }
+        
         # Sample IDs match everywhere.
-        if(!all(rownames(ds$pheno) == rownames(ds$covar))) {
-            print("ERROR: Samples IDs do not match between pheno and covar.")
+        if(!all(rownames(ds$pheno) %in% rownames(ds$covar))) {
+            print(paste("ERROR: ", name,": Samples IDs do not match between pheno and covar."))
         }
 
         if(!all(rownames(ds$pheno) %in% rownames(genoprobs[[1]]))) {
-            print("ERROR: Samples IDs do not match between pheno and genoprobs.")
+            print(paste("ERROR: ", name,": Samples IDs do not match between pheno and genoprobs."))
         }
 
     } else if(ds[["datatype"]] == "mRNA" | ds[["datatype"]] == "protein"){
@@ -198,10 +208,3 @@ CheckExtraVars <- function(allNames) {
         print(paste("ERROR: Number of rows in markers (", nrow(markers), ") does not equal the number of markers in map (", map.length, ")",))
     }
 }
-
-# Test code...
-load("/hpcdata/gac/derived/Attie_DO_Metabolomics/qtl2_input/attie_all_mass_spec_qtl2_input_v3.Rdata")
-CheckVariables()
-CheckDatasets()
-CheckExtraVars(ls())
-CheckDataNames(ds = get(apropos("^dataset")[1]))
