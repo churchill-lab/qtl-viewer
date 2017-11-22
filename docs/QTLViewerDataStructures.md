@@ -124,7 +124,8 @@ The following column names must be present:
 
 | column_name | column_type | description |
 | ----------- | ---------- | ---------- |    
-| `id` | character | Ensembl ID
+| `protein_id` | character | Ensembl Protein ID **(only if protein, omit column if mRNA)**
+| `gene_id` | character | Ensembl Gene ID
 | `symbol` | character | the symbol
 | `chr` | character | chromosome
 | `start` | numeric | start position in megabases, (*For example 0.0-200.0*)
