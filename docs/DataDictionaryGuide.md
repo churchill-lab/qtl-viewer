@@ -58,7 +58,7 @@ This is a summary of the minimal sufficient data descriptions required to conver
 ***is_covar***: an indicator, TRUE if data column is to be used as a covariate.
 > Required.
 
-***is_pheno***: an indicator, TRUE if data column is to be used as a phenotype. Must be numeric.
+***is_pheno***: an indicator, TRUE if data column is to be used as a phenotype.
 > Required.
 
 `Note. Data columns that are covariates or phenotypes are placed in different data structures in the R/qtl2 environment.  If both is_covar and is_pheno are true the data column will be represented in both data structures. See above note about factors and numeric variables.`
