@@ -17,7 +17,7 @@ The following sections try to explain what each element is required and which is
 The following elements should be in the `RData` file.  
 
 * [`genome.build`](#genome_build) - string specifying the genome build
-* [`genoprobs`](#genoprobs) - the genotype probabilities 
+* [`genoprobs`](#genoprobs) - the genotype probabilities
 * [`K`](#kinship) - the kinship matrix
 * [`map`](#map) - list of one element per chromosome, with the genomic position of each marker
 * [`markers`](#markers) - marker names and positions
@@ -66,7 +66,7 @@ Please see the documentation at [R/qtl2geno](https://github.com/rqtl/qtl2geno).
 
 - **R data type:** [data.frame](http://www.r-tutor.com/r-introduction/data-frame)
 
-- **Description:** marker information 
+- **Description:** marker information
 
 The following column names must be present:
 
@@ -80,24 +80,24 @@ The following column names must be present:
 
 ------------
 
-## Configurable Elements
+## Configurable `dataset.*` lists
 
-The following element is a *special* element and there must be at least per `RData` file.
+The `dataset.*` is a *special* [list](http://www.r-tutor.com/r-introduction/list), and there must be at least one per `RData` file. Each `dataset.*` contains elements pertaining to either mRNA, protein, or phenotype.
 
 * [`dataset.*`](#data_elements) - special element
 
-**mRNA**, **protein**, and **phenotype** data sets CAN be configured by `dataset.*` elements.
+**mRNA**, **protein**, and **phenotype** datasets CAN be configured by `dataset.*` lists.
 
 ### `dataset.*`<a name="data_elements"></a>
 
 - **R data type:** [list](http://www.r-tutor.com/r-introduction/list)
 
-- **Description:** annotations for **mRNA** or **protein**
-The `*` part should be alpha-numeric text (underscores are allowed) that describes succinctly your data element.  There must be at least 1 `dataset.*` elements per `RData` file.  These elements will allow you to store multiple **mRNA**, **protein**, and **phenotype** data sets. For example, there could be `dataset.mRNA` and `dataset.mRNA2` to store 2 mRNA datasets.  The text for the `*` part should be any text that make sense to you or your dataset.  What is defined in the `dataset.*` element is what is more important.
+- **Description:** annotations for **mRNA** or **protein** related `dataset.*` lists.  
+The `*` part should be alpha-numeric text (underscores are allowed) that  should be any text that makes sense to you or your dataset. There must be at least 1 `dataset.*` elements per `RData` file.  These elements will allow you to store multiple **mRNA**, **protein**, and **phenotype** data sets. For example, there could be `dataset.mRNA` and `dataset.mRNA2` to store 2 mRNA datasets. What is defined in the `dataset.*` element is what is more important.
 
 ------------
 
-### mRNA and protein <a name="mrna_dataset"></a>`dataset.*`
+### mRNA and protein <a name="mrna_dataset"></a>`dataset.*` elements
 
 The following elements should be in each **mRNA** and **protein** `dataset.*` [list](http://www.r-tutor.com/r-introduction/list)
 
@@ -111,6 +111,15 @@ The following elements should be in each **mRNA** and **protein** `dataset.*` [l
 * [`lod.peaks`](#mrna_lodpeaks) - lod peaks over a certain threshold
 * [`raw`](#mrna_raw) - matrix of raw mrna data (counts out of [EMASE](http://churchill-lab.github.io/emase/))
 * [`samples`](#mrna_samples) - sample annotations
+
+For example, once each element has been formatted accordingly, the elements can be compiled in to the `dataset.*` via the following code:
+
+```CompileDataset
+dataset.mrna <- list(“annots” = annots.mrna,
+                  “covar” = covar,
+                  "covar.factors" = covar.factors,
+                  ...)
+```
 
 ------------
 
@@ -247,7 +256,7 @@ Extra columns can be included, and will be rendered in the viewer. For example,
 
 The following elements should be in each **phenotype** `dataset.*` [list](http://www.r-tutor.com/r-introduction/list).
 
-* [`annots`](#pheno_annots) - data dictionary 
+* [`annots`](#pheno_annots) - data dictionary
 * [`covar`](#pheno_covar) - matrix of covariates data, samples (rows) x covariates (columns)
 * [`covar.factors`](#pheno_covar_factors) - specific information about the covars
 * [`datatype`](#pheno_datatype) - type of data, must be **phenotype**
